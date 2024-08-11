@@ -7,6 +7,7 @@ library(lubridate)
 library(DBI)
 library(writexl)
 
+## Fix some issues with the data
 candidate_fixes <- function(df) {
     df %>%
         mutate(is_write_in = case_when(
@@ -30,6 +31,7 @@ candidate_fixes <- function(df) {
                  TRUE ~ num_elections))
 }
 
+## Older version of data fixes:
 ## candidate_fixes <- function(df) {
 ##     df %>%
 ##         mutate(party = case_when(
@@ -56,6 +58,7 @@ candidate_fixes <- function(df) {
 ##                  TRUE ~ winner))
 ## }
 
+## No longer required
 ## election_fixes <- function(df) {
 ##     df %>%
 ##         filter(election_id != 98279) %>%
@@ -64,6 +67,10 @@ candidate_fixes <- function(df) {
 ##                    TRUE ~ election_date))
 ## }
 
+## The two U.S. Senate seats can be differentiated by
+## their "Class" as defined on the Wikipedia page:
+## https://en.wikipedia.org/wiki/List_of_United_States_senators_from_Massachusetts
+##
 senate_election_class <- function(election_date) {
     case_when(
     (election_date == "2010-01-19") ~ 1,
@@ -72,6 +79,7 @@ senate_election_class <- function(election_date) {
     ((year(election_date) - 1990) %% 6) == 0 ~ 2)
 }
 
+## Treat the Senate seat Class as its district
 add_senate_seat_as_district <- function(df) {
     df %>%
         mutate(district_id = if_else(office == "U.S. Senate",
@@ -91,6 +99,7 @@ cat(str_glue("Reading elections from {elections_in_file}...\n\n"))
 elections <- read_csv(elections_in_file,
                       col_types=list(party_primary = col_logical(),
                                      is_special = col_logical())) %>%
+    # Treat missing TRUE/FALSE as FALSE 
     mutate(party_primary = replace_na(party_primary, FALSE),
            is_special = replace_na(is_special, FALSE)) %>%
     add_senate_seat_as_district()
@@ -108,6 +117,8 @@ candidates <- read_csv(candidates_in_file,
            city_town = str_replace(city_state, ", MA", ""),
            winner = replace_na(winner, FALSE),
            is_write_in = replace_na(is_write_in, FALSE),
+           ## Simplify party information into three-valued "dem", "gop"
+           ## and, "third_party" as `party_role` for use in column naming
            party_role = case_when(
                is_write_in ~ "write_in",
                (party == "Democratic") ~ "dem",
@@ -117,11 +128,11 @@ candidates <- read_csv(candidates_in_file,
 cat(str_glue("Read {nrow(candidates)} candidates.\n\n"))
 
 
-## Attempt to determine incumbency putting each
-## candidates with their election and filtering
-## for only winners, then grouping winners by office,
-## sorting by election date and removing the first
-## row.
+## Determine incumbency by joining the candidates for each election
+## with the election row/results, grouping by office and candidate, and then
+## seeing if the candidate was the winner of the last election for the
+## same office.
+##
 candidate_is_incumbent <- elections %>%
     left_join(candidates, by="election_id") %>%
     group_by(office_id, candidate_id) %>%
@@ -130,11 +141,13 @@ candidate_is_incumbent <- elections %>%
     ungroup() %>%
     select(election_id, candidate_id, is_incumbent)
 
-## This handles the special cases of candidates having been
-## elected to a particular office, being out of office, then
-## coming back. This could be handled in the general case by
-## looking at the previous election for the same district, but
-## this might not work because of redistricting.
+## This handles the special incumbency cases that do not work with the
+## `candidate_is_incumbent` algorithm. Specificyally, candidates having been
+## elected to a particular office, being out of office, then coming back.
+## This could be handled in the general case by looking at the previous election
+## for the same district, except for redistricting where incumbency can be
+## a grey area.
+##
 incumbency_fixes <- function(candidates) {
     candidates %>%
         mutate(is_incumbent = case_when(
@@ -146,40 +159,58 @@ incumbency_fixes <- function(candidates) {
         TRUE ~ is_incumbent))
 }
 
+## Join the incumbency information back into the candidate list
+##
 candidates_w_inc <- candidates %>%
     left_join(candidate_is_incumbent,
               by=c("election_id", "candidate_id")) %>%
     mutate(is_incumbent = replace_na(is_incumbent, FALSE)) %>%
     incumbency_fixes()
 
+## Add the candidates to the elections as a nested dataframe.
+## 
 elections_candidates <- elections %>%
     nest_join(candidates_w_inc,
               by="election_id",
               name="candidate")
 
-## Find mistaken incumbency duplicates
-## num_incumbents <- function(cands) {
-##     incumbents <- cands %>%
-##         filter(is_incumbent)
-##     nrow(incumbents)
-## }
+## This code is for finding incumbency duplicates. If this stops the
+## script, the debugging script can be run to identify the issue
+## and a new `incumbency_fix` can be added.
+##
+num_incumbents <- function(cands) {
+    incumbents <- cands %>%
+        filter(is_incumbent)
+    nrow(incumbents)
+}
 
-## elecs_with_dup_incumbents <- elections_candidates %>%
-##     mutate(num_incumbents = map_dbl(candidate, num_incumbents)) %>%
-##     filter(num_incumbents > 1)
+elecs_with_dup_incumbents <- elections_candidates %>%
+    mutate(num_incumbents = map_dbl(candidate, num_incumbents)) %>%
+    filter(num_incumbents > 1)
 
-## ## If there are dup_incumbents, run this for more info
-## elecs_with_dup_incumbents %>%
-##     unnest(candidate) %>%
-##     select(office,
-##            district_display,
-##            district_id,
-##            election_id,
-##            election_date,
-##            candidate_id,
-##            name,
-##            party_role)
+if (nrow(elecs_with_dup_incumbents) > 0) {
+    dup_incumbents <- elecs_with_dup_incumbents %>%
+        unnest(candidate) %>%
+        select(office,
+               district_display,
+               district_id,
+               election_id,
+               election_date,
+               candidate_id,
+               name,
+               party_role)
+    print(dup_incumbents)
+    stop("There is more than one incumbent for this election")
+}
 
+## This is the primary working function of the script. It identifies
+## (if present) the Democrat, Republican, third-party candidate with
+## most votes, and write-in candidate with most votes, provides
+## flattened information in the election row with the "dem_", "gop_",
+## "third_party_", and "write_in_" prefixes. The information
+## provided is `name`, `votes`, `percent`, `party`, `city_town`,
+## and `id`. 
+##
 extract_summaries <- function(cands) {
     dem <- filter(cands, party_role == "dem")
     gop <- filter(cands, party_role == "gop")
@@ -209,6 +240,7 @@ extract_summaries <- function(cands) {
         pivot_wider(names_from=party_role,
                     values_from=c(name, votes, percent,
                                   party, city_town, id)) %>%
+        ## Leave out some obvious information
         select(-any_of(c("party_dem",
                          "party_gop",
                          "votes_incumbent",
@@ -217,13 +249,21 @@ extract_summaries <- function(cands) {
                          "percent_winner")))
 }
 
-cat("Generating summaries...\n\n")
+cat("Generating summaries (this may take a few minutes)...\n\n")
 
+## Create the flatted `candidate_summary` using the `extract_summaries`. This
+## takes a couple of minutes.
+## 
 election_summaries <- elections_candidates %>%
     mutate(num_candidates = map_int(candidate, nrow),
            candidate_summary = map(candidate, extract_summaries)) %>%
+    ## Try adding a debugging check if the the `candidate_summary`
+    ## has more than one row, which would mean some faulty logic or data.
     select(-candidate) %>%
     unnest(candidate_summary) %>%
+    ## It is a bit brittle to list all of the columns in this
+    ## selection, but it is to get the desired ordering. There could
+    ## be a debugging check to ensure that there are no additional columns.
     select(office_branch,
            office_id,
            office,
@@ -282,16 +322,19 @@ elections_candidates %>%
 sqlite_db_file <- "data/ma_elections.sqlite"
 if (file.exists(sqlite_db_file)) {
     cat(str_glue("Deleting {sqlite_db_file}...\n\n"))
-    file.remove("ma_elections.sqlite")
+    file.remove(sqlite_db_file)
 }
 cat(str_glue("Writing {sqlite_db_file}...\n\n"))
-elec_db <- dbConnect(RSQLite::SQLite(), "ma_elections.sqlite")
+elec_db <- dbConnect(RSQLite::SQLite(), sqlite_db_file)
 dbWriteTable(elec_db, "general_election", election_summaries)
 dbWriteTable(elec_db, "election_candidate", candidates)
 dbDisconnect(elec_db)
 
 cat("Done.\n\n")
 
+## I forget what this was for, so leaving it
+## here until I show it isn't useful.
+##
 ## election_summaries %>%
 ##     arrange(desc(election_date)) %>%
 ##     split(.$office) %>%
