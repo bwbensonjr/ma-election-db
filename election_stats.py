@@ -1,3 +1,7 @@
+"""Use the `electionstats.state.ma.us` website to query election
+results for a given range of years and set of offices producing a
+flattened representation of the elections and candidates as an output."""
+
 import pandas as pd
 import requests
 import sys
