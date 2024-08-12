@@ -5,7 +5,6 @@
 library(tidyverse)
 library(lubridate)
 library(DBI)
-library(writexl)
 
 ## Fix some issues with the data
 candidate_fixes <- function(df) {
@@ -106,6 +105,25 @@ elections <- read_csv(elections_in_file,
 
 cat(str_glue("Read {nrow(elections)} elections.\n\n"))
 
+party_abbrev <- function(party) {
+    case_when(
+        party == "Democratic" ~ "D",
+        party == "Republican" ~ "R",
+        party == "Unenrolled" ~ "U",
+        party == "Libertarian" ~ "L",
+        party == "Independent" ~ "I",
+        party == "Green-Rainbow" ~ "GR",
+        party == "Natural Law" ~ "NL",
+        TRUE ~ "Other"
+    )
+}
+
+candidate_display <- function(name, party_abbr, city_town) {
+    if_else(is.na(city_town),
+            str_glue("{name} ({party_abbr})"),
+            str_glue("{name} ({party_abbr}-{city_town})"))
+}
+
 candidates_in_file <- "data/ma_candidates_1990_2024.csv.gz"
 cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 
@@ -114,7 +132,9 @@ candidates <- read_csv(candidates_in_file,
                                       is_write_in = col_logical())) %>%
     candidate_fixes() %>%
     mutate(party = replace_na(party, "None"),
+           party_abbr = party_abbrev(party),
            city_town = str_replace(city_state, ", MA", ""),
+           display = candidate_display(name, party_abbr, city_town),
            winner = replace_na(winner, FALSE),
            is_write_in = replace_na(is_write_in, FALSE),
            ## Simplify party information into three-valued "dem", "gop"
@@ -233,12 +253,13 @@ extract_summaries <- function(cands) {
         select(party_role,
                party,
                name,
+               display,
                votes=num_votes,
                percent,
                city_town,
                id=candidate_id) %>%
         pivot_wider(names_from=party_role,
-                    values_from=c(name, votes, percent,
+                    values_from=c(name, display, votes, percent,
                                   party, city_town, id)) %>%
         ## Leave out some obvious information
         select(-any_of(c("party_dem",
@@ -279,30 +300,36 @@ election_summaries <- elections_candidates %>%
            num_candidates,
            id_winner,
            name_winner,
+           display_winner,
            city_town_winner,
            party_winner,
            id_incumbent,
            name_incumbent,
+           display_incumbent,
            city_town_incumbent,
            party_incumbent,
            id_dem,
            name_dem,
+           display_dem,
            city_town_dem,
            votes_dem,
            percent_dem,
            id_gop,
            name_gop,
+           display_gop,
            city_town_gop,
            votes_gop,
            percent_gop,
            id_third_party,
            name_third_party,
+           display_third_party,
            city_town_third_party,
            votes_third_party,
            percent_third_party,
            party_third_party,
            id_write_in,
            name_write_in,
+           display_write_in,
            city_town_write_in,
            votes_write_in,
            percent_write_in,
