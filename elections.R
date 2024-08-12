@@ -272,11 +272,18 @@ extract_summaries <- function(cands) {
 
 cat("Generating summaries (this may take a few minutes)...\n\n")
 
+
+## Only count non-write-in candidates that were on the ballot
+##
+num_candidates_on_ballot <-function(cands) {
+    nrow(cands %>% filter(!is_write_in))
+}
+
 ## Create the flatted `candidate_summary` using the `extract_summaries`. This
 ## takes a couple of minutes.
 ## 
 election_summaries <- elections_candidates %>%
-    mutate(num_candidates = map_int(candidate, nrow),
+    mutate(num_candidates = map_int(candidate, num_candidates_on_ballot),
            candidate_summary = map(candidate, extract_summaries)) %>%
     ## Try adding a debugging check if the the `candidate_summary`
     ## has more than one row, which would mean some faulty logic or data.
