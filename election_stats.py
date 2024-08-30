@@ -82,35 +82,47 @@ OFFICES = [
     "President",
 ]
 
-MIN_YEAR = 1990
-MAX_YEAR = 2024
-
 
 def main():
     # extract_elections(stage="General")
-    extract_elections(stage="Primaries")
+    extract_elections(
+        min_year=1996,
+        max_year=2024,
+        stage="Primaries",
+    )
 
-def extract_elections(stage="General"):
+
+def extract_elections(min_year=1990, max_year=2024, stage="General"):
     if stage == "General":
         file_id = ""
     elif stage == "Primaries":
         file_id = "primary_"
     elec_list = []
     cand_list = []
-    for year_from in range(MIN_YEAR, MAX_YEAR, 5):
+    for year_from in range(min_year, max_year, 5):
         year_to = year_from + 4
         for office in OFFICES:
             elecs, cands = query_elections(
-                year_from, year_to, OFFICE_ID[office], stage,
+                year_from,
+                year_to,
+                OFFICE_ID[office],
+                stage,
             )
             if elecs is not None:
                 elec_list.append(elecs)
             if cands is not None:
                 cand_list.append(cands)
+    # Write elections
     elecs = pd.concat(elec_list, ignore_index=True)
+    elecs_file = f"data/ma_{file_id}elections_{min_year}_{max_year}.csv.gz"
+    print(f"Writing elections {elecs_file}...")
+    elecs.to_csv(elecs_file, index=False)
+    # Write candidates
     cands = pd.concat(cand_list, ignore_index=True)
-    elecs.to_csv(f"data/ma_{file_id}elections_{MIN_YEAR}_{MAX_YEAR}.csv.gz", index=False)
-    cands.to_csv(f"data/ma_{file_id}candidates_{MIN_YEAR}_{MAX_YEAR}.csv.gz", index=False)
+    cands_file = f"data/ma_{file_id}candidates_{min_year}_{max_year}.csv.gz"
+    print(f"Writing candidates {cands_file}...")
+    cands.to_csv(cands_file, index=False)
+    print("Done.")
 
 
 def query_elections(year_from, year_to, office_id, stage):
