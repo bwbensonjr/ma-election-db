@@ -359,9 +359,23 @@ if (file.exists(sqlite_db_file)) {
     file.remove(sqlite_db_file)
 }
 cat(str_glue("Writing {sqlite_db_file}...\n\n"))
-elec_db <- dbConnect(RSQLite::SQLite(), sqlite_db_file)
-dbWriteTable(elec_db, "general_election", election_summaries)
-dbWriteTable(elec_db, "election_candidate", candidates)
+elec_db <- dbConnect(
+    drv=RSQLite::SQLite(),
+    sqlite_db_file,
+    extended_types=TRUE
+)
+dbWriteTable(
+    elec_db,
+    "general_election",
+    (election_summaries %>%
+     mutate(election_date = format(election_date, "%Y-%m-%d")))
+)
+dbWriteTable(
+    elec_db,
+    "election_candidate",
+    (candidates %>%
+     mutate(election_date = format(election_date, "%Y-%m-%d")))
+)
 dbDisconnect(elec_db)
 
 cat("Done.\n\n")

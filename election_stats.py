@@ -84,12 +84,12 @@ OFFICES = [
 
 
 def main():
-    # extract_elections(stage="General")
-    extract_elections(
-        min_year=1996,
-        max_year=2024,
-        stage="Primaries",
-    )
+    extract_elections(stage="General")
+    # extract_elections(
+    #     min_year=1996,
+    #     max_year=2024,
+    #     stage="Primaries",
+    # )
 
 
 def extract_elections(min_year=1990, max_year=2024, stage="General"):
