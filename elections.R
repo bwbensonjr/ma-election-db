@@ -373,8 +373,7 @@ dbWriteTable(
 dbWriteTable(
     elec_db,
     "election_candidate",
-    (candidates %>%
-     mutate(election_date = format(election_date, "%Y-%m-%d")))
+    candidates
 )
 dbDisconnect(elec_db)
 
