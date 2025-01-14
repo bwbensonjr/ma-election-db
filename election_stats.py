@@ -64,7 +64,7 @@ CAND_COL_NAMES = {
     "middle_name": "middle_name",
     "last_name": "last_name",
     "n_elections": "num_elections",
-    "CandidateToElection.is_winner": "winner",
+    "CandidateToElection.is_winner": "is_winner",
     "CandidateToElection.is_write_in": "is_write_in",
     "CandidateToElection.n_votes": "num_votes",
     "CandidateToElection.party": "party",
@@ -84,7 +84,11 @@ OFFICES = [
 
 
 def main():
-    extract_elections(stage="General")
+    extract_elections(
+        min_year=1990,
+        max_year=2024,
+        stage="General",
+    )
     # extract_elections(
     #     min_year=1996,
     #     max_year=2024,
