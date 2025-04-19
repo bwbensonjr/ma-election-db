@@ -92,7 +92,7 @@ add_senate_seat_as_district <- function(df) {
                                           district_display))
 }
 
-elections_in_file <- "data/ma_elections_1990_2024.csv.gz"
+elections_in_file <- "data/ma_elections_1990_2025.csv.gz"
 cat(str_glue("Reading elections from {elections_in_file}...\n\n"))
 
 elections <- read_csv(elections_in_file,
@@ -124,7 +124,7 @@ candidate_display <- function(name, party_abbr, city_town) {
             str_glue("{name} ({party_abbr}-{city_town})"))
 }
 
-candidates_in_file <- "data/ma_candidates_1990_2024.csv.gz"
+candidates_in_file <- "data/ma_candidates_1990_2025.csv.gz"
 cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 
 candidates <- read_csv(candidates_in_file,
@@ -342,12 +342,12 @@ election_summaries <- elections_candidates %>%
            percent_write_in,
            party_write_in)
 
-summary_out_file <- "data/ma_general_election_summaries_1990_2024.csv.gz"
+summary_out_file <- "data/ma_general_election_summaries_1990_2025.csv.gz"
 cat(str_glue("Writing summaries to {summary_out_file}...\n\n"))
 election_summaries %>%
     write_csv(summary_out_file)
 
-candidate_out_file <- "data/ma_general_election_candidates_1990_2024.csv.gz"
+candidate_out_file <- "data/ma_general_election_candidates_1990_2025.csv.gz"
 cat(str_glue("Writing candidates to {candidate_out_file}...\n\n"))
 elections_candidates %>%
     unnest(candidate) %>%
