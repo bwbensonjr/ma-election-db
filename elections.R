@@ -17,9 +17,9 @@ candidate_fixes <- function(df) {
                  ((election_id == 154549) & (candidate_id = 88406)) ~ "Bradley H. Jones, Jr.",
                  ((election_id == 140828) & (candidate_id = 82206)) ~ "Steven G. Xiarhos",
                  TRUE ~ name),
-             winner = case_when(
+             is_winner = case_when(
                  ((election_id == 96321) & (candidate_id == 71530)) ~ FALSE,
-                 TRUE ~ winner),
+                 TRUE ~ is_winner),
              candidate_id = case_when(
                  ((election_id == 154549) & (candidate_id = 88406)) ~ 62825,
                  ((election_id == 154423) & (candidate_id = 88326)) ~ 82206,
@@ -52,9 +52,9 @@ candidate_fixes <- function(df) {
 ##              name = case_when(
 ##                  ((election_id == 154409) & (candidate_id == 78007)) ~ "Susannah M. Whipps",
 ##                  TRUE ~ name),
-##              winner = case_when(
+##              is_winner = case_when(
 ##                  ((election_id == 96321) & (candidate_id == 71530)) ~ FALSE,
-##                  TRUE ~ winner))
+##                  TRUE ~ is_winner))
 ## }
 
 ## No longer required
@@ -128,14 +128,14 @@ candidates_in_file <- "data/ma_candidates_1990_2025.csv.gz"
 cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 
 candidates <- read_csv(candidates_in_file,
-                       col_types=list(winner = col_logical(),
+                       col_types=list(is_winner = col_logical(),
                                       is_write_in = col_logical())) %>%
     candidate_fixes() %>%
     mutate(party = replace_na(party, "None"),
            party_abbr = party_abbrev(party),
            city_town = str_replace(city_state, ", MA", ""),
            display = candidate_display(name, party_abbr, city_town),
-           winner = replace_na(winner, FALSE),
+           is_winner = replace_na(is_winner, FALSE),
            is_write_in = replace_na(is_write_in, FALSE),
            ## Simplify party information into three-valued "dem", "gop"
            ## and, "third_party" as `party_role` for use in column naming
@@ -157,7 +157,7 @@ candidate_is_incumbent <- elections %>%
     left_join(candidates, by="election_id") %>%
     group_by(office_id, candidate_id) %>%
     arrange(election_date) %>%
-    mutate(is_incumbent = lag(winner)) %>%
+    mutate(is_incumbent = lag(is_winner)) %>%
     ungroup() %>%
     select(election_id, candidate_id, is_incumbent)
 
@@ -242,7 +242,7 @@ extract_summaries <- function(cands) {
         filter(party_role == "write_in") %>%
         arrange(desc(num_votes)) %>%
         slice(1)
-    winner <- filter(cands, winner) %>%
+    winner <- filter(cands, is_winner) %>%
         mutate(party_role = "winner", percent = 0)
     incumbent <- filter(cands, is_incumbent) %>%
         mutate(party_role = "incumbent", percent = 0)
