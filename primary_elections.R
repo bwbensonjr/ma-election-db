@@ -43,7 +43,7 @@ senate_election_class <- function(election_date) {
 }
 
 
-elections_in_file <- "data/ma_primary_elections_1996_2024.csv.gz"
+elections_in_file <- "data/ma_primary_elections.csv.gz"
 cat(str_glue("Reading primary elections from {elections_in_file}...\n\n"))
 
 elections <- read_csv(elections_in_file,
@@ -112,5 +112,5 @@ district_elections %>%
            office == "State Representative",
            contested)
 
-incumbents <- read_csv("data/ma_general_election_candidates_1990_2024.csv.gz")  %>%
+incumbents <- read_csv("data/ma_general_election_candidates.csv.gz")  %>%
     filter(is_incumbent)

@@ -92,7 +92,7 @@ add_senate_seat_as_district <- function(df) {
                                           district_display))
 }
 
-elections_in_file <- "data/ma_elections_1990_2025.csv.gz"
+elections_in_file <- "data/ma_elections.csv.gz"
 cat(str_glue("Reading elections from {elections_in_file}...\n\n"))
 
 elections <- read_csv(elections_in_file,
@@ -124,7 +124,7 @@ candidate_display <- function(name, party_abbr, city_town) {
             str_glue("{name} ({party_abbr}-{city_town})"))
 }
 
-candidates_in_file <- "data/ma_candidates_1990_2025.csv.gz"
+candidates_in_file <- "data/ma_candidates.csv.gz"
 cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 
 candidates <- read_csv(candidates_in_file,
@@ -265,9 +265,7 @@ extract_summaries <- function(cands) {
         select(-any_of(c("party_dem",
                          "party_gop",
                          "votes_incumbent",
-                         "votes_winner",
-                         "percent_incumbent",
-                         "percent_winner")))
+                         "percent_incumbent")))
 }
 
 cat("Generating summaries (this may take a few minutes)...\n\n")
@@ -289,6 +287,7 @@ election_summaries <- elections_candidates %>%
     ## has more than one row, which would mean some faulty logic or data.
     select(-candidate) %>%
     unnest(candidate_summary) %>%
+    mutate(percent_winner = votes_winner/(total_votes - (blank_votes + all_other_votes))) %>%
     ## It is a bit brittle to list all of the columns in this
     ## selection, but it is to get the desired ordering. There could
     ## be a debugging check to ensure that there are no additional columns.
@@ -309,6 +308,8 @@ election_summaries <- elections_candidates %>%
            name_winner,
            display_winner,
            city_town_winner,
+           votes_winner,
+           percent_winner,
            party_winner,
            id_incumbent,
            name_incumbent,
@@ -342,12 +343,12 @@ election_summaries <- elections_candidates %>%
            percent_write_in,
            party_write_in)
 
-summary_out_file <- "data/ma_general_election_summaries_1990_2025.csv.gz"
+summary_out_file <- "data/ma_general_election_summaries.csv.gz"
 cat(str_glue("Writing summaries to {summary_out_file}...\n\n"))
 election_summaries %>%
     write_csv(summary_out_file)
 
-candidate_out_file <- "data/ma_general_election_candidates_1990_2025.csv.gz"
+candidate_out_file <- "data/ma_general_election_candidates.csv.gz"
 cat(str_glue("Writing candidates to {candidate_out_file}...\n\n"))
 elections_candidates %>%
     unnest(candidate) %>%

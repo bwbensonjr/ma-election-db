@@ -103,11 +103,11 @@ def extract_elections(min_year=1990, max_year=2024, stage="General"):
         file_id = "primary_"
     elecs, cands = query_election_years(min_year, max_year, stage)
     # Write elections
-    elecs_file = f"data/ma_{file_id}elections_{min_year}_{max_year}.csv.gz"
+    elecs_file = f"data/ma_{file_id}elections.csv.gz"
     print(f"Writing elections {elecs_file}...")
     elecs.to_csv(elecs_file, index=False)
     # Write candidates
-    cands_file = f"data/ma_{file_id}candidates_{min_year}_{max_year}.csv.gz"
+    cands_file = f"data/ma_{file_id}candidates.csv.gz"
     print(f"Writing candidates {cands_file}...")
     cands.to_csv(cands_file, index=False)
     print("Done.")

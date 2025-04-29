@@ -2,7 +2,7 @@ from fuzzywuzzy import fuzz
 import pandas as pd
 
 def main():
-    cand_elecs = (pd.read_csv("data/ma_general_election_candidates_1990_2025.csv.gz")
+    cand_elecs = (pd.read_csv("data/ma_general_election_candidates.csv.gz")
                   .sort_values(["candidate_id", "election_id"], ascending=False))
     cands = cand_elecs.drop_duplicates("candidate_id")
     cand_spelling_dups = potential_duplicates(cands)
