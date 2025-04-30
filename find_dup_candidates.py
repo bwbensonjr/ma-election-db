@@ -6,7 +6,7 @@ def main():
                   .sort_values(["candidate_id", "election_id"], ascending=False))
     cands = cand_elecs.drop_duplicates("candidate_id")
     cand_spelling_dups = potential_duplicates(cands)
-    special_dups = special_cases(cands)
+    special_dups = keating_dups(cands)
     dups = (pd.concat([cand_spelling_dups, special_dups], ignore_index=True)
             .sort_values("same_person", ascending=False))
     dups.to_csv("data/possible-candidate-dupes.csv", index=False)
@@ -17,7 +17,7 @@ def main():
                 .sort_values("id_pref"))
     rep_dups.to_csv("data/reported-duplicates.csv", index=False)
         
-def special_cases(df):
+def keating_dups(df):
     keating_rows = df[df["name"].str.contains("Keating")].sort_values("candidate_id")
     pref_id = keating_rows.iloc[2]["candidate_id"]
     keating_1 = combined_row_info(keating_rows.iloc[0], keating_rows.iloc[2])
@@ -27,6 +27,17 @@ def special_cases(df):
                           pref_id = pref_id,
                           ratio = 100))
     return keating_df
+
+def xiarhos_dups(df):
+    row_1 = df[df["candidate_id"] == 82206].iloc[0]
+    row_2 = df[df["candidate_id"] == 88326].iloc[0]
+    pref_id = 82206
+    comb_row = combined_row_info(row_1, row_2)
+    comb_df = (pd.DataFrame([comb_row])
+               .assign(same_person = "yes",
+                       pref_id = pref_id,
+                       ratio = 100))
+    return comb_df
 
 def combined_row_info(row_1, row_2):
     comb_row = {

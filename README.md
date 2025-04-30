@@ -1,4 +1,4 @@
-# ma-election-db
+# Massachusetts Election Database
 
 Tools for querying MA election results and producing a database of
 elections and candidates
@@ -28,3 +28,9 @@ Make queries to the database using the [`sqlime`](https://sqlime.org) SQLite pla
 
 * [MA Election DB playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
 
+## TODO
+
+- [ ] Complete primary election and candidate data refinement
+- [ ] Add primary elections to SQLite database
+- [ ] Addprecinct-level results
+- [x] Specify `INTEGER` data types in SQLite where appropriate

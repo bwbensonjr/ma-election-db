@@ -14,15 +14,15 @@ candidate_fixes <- function(df) {
                  TRUE ~ is_write_in),
              name = case_when(
                  ((election_id == 154409) & (candidate_id == 78007)) ~ "Susannah M. Whipps",
-                 ((election_id == 154549) & (candidate_id = 88406)) ~ "Bradley H. Jones, Jr.",
-                 ((election_id == 140828) & (candidate_id = 82206)) ~ "Steven G. Xiarhos",
+                 ((election_id == 154549) & (candidate_id == 88406)) ~ "Bradley H. Jones, Jr.",
+                 ((election_id == 140828) & (candidate_id == 82206)) ~ "Steven G. Xiarhos",
                  TRUE ~ name),
              is_winner = case_when(
                  ((election_id == 96321) & (candidate_id == 71530)) ~ FALSE,
                  TRUE ~ is_winner),
              candidate_id = case_when(
-                 ((election_id == 154549) & (candidate_id = 88406)) ~ 62825,
-                 ((election_id == 154423) & (candidate_id = 88326)) ~ 82206,
+                 ((election_id == 154549) & (candidate_id == 88406)) ~ 62825,
+                 ((election_id == 154423) & (candidate_id == 88326)) ~ 82206,
                  TRUE ~ candidate_id),
              num_elections = case_when(
                  (candidate_id == 62825) ~ 33,
@@ -369,12 +369,37 @@ dbWriteTable(
     elec_db,
     "general_election",
     (election_summaries %>%
-     mutate(election_date = format(election_date, "%Y-%m-%d")))
+     mutate(election_date = format(election_date, "%Y-%m-%d"))),
+     field.types = c(
+         office_id = "INTEGER",
+         district_id = "INTEGER",
+         election_id = "INTEGER",
+         total_votes = "INTEGER",
+         blank_votes = "INTEGER",
+         all_other_votes = "INTEGER",
+         id_winner = "INTEGER",
+         votes_winner = "INTEGER",
+         id_incumbent = "INTEGER",
+         id_dem = "INTEGER",
+         votes_dem = "INTEGER",
+         id_gop = "INTEGER",
+         votes_gop = "INTEGER",
+         id_third_party = "INTEGER",
+         votes_third_party = "INTEGER",
+         id_write_in = "INTEGER",
+         votes_write_in = "INTEGER"
+     )
 )
 dbWriteTable(
     elec_db,
     "election_candidate",
-    candidates
+    candidates,
+    field.types = c(
+        election_id = "INTEGER",
+        candidate_id = "INTEGER",
+        num_elections = "INTEGER",
+        num_votes = "INTEGER"
+    )
 )
 dbDisconnect(elec_db)
 
