@@ -96,7 +96,7 @@ def main():
     # )
 
 
-def extract_elections(min_year=1990, max_year=2024, stage="General"):
+def extract_elections(min_year=1990, max_year=2025, stage="General"):
     if stage == "General":
         file_id = ""
     elif stage == "Primaries":
@@ -115,7 +115,7 @@ def extract_elections(min_year=1990, max_year=2024, stage="General"):
 def query_election_years(min_year, max_year, stage):
     elec_list = []
     cand_list = []
-    for year_from in range(min_year, max_year, 5):
+    for year_from in range(min_year, (max_year+1), 5):
         year_to = year_from + 4
         for office in OFFICES:
             elecs, cands = query_elections(
