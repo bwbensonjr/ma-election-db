@@ -105,6 +105,30 @@ elections <- read_csv(elections_in_file,
 
 cat(str_glue("Read {nrow(elections)} elections.\n\n"))
 
+## Identify first election cycle for each office to exclude from outputs
+## (these elections have no valid incumbency data)
+first_cycles <- elections %>%
+    group_by(office_id) %>%
+    summarize(first_cycle_date = min(election_date), .groups='drop')
+
+elections <- elections %>%
+    left_join(first_cycles, by="office_id") %>%
+    mutate(is_first_cycle = (election_date == first_cycle_date))
+
+## Show which elections will be excluded
+first_cycle_summary <- elections %>%
+    filter(is_first_cycle) %>%
+    group_by(office) %>%
+    summarize(
+        first_date = first(election_date),
+        num_elections = n(),
+        .groups='drop'
+    )
+
+cat("Excluding first election cycle per office (no incumbency data):\n")
+print(first_cycle_summary)
+cat("\n")
+
 party_abbrev <- function(party) {
     case_when(
         party == "Democratic" ~ "D",
@@ -148,55 +172,72 @@ candidates <- read_csv(candidates_in_file,
 cat(str_glue("Read {nrow(candidates)} candidates.\n\n"))
 
 
-## Determine incumbency by joining the candidates for each election
-## with the election row/results, grouping by office and candidate, and then
-## seeing if the candidate was the winner of the last election for the
-## same office.
+## Determine incumbency by checking if a candidate won in the immediately
+## previous election cycle for that office (regardless of district). This
+## handles career gaps and redistricting more accurately than the lag approach.
 ##
+## First, create a table of distinct election cycles per office, then join back
+## to find the previous cycle date for each election. IMPORTANT: We only consider
+## regular (non-special) elections as "cycles" for incumbency purposes.
+## For U.S. Senate, we need to group by district_id (Class) as well.
+distinct_cycles <- elections %>%
+    filter(!is_special) %>%  ## Only regular elections define cycles
+    group_by(office_id, district_id, election_date) %>%
+    slice(1) %>%  ## One row per office-district-date combination
+    ungroup() %>%
+    group_by(office_id, district_id) %>%  ## Group by office AND district (for Senate Class)
+    arrange(election_date) %>%
+    mutate(prev_cycle_date = lag(election_date)) %>%
+    ungroup() %>%
+    select(office_id, district_id, election_date, prev_cycle_date)
+
+election_cycles <- elections %>%
+    left_join(distinct_cycles, by=c("office_id", "district_id", "election_date")) %>%
+    select(election_id, office_id, election_date, prev_cycle_date)
+
+## Then, create a table of who won what in which cycle
+winners_by_cycle <- elections %>%
+    left_join(candidates %>% filter(is_winner), by="election_id") %>%
+    select(office_id, election_date, district_id, candidate_id, name) %>%
+    filter(!is.na(candidate_id))
+
+
+## Finally, join to see if each candidate won in the previous cycle
+## We need to handle cases where a candidate may have won multiple times
+## in the same cycle (e.g., special elections), so we deduplicate by taking
+## the first district they won in that cycle
 candidate_is_incumbent <- elections %>%
     left_join(candidates, by="election_id") %>%
-    group_by(office_id, candidate_id) %>%
-    arrange(election_date) %>%
-    mutate(is_incumbent = lag(is_winner)) %>%
-    ungroup() %>%
-    select(election_id, candidate_id, is_incumbent)
-
-## This handles the special incumbency cases that do not work with the
-## `candidate_is_incumbent` algorithm. Specificyally, candidates having been
-## elected to a particular office, being out of office, then coming back.
-## This could be handled in the general case by looking at the previous election
-## for the same district, except for redistricting where incumbency can be
-## a grey area.
-##
-incumbency_fixes <- function(candidates) {
-    candidates %>%
-        mutate(is_incumbent = case_when(
-        ((election_id == 98267) & (candidate_id == 63651)) ~ FALSE,
-        ((election_id == 98501) & (candidate_id == 62827)) ~ FALSE,
-        ((election_id == 103356) & (candidate_id == 63232)) ~ FALSE,
-        ((election_id == 126287) & (candidate_id == 63121)) ~ FALSE,
-        ((election_id == 130480) & (candidate_id == 62994)) ~ FALSE,
-        TRUE ~ is_incumbent))
-}
+    left_join(election_cycles, by=c("election_id", "office_id", "election_date")) %>%
+    left_join(
+        winners_by_cycle %>%
+            group_by(office_id, candidate_id, election_date) %>%
+            slice(1) %>%  ## Take first district if multiple wins in same cycle
+            ungroup() %>%
+            mutate(won_prev_cycle = TRUE),  ## Add marker for successful join
+        by=c("office_id", "candidate_id", "prev_cycle_date" = "election_date"),
+        suffix=c("", "_prev")
+    ) %>%
+    mutate(is_incumbent = !is.na(won_prev_cycle)) %>%  ## Check if join matched
+    select(election_id, candidate_id, is_incumbent, district_id_prev)
 
 ## Join the incumbency information back into the candidate list
+## The new algorithm handles all previous edge cases automatically
 ##
 candidates_w_inc <- candidates %>%
     left_join(candidate_is_incumbent,
               by=c("election_id", "candidate_id")) %>%
-    mutate(is_incumbent = replace_na(is_incumbent, FALSE)) %>%
-    incumbency_fixes()
+    mutate(is_incumbent = replace_na(is_incumbent, FALSE))
 
 ## Add the candidates to the elections as a nested dataframe.
-## 
+##
 elections_candidates <- elections %>%
     nest_join(candidates_w_inc,
               by="election_id",
               name="candidate")
 
-## This code is for finding incumbency duplicates. If this stops the
-## script, the debugging script can be run to identify the issue
-## and a new `incumbency_fix` can be added.
+## Count incumbents per election for tracking multiple incumbents
+## (which can happen legitimately due to redistricting)
 ##
 num_incumbents <- function(cands) {
     incumbents <- cands %>%
@@ -204,24 +245,8 @@ num_incumbents <- function(cands) {
     nrow(incumbents)
 }
 
-elecs_with_dup_incumbents <- elections_candidates %>%
-    mutate(num_incumbents = map_dbl(candidate, num_incumbents)) %>%
-    filter(num_incumbents > 1)
-
-if (nrow(elecs_with_dup_incumbents) > 0) {
-    dup_incumbents <- elecs_with_dup_incumbents %>%
-        unnest(candidate) %>%
-        select(office,
-               district_display,
-               district_id,
-               election_id,
-               election_date,
-               candidate_id,
-               name,
-               party_role)
-    print(dup_incumbents)
-    stop("There is more than one incumbent for this election")
-}
+elections_candidates <- elections_candidates %>%
+    mutate(num_incumbents = map_int(candidate, num_incumbents))
 
 ## This is the primary working function of the script. It identifies
 ## (if present) the Democrat, Republican, third-party candidate with
@@ -229,9 +254,13 @@ if (nrow(elecs_with_dup_incumbents) > 0) {
 ## flattened information in the election row with the "dem_", "gop_",
 ## "third_party_", and "write_in_" prefixes. The information
 ## provided is `name`, `votes`, `percent`, `party`, `city_town`,
-## and `id`. 
+## and `id`.
 ##
-extract_summaries <- function(cands) {
+## For incumbents, when multiple exist (due to redistricting), we prefer
+## the incumbent who served in the same district, falling back to the
+## most recent winner.
+##
+extract_summaries <- function(cands, current_district) {
     dem <- filter(cands, party_role == "dem")
     gop <- filter(cands, party_role == "gop")
     third_party <- cands %>%
@@ -244,8 +273,19 @@ extract_summaries <- function(cands) {
         slice(1)
     winner <- filter(cands, is_winner) %>%
         mutate(party_role = "winner", percent = 0)
-    incumbent <- filter(cands, is_incumbent) %>%
+
+    ## Handle multiple incumbents by preferring same-district incumbent
+    incumbent <- cands %>%
+        filter(is_incumbent) %>%
+        arrange(
+            ## Prefer incumbent from same district
+            district_id_prev != current_district,
+            ## Then prefer non-NA district_id_prev
+            is.na(district_id_prev)
+        ) %>%
+        slice(1) %>%
         mutate(party_role = "incumbent", percent = 0)
+
     rbind((rbind(dem, gop, third_party, write_in) %>%
            mutate(percent = num_votes/sum(num_votes))),
           winner,
@@ -279,10 +319,11 @@ num_candidates_on_ballot <-function(cands) {
 
 ## Create the flatted `candidate_summary` using the `extract_summaries`. This
 ## takes a couple of minutes.
-## 
+##
 election_summaries <- elections_candidates %>%
+    filter(!is_first_cycle) %>%
     mutate(num_candidates = map_int(candidate, num_candidates_on_ballot),
-           candidate_summary = map(candidate, extract_summaries)) %>%
+           candidate_summary = map2(candidate, district_id, extract_summaries)) %>%
     ## Try adding a debugging check if the the `candidate_summary`
     ## has more than one row, which would mean some faulty logic or data.
     select(-candidate) %>%
@@ -304,6 +345,7 @@ election_summaries <- elections_candidates %>%
            blank_votes,
            all_other_votes,
            num_candidates,
+           num_incumbents,
            id_winner,
            name_winner,
            display_winner,
@@ -351,6 +393,7 @@ election_summaries %>%
 candidate_out_file <- "data/ma_general_election_candidates.csv.gz"
 cat(str_glue("Writing candidates to {candidate_out_file}...\n\n"))
 elections_candidates %>%
+    filter(!is_first_cycle) %>%
     unnest(candidate) %>%
     write_csv(candidate_out_file)
 
@@ -377,6 +420,8 @@ dbWriteTable(
          total_votes = "INTEGER",
          blank_votes = "INTEGER",
          all_other_votes = "INTEGER",
+         num_candidates = "INTEGER",
+         num_incumbents = "INTEGER",
          id_winner = "INTEGER",
          votes_winner = "INTEGER",
          id_incumbent = "INTEGER",
@@ -393,7 +438,10 @@ dbWriteTable(
 dbWriteTable(
     elec_db,
     "election_candidate",
-    candidates,
+    (elections_candidates %>%
+     filter(!is_first_cycle) %>%
+     unnest(candidate) %>%
+     select(-is_first_cycle, -num_incumbents)),
     field.types = c(
         election_id = "INTEGER",
         candidate_id = "INTEGER",
