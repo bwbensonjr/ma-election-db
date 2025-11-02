@@ -1,0 +1,19 @@
+id_1,name_1,id_2,name_2,office,district_id,detection_method,confidence
+73734,Damian M. Anketell,110223,Damian Mitchell Anketell,State Senate,Second Essex,same_district,medium
+63171,Lawrence P. Novak,93043,Lawrence Peter Novak,State Representative,Ninth Plymouth,same_district,medium
+63637,Matthew John Amorello,72991,Matthew J. Amorello,State Senate,Second Worcester,same_district,medium
+62869,James Michael Murphy,72464,James M. Murphy,State Representative,Fourth Norfolk,same_district,medium
+78102,Brendan P. Crighton,110265,Brendan Peter Crighton,State Senate,64702,consecutive_winner,high
+78082,"David K. Muradian, Jr",110261,"David Kent Muradian, Jr",State Representative,58882,consecutive_winner,high
+70523,Carol A. Doherty,110257,Carol Ann Doherty,State Representative,58744,consecutive_winner,high
+78056,Michelle M. Dubois,110240,Michelle Marie Dubois,State Representative,58852,consecutive_winner,high
+77944,Daniel Joseph Ryan,110233,Daniel J. Ryan,State Representative,58856,consecutive_winner,high
+88290,Dawne F. Shand,110203,Dawne Frances Shand,State Representative,58756,consecutive_winner,high
+74528,Elizabeth A. Warren,110183,Elizabeth Ann Warren,U.S. Senate,1,consecutive_winner,high
+72741,Antonio F.D. Cabral,88412,Antonio d. F. Cabral,State Representative,58754,consecutive_winner,high
+78419,Brian W. Murray,88394,Brian William Murray,State Representative,58883,consecutive_winner,high
+62941,Edward F. Coppinger,88346,Edward Francis Coppinger,State Representative,58864,consecutive_winner,high
+78659,Maria D. Robinson,82257,Maria Duaime Robinson,State Representative,58796,consecutive_winner,high
+78309,Patrick M. O'Connor,82248,Patrick Michael O'Connor,State Senate,58722,consecutive_winner,high
+78029,Eric Philip Lesser,82212,Eric P. Lesser,State Senate,58704,consecutive_winner,high
+63048,Cynthia Stone Creem,78635,Cynthia Stone Creem,State Senate,58712,consecutive_winner,high
