@@ -172,13 +172,12 @@ candidates <- read_csv(candidates_in_file,
 cat(str_glue("Read {nrow(candidates)} candidates.\n\n"))
 
 
-## Determine incumbency by checking if a candidate won in the immediately
-## previous election cycle for that office (regardless of district). This
-## handles career gaps and redistricting more accurately than the lag approach.
+## Determine incumbency by checking if a candidate won the most recent
+## previous election (regular or special) for that office/district.
+## This handles special elections, career gaps, and redistricting.
 ##
-## First, create a table of distinct election cycles per office, then join back
-## to find the previous cycle date for each election. IMPORTANT: We only consider
-## regular (non-special) elections as "cycles" for incumbency purposes.
+## First, create a table of distinct election cycles per office using only
+## regular elections. This is used for first-cycle filtering, not incumbency.
 ## For U.S. Senate, we need to group by district_id (Class) as well.
 distinct_cycles <- elections %>%
     filter(!is_special) %>%  ## Only regular elections define cycles
@@ -193,32 +192,40 @@ distinct_cycles <- elections %>%
 
 election_cycles <- elections %>%
     left_join(distinct_cycles, by=c("office_id", "district_id", "election_date")) %>%
-    select(election_id, office_id, election_date, prev_cycle_date)
+    select(election_id, office_id, district_id, election_date, prev_cycle_date)
 
-## Then, create a table of who won what in which cycle
-winners_by_cycle <- elections %>%
+## Create a table of all election dates per office/district to find previous elections
+## This includes BOTH regular and special elections
+all_election_dates <- elections %>%
+    group_by(office_id, district_id) %>%
+    arrange(election_date) %>%
+    mutate(prev_election_date = lag(election_date)) %>%
+    ungroup() %>%
+    select(election_id, office_id, district_id, election_date, prev_election_date)
+
+## Create a table of who won what in each election (regular or special)
+all_winners <- elections %>%
     left_join(candidates %>% filter(is_winner), by="election_id") %>%
     select(office_id, election_date, district_id, candidate_id, name) %>%
     filter(!is.na(candidate_id))
 
-
-## Finally, join to see if each candidate won in the previous cycle
+## Determine incumbency by checking if candidate won the most recent previous election
 ## We need to handle cases where a candidate may have won multiple times
-## in the same cycle (e.g., special elections), so we deduplicate by taking
-## the first district they won in that cycle
+## in the same election (shouldn't happen but be safe), so deduplicate by taking
+## the first district they won
 candidate_is_incumbent <- elections %>%
     left_join(candidates, by="election_id") %>%
-    left_join(election_cycles, by=c("election_id", "office_id", "election_date")) %>%
+    left_join(all_election_dates, by=c("election_id", "office_id", "district_id", "election_date")) %>%
     left_join(
-        winners_by_cycle %>%
+        all_winners %>%
             group_by(office_id, candidate_id, election_date) %>%
-            slice(1) %>%  ## Take first district if multiple wins in same cycle
+            slice(1) %>%  ## Take first district if multiple wins in same election
             ungroup() %>%
-            mutate(won_prev_cycle = TRUE),  ## Add marker for successful join
-        by=c("office_id", "candidate_id", "prev_cycle_date" = "election_date"),
+            mutate(won_prev_election = TRUE),  ## Add marker for successful join
+        by=c("office_id", "candidate_id", "prev_election_date" = "election_date"),
         suffix=c("", "_prev")
     ) %>%
-    mutate(is_incumbent = !is.na(won_prev_cycle)) %>%  ## Check if join matched
+    mutate(is_incumbent = !is.na(won_prev_election)) %>%  ## Check if join matched
     select(election_id, candidate_id, is_incumbent, district_id_prev)
 
 ## Join the incumbency information back into the candidate list

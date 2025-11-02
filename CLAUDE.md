@@ -53,9 +53,10 @@ python find_dup_candidates.py
 - Reads raw election and candidate CSVs
 - Applies data fixes for known errors in source data (candidate_fixes function)
 - **First election cycle filtering**: Excludes the first election cycle per office from outputs (e.g., 1990 elections) since they lack valid incumbency data
-- **Incumbency determination**: Uses cycle-based algorithm that checks if a candidate won in the immediately previous **regular** (non-special) election cycle for that office
+- **Incumbency determination**: Checks if a candidate won the most recent previous election (regular or special) for that office/district
   - Groups by `(office_id, district_id)` to handle U.S. Senate Classes as separate offices
-  - Automatically handles career gaps - candidates not elected in previous cycle are not incumbents
+  - Includes special elections - winners of special elections are marked as incumbents in subsequent elections
+  - Automatically handles career gaps - candidates not elected in most recent previous election are not incumbents
   - Tracks `district_id_prev` showing which district incumbent previously won (for redistricting analysis)
   - Supports multiple incumbents per race (can occur with redistricting)
 - **U.S. Senate seat handling**: Differentiates two Senate seats by Class (1 or 2) based on election year cycles, treating Class as district_id
@@ -94,17 +95,18 @@ python find_dup_candidates.py
 
 ### Incumbency Model
 
-**Definition**: A candidate is incumbent if they won the immediately previous **regular** (non-special) election cycle for that office, regardless of district.
+**Definition**: A candidate is incumbent if they won the most recent previous election (regular or special) for that office/district.
 
 **Key features:**
-- **Cycle-based**: Compares across distinct election dates per office (excluding special elections)
+- **Election-based**: Checks the most recent previous election (of any type) for each office/district
 - **Office-specific**: Tracks by `(office_id, district_id)` where `district_id` differentiates U.S. Senate Classes
-- **Career gap handling**: Candidates who skipped cycles are not incumbents when they return
+- **Special election handling**: Winners of special elections are marked as incumbents in subsequent elections
+- **Career gap handling**: Candidates who did not win the most recent previous election are not incumbents
 - **Multi-incumbent support**: Multiple incumbents can exist per race (e.g., after redistricting merges districts)
 - **District tracking**: `district_id_prev` records which district incumbent previously won
 
 **Special cases:**
-- **Special elections**: Not used as reference cycles; regular elections reference the previous regular election
+- **Special elections**: Winners of special elections are marked as incumbents in the next election (regular or special)
 - **Statewide offices**: Governor, President have `district_id = NA` but incumbency still calculated correctly
 - **U.S. Senate**: Classes 1 and 2 treated as separate offices via `district_id` (1 or 2)
 - **First cycles**: Elections in the first cycle per office (mostly 1990) are excluded from outputs as they lack incumbency data
