@@ -51,6 +51,7 @@ python find_dup_candidates.py
 
 **Stage 2: R Transformation (elections.R)**
 - Reads raw election and candidate CSVs
+- **Candidate ID mapping**: Applies global ID mapping from `data/candidate-id-map.csv` to handle duplicate candidate IDs caused by name spelling variations (e.g., "David Allen Robertson" vs "David A. Robertson")
 - Applies data fixes for known errors in source data (candidate_fixes function)
 - **First election cycle filtering**: Excludes the first election cycle per office from outputs (e.g., 1990 elections) since they lack valid incumbency data
 - **Incumbency determination**: Checks if a candidate won the most recent previous election (regular or special) for that office/district
@@ -73,10 +74,17 @@ python find_dup_candidates.py
 
 ### Critical Data Quality Checks
 
+**Candidate ID mapping (data/candidate-id-map.csv)**
+- Manual mapping of duplicate candidate IDs to canonical IDs
+- Applied globally in elections.R to ensure same person always has consistent ID
+- Format: `id_dup,id_canonical,name_canonical,note`
+- Required for correct incumbency detection when candidates have spelling variations
+
 **Candidate duplicate detection (find_dup_candidates.py)**
 - Uses fuzzy string matching (fuzzywuzzy) to find potential duplicate candidates with different IDs
 - Manual review required - outputs to `data/possible-candidate-dupes.csv` for classification
 - Confirmed duplicates go to `data/reported-duplicates.csv`
+- **Not part of standard pipeline** - run manually to identify new duplicates, then add to `candidate-id-map.csv`
 
 ### Key Data Transformations
 

@@ -6,6 +6,25 @@ library(tidyverse)
 library(lubridate)
 library(DBI)
 
+## Load candidate ID mapping to handle duplicate IDs from name variations
+## This ensures the same person always has the same canonical ID
+candidate_id_map_file <- "data/candidate-id-map.csv"
+if (file.exists(candidate_id_map_file)) {
+    candidate_id_map <- read_csv(candidate_id_map_file,
+                                  show_col_types = FALSE) %>%
+        select(id_dup, id_canonical)
+} else {
+    candidate_id_map <- tibble(id_dup = integer(), id_canonical = integer())
+}
+
+## Apply candidate ID mapping globally
+apply_candidate_id_mapping <- function(df) {
+    df %>%
+        left_join(candidate_id_map, by = c("candidate_id" = "id_dup")) %>%
+        mutate(candidate_id = coalesce(id_canonical, candidate_id)) %>%
+        select(-id_canonical)
+}
+
 ## Fix some issues with the data
 candidate_fixes <- function(df) {
     df %>%
@@ -15,18 +34,15 @@ candidate_fixes <- function(df) {
              name = case_when(
                  ((election_id == 154409) & (candidate_id == 78007)) ~ "Susannah M. Whipps",
                  ((election_id == 154549) & (candidate_id == 88406)) ~ "Bradley H. Jones, Jr.",
-                 ((election_id == 140828) & (candidate_id == 82206)) ~ "Steven G. Xiarhos",
                  TRUE ~ name),
              is_winner = case_when(
                  ((election_id == 96321) & (candidate_id == 71530)) ~ FALSE,
                  TRUE ~ is_winner),
              candidate_id = case_when(
                  ((election_id == 154549) & (candidate_id == 88406)) ~ 62825,
-                 ((election_id == 154423) & (candidate_id == 88326)) ~ 82206,
                  TRUE ~ candidate_id),
              num_elections = case_when(
                  (candidate_id == 62825) ~ 33,
-                 (candidate_id == 82206) ~ 4,
                  TRUE ~ num_elections))
 }
 
@@ -154,6 +170,7 @@ cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 candidates <- read_csv(candidates_in_file,
                        col_types=list(is_winner = col_logical(),
                                       is_write_in = col_logical())) %>%
+    apply_candidate_id_mapping() %>%
     candidate_fixes() %>%
     mutate(party = replace_na(party, "None"),
            party_abbr = party_abbrev(party),
