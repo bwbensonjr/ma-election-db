@@ -63,15 +63,15 @@ candidate_display <- function(name, party_abbr, city_town) {
             str_glue("{name} ({party_abbr}-{city_town})"))
 }
 
-candidates_in_file <- "data/ma_primary_candidates_1996_2024.csv.gz"
+candidates_in_file <- "data/ma_primary_candidates.csv.gz"
 cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 
 candidates <- read_csv(candidates_in_file,
-                       col_types=list(winner = col_logical(),
+                       col_types=list(is_winner = col_logical(),
                                       is_write_in = col_logical())) %>%
     select(-party) %>%
     mutate(city_town = str_replace(city_state, ", MA", ""),
-           winner = replace_na(winner, FALSE),
+           is_winner = replace_na(is_winner, FALSE),
            is_write_in = replace_na(is_write_in, FALSE))
 
 cat(str_glue("Read {nrow(candidates)} candidates.\n\n"))
