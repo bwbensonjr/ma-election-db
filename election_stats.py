@@ -2,6 +2,7 @@
 results for a given range of years and set of offices producing a
 flattened representation of the elections and candidates as an output."""
 
+import argparse 
 import pandas as pd
 import requests
 import sys
@@ -84,17 +85,19 @@ OFFICES = [
 
 
 def main():
-    extract_elections(
-        min_year=1990,
-        max_year=2025,
-        stage="General",
+    parser = argparse.ArgumentParser(
+        description="Query election data and put into flat format."
     )
-    # extract_elections(
-    #     min_year=1996,
-    #     max_year=2024,
-    #     stage="Primaries",
-    # )
-
+    parser.add_argument("--min-year", default=1990, type=int)
+    parser.add_argument("--max-year", default=2025, type=int)
+    parser.add_argument("--stage", default="General", choices=STAGES)
+    args = parser.parse_args()
+        
+    extract_elections(
+        min_year=args.min_year,
+        max_year=args.max_year,
+        stage=args.stage,
+    )
 
 def extract_elections(min_year=1990, max_year=2025, stage="General"):
     if stage == "General":

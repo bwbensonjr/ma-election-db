@@ -15,7 +15,12 @@ The project follows a two-stage data pipeline:
 ### Full data pipeline
 ```bash
 # Extract election data from state API (takes several minutes)
+# Default: general elections from 1990-2025
 python election_stats.py
+
+# Customize year range or stage
+python election_stats.py --min-year 2000 --max-year 2024
+python election_stats.py --stage Primaries
 
 # Transform and summarize into database (takes a few minutes)
 Rscript elections.R
@@ -136,7 +141,10 @@ python find_dup_candidates.py
 ## Dependencies
 
 **Python:**
-- pandas, requests (see requirements.txt)
+- Managed via pyproject.toml and uv package manager
+- Core: pandas>=2.3.3, requests>=2.32.5
+- Requires Python >=3.12
+- Install with: `uv pip install -e .`
 - fuzzywuzzy (for find_dup_candidates.py)
 
 **R:**

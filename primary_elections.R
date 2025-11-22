@@ -2,6 +2,26 @@ library(tidyverse)
 library(lubridate)
 library(DBI)
 
+## Load candidate ID mapping to handle duplicate IDs from name variations
+## This ensures the same person always has the same canonical ID and name
+candidate_id_map_file <- "data/candidate-id-map.csv"
+if (file.exists(candidate_id_map_file)) {
+    candidate_id_map <- read_csv(candidate_id_map_file,
+                                  show_col_types = FALSE) %>%
+        select(id_dup, id_canonical, name_canonical)
+} else {
+    candidate_id_map <- tibble(id_dup = integer(), id_canonical = integer(), name_canonical = character())
+}
+
+## Apply candidate ID mapping globally
+apply_candidate_id_mapping <- function(df) {
+    df %>%
+        left_join(candidate_id_map, by = c("candidate_id" = "id_dup")) %>%
+        mutate(candidate_id = coalesce(id_canonical, candidate_id),
+               name = coalesce(name_canonical, name)) %>%
+        select(-id_canonical, -name_canonical)
+}
+
 date_fixes <- function(election_date) {
     case_when(
     (election_date == "2000-11-07") ~ ymd("2000-09-19"),
@@ -69,6 +89,7 @@ cat(str_glue("Reading candidates from {candidates_in_file}...\n\n"))
 candidates <- read_csv(candidates_in_file,
                        col_types=list(is_winner = col_logical(),
                                       is_write_in = col_logical())) %>%
+    apply_candidate_id_mapping() %>%
     select(-party) %>%
     mutate(city_town = str_replace(city_state, ", MA", ""),
            is_winner = replace_na(is_winner, FALSE),
