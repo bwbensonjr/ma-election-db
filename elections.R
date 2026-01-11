@@ -422,6 +422,19 @@ elections_candidates %>%
     unnest(candidate) %>%
     write_csv(candidate_out_file)
 
+district_out_file <- "data/ma_election_districts.csv"
+cat(str_glue("Writing districts to {district_out_file}...\n\n"))
+election_summaries |>
+    distinct(
+        office_branch,
+        office_id,
+        office,
+        district,
+        district_display,
+        district_id
+    ) |>
+    write_csv(district_out_file)
+
 sqlite_db_file <- "data/ma_elections.sqlite"
 if (file.exists(sqlite_db_file)) {
     cat(str_glue("Deleting {sqlite_db_file}...\n\n"))
