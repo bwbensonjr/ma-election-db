@@ -2,7 +2,8 @@
 results for a given range of years and set of offices producing a
 flattened representation of the elections and candidates as an output."""
 
-import argparse 
+import argparse
+import datetime
 import pandas as pd
 import requests
 import sys
@@ -83,13 +84,14 @@ OFFICES = [
     "President",
 ]
 
+CURRENT_YEAR = datetime.datetime.now().year
 
 def main():
     parser = argparse.ArgumentParser(
         description="Query election data and put into flat format."
     )
     parser.add_argument("--min-year", default=1990, type=int)
-    parser.add_argument("--max-year", default=2025, type=int)
+    parser.add_argument("--max-year", default=CURRENT_YEAR, type=int)
     parser.add_argument("--stage", default="General", choices=STAGES)
     args = parser.parse_args()
         
