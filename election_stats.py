@@ -4,6 +4,8 @@ flattened representation of the elections and candidates as an output."""
 
 import argparse
 import datetime
+import os
+import shutil
 import pandas as pd
 import requests
 import sys
@@ -101,6 +103,76 @@ def main():
         stage=args.stage,
     )
 
+def backup_file(file_path, backup_path):
+    """Copy file_path to backup_path. Skip silently if file_path doesn't exist."""
+    if not os.path.exists(file_path):
+        return
+    shutil.copy2(file_path, backup_path)
+    print(f"Backed up {file_path} → {backup_path}")
+
+
+def diff_csv_files(current_path, last_path, key_columns):
+    """Read current and last CSV files and print a summary of differences."""
+    if not os.path.exists(last_path):
+        print(f"No previous file {last_path} to diff.")
+        return
+
+    current = pd.read_csv(current_path)
+    last = pd.read_csv(last_path)
+
+    print(f"\n--- Diff: {current_path} ---")
+    n_last = len(last)
+    n_current = len(current)
+    delta = n_current - n_last
+    sign = "+" if delta >= 0 else ""
+    print(f"Rows: {n_last} → {n_current} ({sign}{delta})")
+
+    # Ensure key columns are lists
+    if isinstance(key_columns, str):
+        key_columns = [key_columns]
+
+    # Build key-indexed DataFrames
+    current_keys = current.set_index(key_columns)
+    last_keys = last.set_index(key_columns)
+
+    current_idx = set(current_keys.index)
+    last_idx = set(last_keys.index)
+
+    new_keys = current_idx - last_idx
+    removed_keys = last_idx - current_idx
+    common_keys = current_idx & last_idx
+
+    has_diff = False
+
+    # New rows
+    for key in sorted(new_keys):
+        has_diff = True
+        row = current_keys.loc[key]
+        print(f"+ {row.to_dict()}")
+
+    # Removed rows
+    for key in sorted(removed_keys):
+        has_diff = True
+        row = last_keys.loc[key]
+        print(f"- {row.to_dict()}")
+
+    # Changed rows
+    if common_keys:
+        common_list = sorted(common_keys)
+        cur_common = current_keys.loc[common_list]
+        last_common = last_keys.loc[common_list]
+        diff_mask = (cur_common != last_common) & ~(cur_common.isna() & last_common.isna())
+        for key in diff_mask[diff_mask.any(axis=1)].index:
+            has_diff = True
+            print(f"- {last_common.loc[key].to_dict()}")
+            print(f"+ {cur_common.loc[key].to_dict()}")
+
+    if not has_diff:
+        print("No changes.")
+
+    print()
+
+
 def extract_elections(min_year=1990, max_year=2025, stage="General"):
     if stage == "General":
         file_id = ""
@@ -109,12 +181,23 @@ def extract_elections(min_year=1990, max_year=2025, stage="General"):
     elecs, cands = query_election_years(min_year, max_year, stage)
     # Write elections
     elecs_file = f"data/ma_{file_id}elections.csv.gz"
+    elecs_last = f"data/ma_{file_id}elections_last.csv.gz"
+    print(f"Backing up {elecs_file} to {elecs_last}...")
+    backup_file(elecs_file, elecs_last)
     print(f"Writing elections {elecs_file}...")
     elecs.to_csv(elecs_file, index=False)
     # Write candidates
     cands_file = f"data/ma_{file_id}candidates.csv.gz"
+    cands_last = f"data/ma_{file_id}candidates_last.csv.gz"
+    print(f"Backing up {cands_file} to {cands_last}...")
+    backup_file(cands_file, cands_last)
     print(f"Writing candidates {cands_file}...")
     cands.to_csv(cands_file, index=False)
+    # Diff against previous versions
+    print(f"Elections file difference...")
+    diff_csv_files(elecs_file, elecs_last, "election_id")
+    print(f"Candidates file difference...")
+    diff_csv_files(cands_file, cands_last, ["election_id", "candidate_id"])
     print("Done.")
 
 def query_election_years(min_year, max_year, stage):
