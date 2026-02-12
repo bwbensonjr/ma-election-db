@@ -104,8 +104,9 @@ candidates <- read_csv(candidates_in_file,
 cat(str_glue("Read {nrow(candidates)} candidates.\n\n"))
 
 elections_candidates <- elections |>
-    # Right join to leave out elections with no candidates
-    right_join(candidates, by = "election_id") |>
+    ## Inner join to leave out elections with no candidates
+    ## and candidates with no election.
+    inner_join(candidates, by = "election_id") |>
     group_by(election_id) |>
     mutate(
         party_abbr = party_abbrev(party),
@@ -149,6 +150,8 @@ winner_percent <- function(cands) {
     if (nrow(winners) == 0) return(NA_real_)
     winners$percent[1]
 }
+
+cat(str_glue("Summarizing elections...\n\n"))
 
 elections_summaries <- elections_candidates |>
     nest(candidate = c(
