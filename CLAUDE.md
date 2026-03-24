@@ -157,3 +157,111 @@ python find_dup_candidates.py
 - `data/ma_general_election_summaries.csv.gz` - Analysis-ready election summaries (1 row per election)
 - `data/ma_general_election_candidates.csv.gz` - All candidates with incumbency flags
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
+
+## SQLite Schema 
+
+```sql
+-- One row per general election
+CREATE TABLE `general_election` (
+  `office_branch` TEXT,
+  `office_id` INTEGER,
+  `office` TEXT,
+  `district` TEXT,
+  `district_display` TEXT,
+  `district_id` INTEGER,
+  `election_id` INTEGER,
+  `election_date` TEXT,
+  `is_special` INTEGER,
+  `total_votes` INTEGER,
+  `blank_votes` INTEGER,
+  `all_other_votes` INTEGER,
+  `num_candidates` INTEGER,
+  `num_incumbents` INTEGER,
+  `id_winner` INTEGER,
+  `name_winner` TEXT,
+  `display_winner` TEXT,
+  `city_town_winner` TEXT,
+  `votes_winner` INTEGER,
+  `percent_winner` REAL,
+  `party_winner` TEXT,
+  `id_incumbent` INTEGER,
+  `name_incumbent` TEXT,
+  `display_incumbent` TEXT,
+  `city_town_incumbent` TEXT,
+  `party_incumbent` TEXT,
+  `id_dem` INTEGER,
+  `name_dem` TEXT,
+  `display_dem` TEXT,
+  `city_town_dem` TEXT,
+  `votes_dem` INTEGER,
+  `percent_dem` REAL,
+  `id_gop` INTEGER,
+  `name_gop` TEXT,
+  `display_gop` TEXT,
+  `city_town_gop` TEXT,
+  `votes_gop` INTEGER,
+  `percent_gop` REAL,
+  `id_third_party` INTEGER,
+  `name_third_party` TEXT,
+  `display_third_party` TEXT,
+  `city_town_third_party` TEXT,
+  `votes_third_party` INTEGER,
+  `percent_third_party` REAL,
+  `party_third_party` TEXT,
+  `id_write_in` INTEGER,
+  `name_write_in` TEXT,
+  `display_write_in` TEXT,
+  `city_town_write_in` TEXT,
+  `votes_write_in` INTEGER,
+  `percent_write_in` REAL,
+  `party_write_in` TEXT
+);
+
+-- One row per candidate, per election 
+CREATE TABLE `election_candidate` (
+  `office_branch` TEXT,
+  `office_id` REAL,
+  `office` TEXT,
+  `district` TEXT,
+  `district_display` TEXT,
+  `district_id` REAL,
+  `election_id` INTEGER,
+  `election_date` DATE,
+  `party_primary` INTEGER,
+  `is_special` INTEGER,
+  `all_other_votes` REAL,
+  `blank_votes` REAL,
+  `total_votes` REAL,
+  `first_cycle_date` DATE,
+  `candidate_id` INTEGER,
+  `name` TEXT,
+  `first_name` TEXT,
+  `middle_name` TEXT,
+  `last_name` TEXT,
+  `num_elections` INTEGER,
+  `is_winner` INTEGER,
+  `is_write_in` INTEGER,
+  `num_votes` INTEGER,
+  `party` TEXT,
+  `street_addr` TEXT,
+  `city_state` TEXT,
+  `party_abbr` TEXT,
+  `city_town` TEXT,
+  `display` TEXT,
+  `party_role` TEXT,
+  `is_incumbent` INTEGER,
+  `district_id_prev` REAL
+);
+```
+
+### Office and District Values
+
+| `office` | `office_id` | Example `district` values |
+|---|---|---|
+| President | 1 | *(no district)* |
+| Governor | 3 | *(no district)* |
+| U.S. House | 5 | `1`, `2`, ..., `10` |
+| U.S. Senate | 6 | `Class 1`, `Class 2` |
+| State Representative | 8 | `First Suffolk`, `Eighteenth Essex`, `Barnstable, Dukes and Nantucket` |
+| State Senate | 9 | `First Essex`, `Cape and Islands`, `Berkshire, Hampshire, Franklin & Hampden` |
+| Governor's Council | 529 | `First`, `Second`, ..., `Eighth` |
