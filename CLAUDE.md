@@ -4,13 +4,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Massachusetts Election Database - Tools for querying MA election results from electionstats.state.ma.us and producing a structured database of elections and candidates from 1990-2024.
+Massachusetts Election Database - Tools for querying MA election results from electionstats.state.ma.us and producing a structured database of elections, candidates, and district-level demographics.
 
-The project follows a two-stage data pipeline:
+The project is organized as a set of domain pipelines that each produce CSVs under `data/<domain>/`, followed by a single SQLite assembler (`build_sqlite.R`) that combines them into `data/ma_elections.sqlite`:
+
 1. **Python extraction** (election_stats.py) - Queries raw election data from the MA state API
-2. **R transformation** (elections.R) - Processes raw data into analysis-ready formats and SQLite database
+2. **R transformation** (elections.R) - Processes raw data into analysis-ready election summaries
+3. **Demographics** (demographics/ma_census.R) - Builds district- and precinct-level Census ACS tables
+4. **SQLite assembly** (build_sqlite.R) - Reads the CSVs above and writes `data/ma_elections.sqlite`
 
 ## Common Commands
+
+### Full rebuild
+```bash
+# Transform existing raw CSVs, refresh demographics, and assemble SQLite
+make all
+```
+
+`make all` runs `elections.R`, `demographics/ma_census.R`, and
+`build_sqlite.R` in order. It does NOT re-fetch from the MA state API or
+Census API - run `make general_elections` or `make demographics` directly
+to refresh those inputs.
 
 ### Full data pipeline
 ```bash
@@ -22,14 +36,24 @@ python election_stats.py
 python election_stats.py --min-year 2000 --max-year 2024
 python election_stats.py --stage Primaries
 
-# Transform and summarize into database (takes a few minutes)
+# Transform raw CSVs into election summaries
 Rscript elections.R
+
+# Assemble the SQLite database from the CSVs
+Rscript build_sqlite.R
 ```
 
 ### Primary elections processing (work in progress)
 ```bash
 # Process primary election data
 Rscript primary_elections.R
+```
+
+### Demographics processing
+```bash
+# Requires CENSUS_API_KEY env var (see demographics/README.md).
+# Takes 15-30 min on first run due to tigris geometry downloads.
+Rscript demographics/ma_census.R
 ```
 
 ### Candidate duplicate detection
@@ -75,7 +99,32 @@ python find_dup_candidates.py
 - Outputs:
   - `data/ma_general_election_summaries.csv.gz` - Flattened election summaries
   - `data/ma_general_election_candidates.csv.gz` - Candidates with incumbency flags
-  - `data/ma_elections.sqlite` - SQLite database with tables: general_election, election_candidate
+  - `data/ma_election_districts.csv` - Distinct district metadata
+
+**Stage 3: Demographics (demographics/ma_census.R)**
+- Queries the U.S. Census ACS 5-year API via `tidycensus`
+- Uses areal interpolation (`sf::interpolate_pw` via `tidycensus`) to map
+  block-group and tract geographies into the legislative districts defined
+  by the GeoJSON files in `data/geometry/2021/`
+- Classifies census tracts by household density ("very low", "low",
+  "medium", "high"); aggregates to a district-level `density_type`
+- All outputs carry a `census_year` column (currently `2024`) so multiple
+  ACS vintages can coexist in the unified dataset
+- Outputs:
+  - `data/demographics/ma_district_demographics.csv.gz` - 217 rows, one
+    per legislative district across all 4 offices, distinguished by an
+    `office` column
+  - `data/demographics/ma_precinct_demographics.csv.gz` - ~2,383 rows
+  - `data/demographics/ma_city_town_demographics.csv.gz` - ~351 rows
+
+**Stage 4: SQLite assembly (build_sqlite.R)**
+- Deletes `data/ma_elections.sqlite` and rebuilds it from the CSVs
+  produced by the other stages
+- Single writer for the SQLite file - no other script opens the database
+- Writes tables: `general_election`, `election_candidate`,
+  `district_demographics`, `precinct_demographics`
+- Creates unique indexes for the logical primary keys on the demographics
+  tables (SQLite does not enforce composite PKs via `dbWriteTable`)
 
 ### Critical Data Quality Checks
 
@@ -151,11 +200,19 @@ python find_dup_candidates.py
 - tidyverse (dplyr, tidyr, readr, stringr, purrr)
 - lubridate
 - DBI, RSQLite
+- tidycensus, tigris, sf, here (demographics pipeline only)
+- Managed via `renv` - run `renv::restore()` to install locked versions
+- Demographics requires a `CENSUS_API_KEY` env var; set via `.Renviron` at
+  repo root (gitignored). See `demographics/README.md`.
 
 ## Output Files
 
 - `data/ma_general_election_summaries.csv.gz` - Analysis-ready election summaries (1 row per election)
 - `data/ma_general_election_candidates.csv.gz` - All candidates with incumbency flags
+- `data/demographics/ma_district_demographics.csv.gz` - District-level demographics (217 rows across 4 offices)
+- `data/demographics/ma_precinct_demographics.csv.gz` - Precinct-level demographics
+- `data/demographics/ma_city_town_demographics.csv.gz` - City/town-level demographics
+- `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
 
 ## SQLite Schema 
@@ -217,6 +274,40 @@ CREATE TABLE `general_election` (
   `party_write_in` TEXT
 );
 
+-- District-level demographics: one row per (census_year, office, district).
+-- The office column matches `general_election.office` for the 4 legislative
+-- offices (State Representative, State Senate, Governor's Council, U.S. House).
+-- A unique index enforces the logical composite key.
+CREATE TABLE `district_demographics` (
+  `census_year` INTEGER,
+  `office` TEXT,
+  `district` TEXT,
+  -- ... ~115 demographic columns (see
+  --     data/demographics/ma_district_demographics.csv.gz headers):
+  --     total_population, race_{white,black,asian,hispanic,...},
+  --     race_{...}_pct, median_age, median_household_income,
+  --     ed_college_degree(_pct), ancestry_{...},
+  --     below_poverty(_pct), wwc_pct, vote_eligible, density_type,
+  --     area_m2, ...
+  `area_m2` REAL,
+  `density_type` TEXT
+);
+CREATE UNIQUE INDEX idx_district_demographics_pk
+    ON district_demographics (census_year, office, district);
+
+-- Precinct-level demographics: one row per (census_year, city_town, ward, precinct).
+CREATE TABLE `precinct_demographics` (
+  `census_year` INTEGER,
+  `name` TEXT,
+  `city_town` TEXT,
+  `ward` TEXT,
+  `precinct` TEXT,
+  -- ... same demographic columns as district_demographics
+  `area_m2` REAL
+);
+CREATE UNIQUE INDEX idx_precinct_demographics_pk
+    ON precinct_demographics (census_year, city_town, ward, precinct);
+
 -- One row per candidate, per election 
 CREATE TABLE `election_candidate` (
   `office_branch` TEXT,
@@ -265,3 +356,33 @@ CREATE TABLE `election_candidate` (
 | State Representative | 8 | `First Suffolk`, `Eighteenth Essex`, `Barnstable, Dukes and Nantucket` |
 | State Senate | 9 | `First Essex`, `Cape and Islands`, `Berkshire, Hampshire, Franklin & Hampden` |
 | Governor's Council | 529 | `First`, `Second`, ..., `Eighth` |
+
+The `district_demographics.office` column uses the same four legislative
+values as `general_election.office`: `State Representative`, `State Senate`,
+`U.S. House`, `Governor's Council`.
+
+## Extensibility Convention
+
+New data domains (PVI, precinct-district mapping, precinct presidential
+votes, district summaries, ...) follow a consistent shape so that each
+addition is local and doesn't disturb existing pipelines:
+
+1. **One subdirectory per domain at the repo root** (`demographics/`,
+   later `pvi/`, `precinct_district/`, ...). Each owns its scripts and
+   any static inputs (variable maps, etc.).
+2. **Data outputs go under `data/<domain>/`** as gzipped CSVs. Include a
+   year key column where the data is temporal: `census_year` for
+   demographics, `pvi_year` for PVI, `redistricting_year` for precinct-
+   district mapping and geometry. This lets new vintages be inserted as
+   new rows rather than schema changes.
+3. **Geometry goes under `data/geometry/<redistricting_year>/`** as
+   GeoJSON (not in SQLite - SpatiaLite would break the sqlime.org
+   playground).
+4. **SQLite tables are added only by appending `dbWriteTable` calls to
+   `build_sqlite.R`.** No domain script opens the SQLite file directly.
+   Add a `CREATE UNIQUE INDEX` for the logical primary key after each
+   `dbWriteTable` - SQLite does not enforce composite PKs via
+   `dbWriteTable`.
+
+See `../mapoli/DATA-UNIFICATION-PLAN.md` for the full roadmap of domains
+still to migrate.

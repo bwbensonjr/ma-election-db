@@ -1,0 +1,132 @@
+variable,var_name,keep,geography,count
+B01003_001,total_population,TRUE,block group,TRUE
+b01001_002,gender_male,TRUE,block group,TRUE
+B01001_026,gender_female,TRUE,block group,TRUE
+B03002_003,race_white,TRUE,block group,TRUE
+B03002_004,race_black,TRUE,block group,TRUE
+B03002_005,race_native_american,TRUE,block group,TRUE
+B03002_006,race_asian,TRUE,block group,TRUE
+B03002_007,race_hawaiian,TRUE,block group,TRUE
+B03002_008,race_other,TRUE,block group,TRUE
+B03002_009,race_multiracial,TRUE,block group,TRUE
+B03002_012,race_hispanic,TRUE,block group,TRUE
+B11001_001,total_households,TRUE,block group,TRUE
+B19013_001,median_household_income,TRUE,block group,FALSE
+B19113_001,median_family_income,TRUE,block group,FALSE
+B15003_001,ed_25yrs_older_total,TRUE,block group,TRUE
+B15003_002,ed_no_schooling,FALSE,block group,TRUE
+B15003_003,ed_nursery_school,FALSE,block group,TRUE
+B15003_004,ed_kindergarten,FALSE,block group,TRUE
+B15003_005,ed_1st_grade,FALSE,block group,TRUE
+B15003_006,ed_2nd_grade,FALSE,block group,TRUE
+B15003_007,ed_3rd_grade,FALSE,block group,TRUE
+B15003_008,ed_4th_grade,FALSE,block group,TRUE
+B15003_009,ed_5th_grade,FALSE,block group,TRUE
+B15003_010,ed_6th_grade,FALSE,block group,TRUE
+B15003_011,ed_7th_grade,FALSE,block group,TRUE
+B15003_012,ed_8th_grade,FALSE,block group,TRUE
+B15003_013,ed_9th_grade,FALSE,block group,TRUE
+B15003_014,ed_10th_grade,FALSE,block group,TRUE
+B15003_015,ed_11th_grade,FALSE,block group,TRUE
+B15003_016,ed_12th_grade,FALSE,block group,TRUE
+B15003_017,ed_high_school_diploma,FALSE,block group,TRUE
+B15003_018,ed_ged,FALSE,block group,TRUE
+B15003_019,ed_college_lt_1,FALSE,block group,TRUE
+B15003_020,ed_college_gt_1,FALSE,block group,TRUE
+B15003_021,ed_associates,FALSE,block group,TRUE
+B15003_022,ed_bachelors,FALSE,block group,TRUE
+B15003_023,ed_masters,FALSE,block group,TRUE
+B15003_024,ed_professional,FALSE,block group,TRUE
+B15003_025,ed_doctorate,FALSE,block group,TRUE
+B01002_001,median_age,TRUE,block group,FALSE
+B05003_009,vote_male_native_18_plus,FALSE,tract,TRUE
+B05003_011,vote_male_naturalized_18_plus,FALSE,tract,TRUE
+B05003_012,vote_male_non_citizen_18_plus,FALSE,tract,TRUE
+B05003_020,vote_female_native_18_plus,FALSE,tract,TRUE
+B05003_022,vote_female_naturalized_18_plus,FALSE,tract,TRUE
+B05003_023,vote_female_non_citizen_18_plus,FALSE,tract,TRUE
+B17001_001,poverty_total,TRUE,tract,TRUE
+B17001_002,below_poverty_level,TRUE,tract,TRUE
+B17001_031,above_poverty_level,TRUE,tract,TRUE
+C15002H_001,white_nh,FALSE,tract,TRUE
+C15002H_002,white_nh_male,FALSE,tract,TRUE
+C15002H_003,white_nh_male_lt_high_school,FALSE,tract,TRUE
+C15002H_004,white_nh_male_high_school_grad,FALSE,tract,TRUE
+C15002H_005,white_nh_male_some_college,FALSE,tract,TRUE
+C15002H_006,white_nh_male_bachelors_or_gt,FALSE,tract,TRUE
+C15002H_007,white_nh_female,FALSE,tract,TRUE
+C15002H_008,white_nh_female_lt_high_school,FALSE,tract,TRUE
+C15002H_009,white_nh_female_high_school_grad,FALSE,tract,TRUE
+C15002H_010,white_nh_female_some_college,FALSE,tract,TRUE
+C15002H_011,white_nh_female_bachelors_or_gt,FALSE,tract,TRUE
+B04004_002,ancestry_afghan,TRUE,tract,TRUE
+B04004_003,ancestry_albanian,TRUE,tract,TRUE
+B04004_004,ancestry_alsatian,TRUE,tract,TRUE
+B04004_005,ancestry_american,TRUE,tract,TRUE
+B04004_006,ancestry_arab,TRUE,tract,TRUE
+B04004_016,ancestry_armenian,TRUE,tract,TRUE
+B04004_017,ancestry_assyrian,TRUE,tract,TRUE
+B04004_018,ancestry_australian,TRUE,tract,TRUE
+B04004_019,ancestry_austrian,TRUE,tract,TRUE
+B04004_020,ancestry_basque,TRUE,tract,TRUE
+B04004_021,ancestry_belgian,TRUE,tract,TRUE
+B04004_022,ancestry_brazilian,TRUE,tract,TRUE
+B04004_023,ancestry_british,TRUE,tract,TRUE
+B04004_024,ancestry_bulgarian,TRUE,tract,TRUE
+B04004_025,ancestry_cajun,TRUE,tract,TRUE
+B04004_026,ancestry_canadian,TRUE,tract,TRUE
+B04004_027,ancestry_carpatho_rusyn,TRUE,tract,TRUE
+B04004_028,ancestry_celtic,TRUE,tract,TRUE
+B04004_029,ancestry_croatian,TRUE,tract,TRUE
+B04004_030,ancestry_cypriot,TRUE,tract,TRUE
+B04004_031,ancestry_czech,TRUE,tract,TRUE
+B04004_032,ancestry_czechoslovakian,TRUE,tract,TRUE
+B04004_033,ancestry_danish,TRUE,tract,TRUE
+B04004_034,ancestry_dutch,TRUE,tract,TRUE
+B04004_035,ancestry_eastern_european,TRUE,tract,TRUE
+B04004_036,ancestry_english,TRUE,tract,TRUE
+B04004_037,ancestry_estonian,TRUE,tract,TRUE
+B04004_038,ancestry_european,TRUE,tract,TRUE
+B04004_039,ancestry_finnish,TRUE,tract,TRUE
+B04004_040,ancestry_french,TRUE,tract,TRUE
+B04004_041,ancestry_french_canadian,TRUE,tract,TRUE
+B04004_042,ancestry_german,TRUE,tract,TRUE
+B04004_043,ancestry_german_russian,TRUE,tract,TRUE
+B04004_044,ancestry_greek,TRUE,tract,TRUE
+B04004_045,ancestry_guyanese,TRUE,tract,TRUE
+B04004_046,ancestry_hungarian,TRUE,tract,TRUE
+B04004_047,ancestry_icelander,TRUE,tract,TRUE
+B04004_048,ancestry_iranian,TRUE,tract,TRUE
+B04004_049,ancestry_irish,TRUE,tract,TRUE
+B04004_050,ancestry_israeli,TRUE,tract,TRUE
+B04004_051,ancestry_italian,TRUE,tract,TRUE
+B04004_052,ancestry_latvian,TRUE,tract,TRUE
+B04004_053,ancestry_lithuanian,TRUE,tract,TRUE
+B04004_054,ancestry_luxembourger,TRUE,tract,TRUE
+B04004_055,ancestry_macedonian,TRUE,tract,TRUE
+B04004_056,ancestry_maltese,TRUE,tract,TRUE
+B04004_057,ancestry_new_zealander,TRUE,tract,TRUE
+B04004_058,ancestry_northern_european,TRUE,tract,TRUE
+B04004_059,ancestry_norwegian,TRUE,tract,TRUE
+B04004_060,ancestry_pennsylvania_german,TRUE,tract,TRUE
+B04004_061,ancestry_polish,TRUE,tract,TRUE
+B04004_062,ancestry_portuguese,TRUE,tract,TRUE
+B04004_063,ancestry_romanian,TRUE,tract,TRUE
+B04004_064,ancestry_russian,TRUE,tract,TRUE
+B04004_065,ancestry_scandinavian,TRUE,tract,TRUE
+B04004_066,ancestry_scotch_irish,TRUE,tract,TRUE
+B04004_067,ancestry_scottish,TRUE,tract,TRUE
+B04004_068,ancestry_serbian,TRUE,tract,TRUE
+B04004_069,ancestry_slavic,TRUE,tract,TRUE
+B04004_070,ancestry_slovak,TRUE,tract,TRUE
+B04004_071,ancestry_slovene,TRUE,tract,TRUE
+B04004_072,ancestry_soviet_union,TRUE,tract,TRUE
+B04004_073,ancestry_subsaharan_african,TRUE,tract,TRUE
+B04004_089,ancestry_swedish,TRUE,tract,TRUE
+B04004_090,ancestry_swiss,TRUE,tract,TRUE
+B04004_091,ancestry_turkish,TRUE,tract,TRUE
+B04004_092,ancestry_ukrainian,TRUE,tract,TRUE
+B04004_093,ancestry_welsh,TRUE,tract,TRUE
+B04004_094,ancestry_west_indian,TRUE,tract,TRUE
+B04004_107,ancestry_yugoslavian,TRUE,tract,TRUE
+B04004_108,ancestry_other,TRUE,tract,TRUE

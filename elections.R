@@ -4,7 +4,6 @@
 
 library(tidyverse)
 library(lubridate)
-library(DBI)
 
 ## Load candidate ID mapping to handle duplicate IDs from name variations
 ## This ensures the same person always has the same canonical ID and name
@@ -435,61 +434,7 @@ election_summaries |>
     ) |>
     write_csv(district_out_file)
 
-sqlite_db_file <- "data/ma_elections.sqlite"
-if (file.exists(sqlite_db_file)) {
-    cat(str_glue("Deleting {sqlite_db_file}...\n\n"))
-    file.remove(sqlite_db_file)
-}
-cat(str_glue("Writing {sqlite_db_file}...\n\n"))
-elec_db <- dbConnect(
-    drv=RSQLite::SQLite(),
-    sqlite_db_file,
-    extended_types=TRUE
-)
-dbWriteTable(
-    elec_db,
-    "general_election",
-    (election_summaries %>%
-     mutate(election_date = format(election_date, "%Y-%m-%d"))),
-     field.types = c(
-         office_id = "INTEGER",
-         district_id = "INTEGER",
-         election_id = "INTEGER",
-         total_votes = "INTEGER",
-         blank_votes = "INTEGER",
-         all_other_votes = "INTEGER",
-         num_candidates = "INTEGER",
-         num_incumbents = "INTEGER",
-         id_winner = "INTEGER",
-         votes_winner = "INTEGER",
-         id_incumbent = "INTEGER",
-         id_dem = "INTEGER",
-         votes_dem = "INTEGER",
-         id_gop = "INTEGER",
-         votes_gop = "INTEGER",
-         id_third_party = "INTEGER",
-         votes_third_party = "INTEGER",
-         id_write_in = "INTEGER",
-         votes_write_in = "INTEGER"
-     )
-)
-dbWriteTable(
-    elec_db,
-    "election_candidate",
-    (elections_candidates %>%
-     filter(!is_first_cycle) %>%
-     unnest(candidate) %>%
-     select(-is_first_cycle, -num_incumbents)),
-    field.types = c(
-        election_id = "INTEGER",
-        candidate_id = "INTEGER",
-        num_elections = "INTEGER",
-        num_votes = "INTEGER"
-    )
-)
-dbDisconnect(elec_db)
-
-cat("Done.\n\n")
+cat("Done writing CSVs; run build_sqlite.R to assemble data/ma_elections.sqlite.\n\n")
 
 ## I forget what this was for, so leaving it
 ## here until I show it isn't useful.

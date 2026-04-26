@@ -8,18 +8,38 @@ elections and candidates
   flattening, renaming, and writing to output files.
 
 * [`elections.R`](elections.R) - Transform the queried data into
-  summarized election results into a format suitable for
-  analysis. This outputs to summary files and a SQLite database with
-  tables corresponding to the output files.
-  * [`data/ma_general_election_candidates_1990_2024.csv.gz`](data/ma_general_election_candidates_1990_2024.csv.gz)
-  * [`data/ma_general_election_summaries_1990_2024.csv.gz`](data/ma_general_election_summaries_1990_2024.csv.gz)
-  * [`data/ma_elections.sqlite`](data/ma_elections.sqlite)
+  summarized election results suitable for analysis. Writes gzipped
+  CSVs to `data/`.
+  * [`data/ma_general_election_candidates.csv.gz`](data/ma_general_election_candidates.csv.gz)
+  * [`data/ma_general_election_summaries.csv.gz`](data/ma_general_election_summaries.csv.gz)
+
+* [`demographics/ma_census.R`](demographics/ma_census.R) - Build
+  district- and precinct-level demographics from the U.S. Census ACS
+  5-year data. Requires a `CENSUS_API_KEY` - see
+  [`demographics/README.md`](demographics/README.md).
+  * [`data/demographics/ma_district_demographics.csv.gz`](data/demographics/ma_district_demographics.csv.gz)
+  * [`data/demographics/ma_precinct_demographics.csv.gz`](data/demographics/ma_precinct_demographics.csv.gz)
+  * [`data/demographics/ma_city_town_demographics.csv.gz`](data/demographics/ma_city_town_demographics.csv.gz)
+
+* [`build_sqlite.R`](build_sqlite.R) - Read the CSVs produced above
+  and assemble [`data/ma_elections.sqlite`](data/ma_elections.sqlite).
+  This is the single writer for the SQLite database.
 
 ## Running the tools
 
+Full rebuild:
+
 ```
-$ python election_stats.py
-$ Rscript elections.R
+$ make all
+```
+
+Individual stages:
+
+```
+$ python election_stats.py            # refetch raw election data
+$ Rscript elections.R                 # produce election summary CSVs
+$ Rscript demographics/ma_census.R    # produce demographics CSVs
+$ Rscript build_sqlite.R              # assemble SQLite database
 ```
 
 ## Database browser
