@@ -1,10 +1,10 @@
-.PHONY: all general_elections primary_elections summaries demographics sqlite clean
+.PHONY: all general_elections primary_elections summaries demographics pvi sqlite clean
 
 # Full rebuild: transform existing raw CSVs, refresh demographics, and
 # assemble the SQLite database. Does NOT re-fetch from the MA state API
 # or Census API by default; use `make general_elections` or
 # `make demographics` (which force re-runs) to refresh those inputs.
-all: summaries demographics sqlite
+all: summaries demographics pvi sqlite
 
 # --- Stage 1: extraction from MA state API -----------------------------
 # Re-fetches raw election/candidate CSVs. Run explicitly when new
@@ -43,6 +43,16 @@ data/demographics/ma_city_town_demographics.csv.gz: demographics/ma_census.R \
     data/geometry/2021/wards_pcts_subs_2022.geojson
 	Rscript demographics/ma_census.R
 
+# --- Stage 3.5: PVI (district-level partisan voting index) -------------
+# Reshapes mapoli's PVI outputs into the unified ma-election-db schema.
+# Requires the mapoli repo to be checked out as a sibling directory.
+pvi: data/pvi/ma_district_pvi.csv.gz
+
+data/pvi/ma_district_pvi.csv.gz: pvi/ma_pvi.R \
+    ../mapoli/pvi/ma_state_leg_pvi_2008_2024.csv \
+    ../mapoli/pvi/ma_legislative_district_pvi_2024.csv
+	Rscript pvi/ma_pvi.R
+
 # --- Stage 4: assemble the SQLite database ----------------------------
 sqlite: data/ma_elections.sqlite
 
@@ -50,7 +60,8 @@ data/ma_elections.sqlite: build_sqlite.R \
     data/ma_general_election_summaries.csv.gz \
     data/ma_general_election_candidates.csv.gz \
     data/demographics/ma_district_demographics.csv.gz \
-    data/demographics/ma_precinct_demographics.csv.gz
+    data/demographics/ma_precinct_demographics.csv.gz \
+    data/pvi/ma_district_pvi.csv.gz
 	Rscript build_sqlite.R
 
 clean:

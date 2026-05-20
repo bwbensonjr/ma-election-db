@@ -21,6 +21,12 @@ elections and candidates
   * [`data/demographics/ma_precinct_demographics.csv.gz`](data/demographics/ma_precinct_demographics.csv.gz)
   * [`data/demographics/ma_city_town_demographics.csv.gz`](data/demographics/ma_city_town_demographics.csv.gz)
 
+* [`pvi/ma_pvi.R`](pvi/ma_pvi.R) - Reshape multi-year district-level
+  Partisan Voting Index (PVI) data from a sibling
+  [mapoli](https://github.com/bwbensonjr/mapoli) checkout into a single
+  unified CSV - see [`pvi/README.md`](pvi/README.md).
+  * [`data/pvi/ma_district_pvi.csv.gz`](data/pvi/ma_district_pvi.csv.gz)
+
 * [`build_sqlite.R`](build_sqlite.R) - Read the CSVs produced above
   and assemble [`data/ma_elections.sqlite`](data/ma_elections.sqlite).
   This is the single writer for the SQLite database.
@@ -39,6 +45,7 @@ Individual stages:
 $ python election_stats.py            # refetch raw election data
 $ Rscript elections.R                 # produce election summary CSVs
 $ Rscript demographics/ma_census.R    # produce demographics CSVs
+$ Rscript pvi/ma_pvi.R                # produce district PVI CSV
 $ Rscript build_sqlite.R              # assemble SQLite database
 ```
 

@@ -11,7 +11,8 @@ The project is organized as a set of domain pipelines that each produce CSVs und
 1. **Python extraction** (election_stats.py) - Queries raw election data from the MA state API
 2. **R transformation** (elections.R) - Processes raw data into analysis-ready election summaries
 3. **Demographics** (demographics/ma_census.R) - Builds district- and precinct-level Census ACS tables
-4. **SQLite assembly** (build_sqlite.R) - Reads the CSVs above and writes `data/ma_elections.sqlite`
+4. **PVI** (pvi/ma_pvi.R) - Reshapes mapoli's district PVI outputs into a multi-year unified table
+5. **SQLite assembly** (build_sqlite.R) - Reads the CSVs above and writes `data/ma_elections.sqlite`
 
 ## Common Commands
 
@@ -21,8 +22,8 @@ The project is organized as a set of domain pipelines that each produce CSVs und
 make all
 ```
 
-`make all` runs `elections.R`, `demographics/ma_census.R`, and
-`build_sqlite.R` in order. It does NOT re-fetch from the MA state API or
+`make all` runs `elections.R`, `demographics/ma_census.R`, `pvi/ma_pvi.R`,
+and `build_sqlite.R` in order. It does NOT re-fetch from the MA state API or
 Census API - run `make general_elections` or `make demographics` directly
 to refresh those inputs.
 
@@ -54,6 +55,13 @@ Rscript primary_elections.R
 # Requires CENSUS_API_KEY env var (see demographics/README.md).
 # Takes 15-30 min on first run due to tigris geometry downloads.
 Rscript demographics/ma_census.R
+```
+
+### PVI processing
+```bash
+# Reshapes mapoli's PVI outputs into the unified ma-election-db schema.
+# Requires the mapoli repo checked out as a sibling (../mapoli). See pvi/README.md.
+Rscript pvi/ma_pvi.R
 ```
 
 ### Candidate duplicate detection
@@ -117,14 +125,31 @@ python find_dup_candidates.py
   - `data/demographics/ma_precinct_demographics.csv.gz` - ~2,383 rows
   - `data/demographics/ma_city_town_demographics.csv.gz` - ~351 rows
 
+**Stage 3.5: PVI (pvi/ma_pvi.R)**
+- Reshapes already-computed PVI CSVs from a sibling mapoli checkout
+  (`../mapoli/pvi/`) into the unified ma-election-db schema. Does not
+  recompute PVI; mapoli is the current source-of-truth for the
+  calculation
+- Inputs:
+  - `../mapoli/pvi/ma_state_leg_pvi_2008_2024.csv` - State Rep + State
+    Senate PVI for 2008, 2012, 2016, 2020, 2022, 2024 (post-2021 district names)
+  - `../mapoli/pvi/ma_legislative_district_pvi_2024.csv` - 2024 PVI for
+    Governor's Council and U.S. House (the offices missing from the
+    historical file)
+- Renames `PVI_N`/`PVI` to `pvi_n`/`pvi` (snake_case)
+- Output:
+  - `data/pvi/ma_district_pvi.csv.gz` - ~1,217 rows, one per
+    `(pvi_year, office, district)`
+
 **Stage 4: SQLite assembly (build_sqlite.R)**
 - Deletes `data/ma_elections.sqlite` and rebuilds it from the CSVs
   produced by the other stages
 - Single writer for the SQLite file - no other script opens the database
 - Writes tables: `general_election`, `election_candidate`,
-  `district_demographics`, `precinct_demographics`
+  `district_demographics`, `precinct_demographics`, `district_pvi`
 - Creates unique indexes for the logical primary keys on the demographics
-  tables (SQLite does not enforce composite PKs via `dbWriteTable`)
+  and PVI tables (SQLite does not enforce composite PKs via
+  `dbWriteTable`)
 
 ### Critical Data Quality Checks
 
@@ -212,6 +237,7 @@ python find_dup_candidates.py
 - `data/demographics/ma_district_demographics.csv.gz` - District-level demographics (217 rows across 4 offices)
 - `data/demographics/ma_precinct_demographics.csv.gz` - Precinct-level demographics
 - `data/demographics/ma_city_town_demographics.csv.gz` - City/town-level demographics
+- `data/pvi/ma_district_pvi.csv.gz` - Multi-year district PVI (~1,217 rows, `pvi_year` 2008-2024)
 - `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
 
@@ -307,6 +333,20 @@ CREATE TABLE `precinct_demographics` (
 );
 CREATE UNIQUE INDEX idx_precinct_demographics_pk
     ON precinct_demographics (census_year, city_town, ward, precinct);
+
+-- District-level PVI: one row per (pvi_year, office, district).
+-- Sourced from mapoli's already-computed PVI files; reshaped here.
+-- pvi_n is numeric (positive = Dem lean); pvi is the display string ("D+5", "R+3", "EVEN").
+CREATE TABLE `district_pvi` (
+  `pvi_year` INTEGER,
+  `office` TEXT,
+  `district` TEXT,
+  `district_display` TEXT,
+  `pvi_n` REAL,
+  `pvi` TEXT
+);
+CREATE UNIQUE INDEX idx_district_pvi_pk
+    ON district_pvi (pvi_year, office, district);
 
 -- One row per candidate, per election 
 CREATE TABLE `election_candidate` (

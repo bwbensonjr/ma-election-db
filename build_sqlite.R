@@ -119,6 +119,29 @@ if (file.exists(precinct_demographics_file)) {
     cat(str_glue("Skipping precinct_demographics ({precinct_demographics_file} not found).\n\n"))
 }
 
+## --- district_pvi ---
+district_pvi_file <- "data/pvi/ma_district_pvi.csv.gz"
+if (file.exists(district_pvi_file)) {
+    cat("Loading district_pvi...\n")
+    district_pvi <- read_csv(
+        district_pvi_file,
+        show_col_types = FALSE
+    )
+    dbWriteTable(
+        elec_db,
+        "district_pvi",
+        district_pvi,
+        field.types = c(pvi_year = "INTEGER")
+    )
+    dbExecute(
+        elec_db,
+        "CREATE UNIQUE INDEX idx_district_pvi_pk
+             ON district_pvi (pvi_year, office, district)"
+    )
+} else {
+    cat(str_glue("Skipping district_pvi ({district_pvi_file} not found).\n\n"))
+}
+
 dbDisconnect(elec_db)
 
 cat("Done.\n\n")
