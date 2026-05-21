@@ -142,6 +142,29 @@ if (file.exists(district_pvi_file)) {
     cat(str_glue("Skipping district_pvi ({district_pvi_file} not found).\n\n"))
 }
 
+## --- district_summary ---
+district_summary_file <- "data/district_summaries.csv"
+if (file.exists(district_summary_file)) {
+    cat("Loading district_summary...\n")
+    district_summary <- read_csv(
+        district_summary_file,
+        show_col_types = FALSE
+    )
+    dbWriteTable(
+        elec_db,
+        "district_summary",
+        (district_summary %>%
+         mutate(effective_date = format(effective_date, "%Y-%m-%d")))
+    )
+    dbExecute(
+        elec_db,
+        "CREATE UNIQUE INDEX idx_district_summary_pk
+             ON district_summary (office, district, effective_date)"
+    )
+} else {
+    cat(str_glue("Skipping district_summary ({district_summary_file} not found).\n\n"))
+}
+
 dbDisconnect(elec_db)
 
 cat("Done.\n\n")

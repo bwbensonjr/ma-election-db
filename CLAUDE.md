@@ -146,9 +146,10 @@ python find_dup_candidates.py
   produced by the other stages
 - Single writer for the SQLite file - no other script opens the database
 - Writes tables: `general_election`, `election_candidate`,
-  `district_demographics`, `precinct_demographics`, `district_pvi`
-- Creates unique indexes for the logical primary keys on the demographics
-  and PVI tables (SQLite does not enforce composite PKs via
+  `district_demographics`, `precinct_demographics`, `district_pvi`,
+  `district_summary`
+- Creates unique indexes for the logical primary keys on the demographics,
+  PVI, and summary tables (SQLite does not enforce composite PKs via
   `dbWriteTable`)
 
 ### Critical Data Quality Checks
@@ -238,6 +239,7 @@ python find_dup_candidates.py
 - `data/demographics/ma_precinct_demographics.csv.gz` - Precinct-level demographics
 - `data/demographics/ma_city_town_demographics.csv.gz` - City/town-level demographics
 - `data/pvi/ma_district_pvi.csv.gz` - Multi-year district PVI (~1,217 rows, `pvi_year` 2008-2024)
+- `data/district_summaries.csv` - LLM-generated narrative summary per district, keyed by `effective_date` (217 rows)
 - `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
 
@@ -347,6 +349,19 @@ CREATE TABLE `district_pvi` (
 );
 CREATE UNIQUE INDEX idx_district_pvi_pk
     ON district_pvi (pvi_year, office, district);
+
+-- District summary text (LLM-generated narrative).
+-- Keyed by effective_date so summaries can be revised after redistricting,
+-- special elections, or other events without losing prior versions.
+-- Lookup pattern: most recent effective_date <= target date (e.g., today).
+CREATE TABLE `district_summary` (
+  `office` TEXT,
+  `district` TEXT,
+  `effective_date` TEXT,    -- ISO 'YYYY-MM-DD'
+  `summary` TEXT
+);
+CREATE UNIQUE INDEX idx_district_summary_pk
+    ON district_summary (office, district, effective_date);
 
 -- One row per candidate, per election 
 CREATE TABLE `election_candidate` (
