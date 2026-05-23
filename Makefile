@@ -1,10 +1,10 @@
-.PHONY: all general_elections primary_elections summaries demographics pvi sqlite clean
+.PHONY: all general_elections primary_elections summaries demographics pvi precincts sqlite clean
 
 # Full rebuild: transform existing raw CSVs, refresh demographics, and
 # assemble the SQLite database. Does NOT re-fetch from the MA state API
 # or Census API by default; use `make general_elections` or
 # `make demographics` (which force re-runs) to refresh those inputs.
-all: summaries demographics pvi sqlite
+all: summaries demographics pvi precincts sqlite
 
 # --- Stage 1: extraction from MA state API -----------------------------
 # Re-fetches raw election/candidate CSVs. Run explicitly when new
@@ -53,6 +53,20 @@ data/pvi/ma_district_pvi.csv.gz: pvi/ma_pvi.R \
     ../mapoli/pvi/ma_legislative_district_pvi_2024.csv
 	Rscript pvi/ma_pvi.R
 
+# --- Stage 3.6: precinct data (district mapping + presidential votes) -
+# Reshapes mapoli's precinct CSVs into the unified ma-election-db schema.
+# Requires the mapoli repo to be checked out as a sibling directory.
+precincts: data/precinct/ma_precinct_district.csv.gz
+
+data/precinct/ma_precinct_district.csv.gz \
+data/precinct/ma_precinct_presidential_vote.csv.gz \
+data/precinct/ma_national_presidential_baseline.csv: precinct/ma_precincts.R \
+    ../mapoli/pvi/ma_precincts_districts_12_16_pres.csv \
+    ../mapoli/pvi/ma_precincts_districts_16_20_pres.csv \
+    ../mapoli/pvi/ma_precincts_districts_pres_2022.csv \
+    ../mapoli/pvi/ma_precincts_districts_pres_2024.csv
+	Rscript precinct/ma_precincts.R
+
 # --- Stage 4: assemble the SQLite database ----------------------------
 sqlite: data/ma_elections.sqlite
 
@@ -61,7 +75,10 @@ data/ma_elections.sqlite: build_sqlite.R \
     data/ma_general_election_candidates.csv.gz \
     data/demographics/ma_district_demographics.csv.gz \
     data/demographics/ma_precinct_demographics.csv.gz \
-    data/pvi/ma_district_pvi.csv.gz
+    data/pvi/ma_district_pvi.csv.gz \
+    data/precinct/ma_precinct_district.csv.gz \
+    data/precinct/ma_precinct_presidential_vote.csv.gz \
+    data/precinct/ma_national_presidential_baseline.csv
 	Rscript build_sqlite.R
 
 clean:

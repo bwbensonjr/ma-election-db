@@ -141,16 +141,43 @@ python find_dup_candidates.py
   - `data/pvi/ma_district_pvi.csv.gz` - ~1,217 rows, one per
     `(pvi_year, office, district)`
 
+**Stage 3.6: Precincts (precinct/ma_precincts.R)**
+- Reshapes mapoli's wide-format precinct CSVs into a normalized
+  multi-vintage schema. Reads four files from the sibling mapoli
+  checkout (`../mapoli/pvi/`)
+- Inputs:
+  - `../mapoli/pvi/ma_precincts_districts_12_16_pres.csv` (pre-2021 districts; 2012, 2016)
+  - `../mapoli/pvi/ma_precincts_districts_16_20_pres.csv` (pre-2021 districts; 2016, 2020)
+  - `../mapoli/pvi/ma_precincts_districts_pres_2022.csv` (post-2021 districts; 2016, 2020)
+  - `../mapoli/pvi/ma_precincts_districts_pres_2024.csv` (post-2021 districts; 2016, 2020, 2024)
+- Normalizes pre-2021 headers (`City/Town`, `Pct`, `State Rep`, ...) and
+  post-2021 headers (`city_town`, `precinct`, `State_Rep`, ...) to a
+  common snake_case schema
+- Pivots candidate-named vote columns (`Biden_20`, `Harris_24`, ...)
+  into long format keyed by `election_year`
+- Within a redistricting cycle, where the same row appears in multiple
+  files, keeps the most recent file's value
+- National baseline totals are hardcoded in the script (lifted from
+  `../mapoli/R/pvi_utils.R` plus 2012 from official certified results)
+- Outputs:
+  - `data/precinct/ma_precinct_district.csv.gz` - ~4,556 rows, one per
+    `(redistricting_year, city_town, ward, precinct)`
+  - `data/precinct/ma_precinct_presidential_vote.csv.gz` - ~13,666
+    rows, one per `(election_year, redistricting_year, city_town, ward, precinct)`
+  - `data/precinct/ma_national_presidential_baseline.csv` - 4 rows, one
+    per presidential election year
+
 **Stage 4: SQLite assembly (build_sqlite.R)**
 - Deletes `data/ma_elections.sqlite` and rebuilds it from the CSVs
   produced by the other stages
 - Single writer for the SQLite file - no other script opens the database
 - Writes tables: `general_election`, `election_candidate`,
   `district_demographics`, `precinct_demographics`, `district_pvi`,
-  `district_summary`
+  `precinct_district`, `precinct_presidential_vote`,
+  `national_presidential_baseline`, `district_summary`
 - Creates unique indexes for the logical primary keys on the demographics,
-  PVI, and summary tables (SQLite does not enforce composite PKs via
-  `dbWriteTable`)
+  PVI, precinct, and summary tables (SQLite does not enforce composite
+  PKs via `dbWriteTable`)
 
 ### Critical Data Quality Checks
 
@@ -239,6 +266,9 @@ python find_dup_candidates.py
 - `data/demographics/ma_precinct_demographics.csv.gz` - Precinct-level demographics
 - `data/demographics/ma_city_town_demographics.csv.gz` - City/town-level demographics
 - `data/pvi/ma_district_pvi.csv.gz` - Multi-year district PVI (~1,217 rows, `pvi_year` 2008-2024)
+- `data/precinct/ma_precinct_district.csv.gz` - Precinct-to-district mapping by redistricting cycle (~4,556 rows)
+- `data/precinct/ma_precinct_presidential_vote.csv.gz` - Precinct-level presidential votes 2012-2024 (~13,666 rows)
+- `data/precinct/ma_national_presidential_baseline.csv` - National Dem/GOP totals per presidential election (4 rows, used by PVI calc)
 - `data/district_summaries.csv` - LLM-generated narrative summary per district, keyed by `effective_date` (217 rows)
 - `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
@@ -349,6 +379,49 @@ CREATE TABLE `district_pvi` (
 );
 CREATE UNIQUE INDEX idx_district_pvi_pk
     ON district_pvi (pvi_year, office, district);
+
+-- Precinct-to-district mapping, keyed by redistricting cycle.
+-- Pre-2021 districts use `redistricting_year = 2011`;
+-- post-2021 districts use `redistricting_year = 2021`.
+-- Ward is "-" for unwarded municipalities.
+CREATE TABLE `precinct_district` (
+  `redistricting_year` INTEGER,
+  `city_town` TEXT,
+  `ward` TEXT,
+  `precinct` TEXT,
+  `state_rep` TEXT,
+  `state_senate` TEXT,
+  `us_house` TEXT,
+  `gov_council` TEXT
+);
+CREATE UNIQUE INDEX idx_precinct_district_pk
+    ON precinct_district (redistricting_year, city_town, ward, precinct);
+
+-- Precinct-level presidential votes. One row per
+-- (election_year, redistricting_year, precinct). The same election year
+-- may appear under both redistricting cycles where source data covers
+-- both maps (e.g., 2016 votes mapped to pre-2021 vs post-2021 districts).
+-- Vote totals are REAL because post-2021 split precincts hold
+-- fractional totals after areal interpolation.
+CREATE TABLE `precinct_presidential_vote` (
+  `election_year` INTEGER,
+  `redistricting_year` INTEGER,
+  `city_town` TEXT,
+  `ward` TEXT,
+  `precinct` TEXT,
+  `dem_votes` REAL,
+  `gop_votes` REAL
+);
+CREATE UNIQUE INDEX idx_precinct_presidential_vote_pk
+    ON precinct_presidential_vote
+       (election_year, redistricting_year, city_town, ward, precinct);
+
+-- National Dem/GOP totals per presidential election (used by PVI calc).
+CREATE TABLE `national_presidential_baseline` (
+  `election_year` INTEGER PRIMARY KEY,
+  `dem_votes` INTEGER,
+  `gop_votes` INTEGER
+);
 
 -- District summary text (LLM-generated narrative).
 -- Keyed by effective_date so summaries can be revised after redistricting,
