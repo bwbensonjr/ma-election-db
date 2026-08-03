@@ -1,0 +1,652 @@
+# 2026 Massachusetts State Primary candidates (September 1, 2026)
+# Source (fetched 2026-07-20):
+#   Democratic: https://www.sec.state.ma.us/divisions/elections/research-and-statistics/dem-state-primary-candidates2026.htm
+#   Republican: https://www.sec.state.ma.us/divisions/elections/research-and-statistics/rep-state-primary-candidates2026.htm
+#
+# Only offices tracked by ma-election-db are included: U.S. Senate, Governor,
+# U.S. House, Governor's Council, State Senate, State Representative.
+# Districts with no nominations for a party are omitted (no candidate rows).
+#
+# Format:
+#   [Party]        party section (Democratic / Republican)
+#   $ Office       office name (matches ma-election-db `office`)
+#   @ District     district as listed on the SEC page ("&"/"and" as printed;
+#                  "District" suffix dropped). Omitted for statewide offices.
+#   Name, City     one candidate per line; city is the text after the LAST comma
+#                  (so name suffixes like ", Jr." / ", III" stay in the name).
+# Lines beginning with '#' and blank lines are ignored.
+
+[Democratic]
+
+$ U.S. Senate
+Edward J. Markey, Malden
+Seth Moulton, Salem
+
+$ Governor
+Maura Healey, Arlington
+
+$ U.S. House
+@ 1
+Richard E. Neal, Springfield
+Jeromie Whalen, South Hadley
+@ 2
+James P. McGovern, Worcester
+@ 3
+Lori Loureiro Trahan, Westford
+@ 4
+Jake Auchincloss, Newton
+Jason Poulos, Sherborn
+@ 5
+Katherine M. Clark, Revere
+Tarik Samman, Cambridge
+Jonathan Paz, Waltham
+@ 6
+Bethany Andres-Beck, Middleton
+John A. Beccia, III, Lynnfield
+Jamie Belsito, Topsfield
+Dan Koh, Andover
+Mariah L. Lancaster, Salem
+Tram T. Nguyen, Andover
+@ 7
+Ayanna S. Pressley, Boston
+@ 8
+Stephen F. Lynch, Boston
+Patrick Thomas Roath, Boston
+@ 9
+Bill Keating, Bourne
+Craig Swallow, New Bedford
+
+$ Governor's Council
+@ First
+Joseph C. Ferreira, Swansea
+@ Second
+Tamisha L. Civil, Stoughton
+@ Third
+Mara Dolan, Concord
+Margie Palladino, Wellesley
+@ Fourth
+Christopher A. Iannella, Jr., Boston
+Ronald Primo Iacobucci, Quincy
+@ Fifth
+Eunice Delice Zeigler, Methuen
+@ Sixth
+Terrence W. Kennedy, Lynnfield
+Diann Mary Baylis, Marblehead
+@ Seventh
+Paul M. DePalo, Worcester
+@ Eighth
+Tara J. Jacobs, North Adams
+Michael A. Fenton, Springfield
+
+$ State Senate
+@ Berkshire, Hampden, Franklin & Hampshire
+Paul W. Mark, Becket
+@ Bristol & Norfolk
+Paul Richard Feeney, Foxborough
+@ First Bristol & Plymouth
+Michael J. Rodrigues, Westport
+@ Second Bristol & Plymouth
+Mark C.W. Montigny, New Bedford
+@ Cape & Islands
+Julian Cyr, Provincetown
+@ First Essex
+Pavel M. Payano, Lawrence
+@ Second Essex
+Joan B. Lovely, Salem
+@ Third Essex
+Brendan Peter Crighton, Lynn
+@ Second Essex & Middlesex
+Barry R. Finegold, Andover
+@ Hampden
+Adam Gomez, Springfield
+@ Hampden & Hampshire
+John Christopher Velis, Westfield
+@ Hampden, Hampshire & Worcester
+Jacob R. Oliveira, Ludlow
+@ Hampshire, Franklin & Worcester
+Joanne M. Comerford, Northampton
+@ First Middlesex
+Vanna Howard, Lowell
+@ Second Middlesex
+Burhan Azeem, Cambridge
+Christine P. Barber, Somerville
+Thomas E. Hopcroft, Winchester
+Matthew McLaughlin, Somerville
+Erika Uyterhoeven, Somerville
+@ Third Middlesex
+Michael J. Barrett, Lexington
+@ Fourth Middlesex
+Cindy F. Friedman, Arlington
+@ Fifth Middlesex
+Kate Lipper-Garabedian, Melrose
+Carey McDonald, Malden
+Ryan J. O'Malley, Malden
+@ Middlesex & Norfolk
+Karen E. Spilka, Ashland
+@ Middlesex & Suffolk
+Sal N. DiDomenico, Everett
+@ Middlesex & Worcester
+James Bradley Eldridge, Marlborough
+@ Norfolk & Middlesex
+Cynthia Stone Creem, Newton
+@ Norfolk & Plymouth
+John F. Keenan, Quincy
+@ Norfolk, Plymouth & Bristol
+William J. Driscoll, Jr., Milton
+Tony King, Milton
+Michael F. Zullas, Milton
+@ Norfolk & Suffolk
+Michael F. Rush, Boston
+Persis S. Yu, Boston
+@ Norfolk, Worcester & Middlesex
+Rebecca L. Rausch, Needham
+@ Plymouth & Barnstable
+Dylan A. Fernandes, Falmouth
+@ Second Plymouth & Norfolk
+Michael D. Brady, Brockton
+@ First Suffolk
+Nicholas P. Collins, Boston
+Latoya Sherria Gayle, Boston
+Juwan Khiry Skeens, Boston
+@ Second Suffolk
+Liz Miranda, Boston
+@ Third Suffolk
+Lydia Marie Edwards, Boston
+@ Suffolk & Middlesex
+William N. Brownsberger, Belmont
+Daniel Lander, Boston
+@ First Worcester
+Robyn Kennedy, Worcester
+@ Second Worcester
+Michael O. Moore, Millbury
+@ Worcester & Hampshire
+Shannon M. Teabo, West Brookfield
+@ Worcester & Middlesex
+John Cronin, Fitchburg
+
+$ State Representative
+@ Barnstable, Dukes & Nantucket
+Thomas W. Moakley, Falmouth
+@ First Barnstable
+Christopher Lambton, Dennis
+Steven Matthew Leibowitz, Brewster
+@ Second Barnstable
+Kip A. Diggs, Barnstable
+@ Third Barnstable
+Jack Peter Richardson, Falmouth
+@ Fourth Barnstable
+Hadley Luddy, Orleans
+@ First Berkshire
+John Barrett, III, North Adams
+Andrew J. Fitch, North Adams
+@ Second Berkshire
+Tricia Farley-Bouvier, Pittsfield
+@ Third Berkshire
+Leigh Susan Davis, Great Barrington
+@ Second Bristol
+James Kimball Hawkins, Attleboro
+@ Third Bristol
+Lisa M. Field, Taunton
+Edward Walsh, Jr., Taunton
+@ Fifth Bristol
+Jamison D. Souza, Somerset
+@ Sixth Bristol
+Carole A. Fiola, Fall River
+@ Seventh Bristol
+Alan Silvia, Fall River
+@ Eighth Bristol
+Steven J. Ouellette, Westport
+@ Ninth Bristol
+Stephen J. Medeiros, Dartmouth
+Edward M. Pacheco, Dartmouth
+@ Tenth Bristol
+Mark D. Sylvia, Fairhaven
+@ Eleventh Bristol
+Christopher M. Hendricks, New Bedford
+@ Thirteenth Bristol
+Antonio F.D. Cabral, New Bedford
+@ Fourteenth Bristol
+Adam J. Scanlon, North Attleborough
+@ First Essex
+Dawne Frances Shand, Newburyport
+Stephen Alexander Roth, Salisbury
+@ Second Essex
+Kristin Elena Kassner, Hamilton
+@ Third Essex
+Andres Xavier Vargas, Haverhill
+@ Fourth Essex
+Estela A. Reyes, Lawrence
+@ Fifth Essex
+Andrew Francis Robert Tarr, Gloucester
+Sarah Jane Wilkinson, Rockport
+@ Sixth Essex
+Hannah Louise Bowen, Beverly
+@ Seventh Essex
+Manny Cruz, Salem
+@ Eighth Essex
+Jennifer WB Armini, Marblehead
+@ Ninth Essex
+Peter Meaney, Lynn
+Zosia Jean VanMeter, Lynn
+@ Tenth Essex
+Daniel Francis Cahill, Lynn
+@ Eleventh Essex
+Sean Daniel Reid, Lynn
+@ Twelfth Essex
+Thomas P. Walsh, Peabody
+@ Thirteenth Essex
+Sally Patrice Kerans, Danvers
+@ Fourteenth Essex
+Adrianne Pusateri Ramos, North Andover
+@ Fifteenth Essex
+Ryan M. Hamilton, Methuen
+@ Sixteenth Essex
+Francisco E. Paulino, Methuen
+Celina A. Reyes, Lawrence
+@ Seventeenth Essex
+Frank A. Moran, Lawrence
+@ Eighteenth Essex
+Connor A. Murray, Andover
+@ First Franklin
+Corinne Ellen Coryat, Deerfield
+Lora L. Wondolowski, Greenfield
+@ Second Hampden
+Brian Michael Ashe, Longmeadow
+@ Third Hampden
+Thomas D. Hendrickson, Agawam
+@ Fourth Hampden
+Colby Walshe Hoffman, Westfield
+@ Fifth Hampden
+Patricia A. Duffy, Holyoke
+Dori Lynn Dean, Holyoke
+@ Sixth Hampden
+Michael James Finn, West Springfield
+@ Seventh Hampden
+Aaron L. Saunders, Belchertown
+@ Eighth Hampden
+Shirley Arriaga, Chicopee
+@ Ninth Hampden
+Orlando Ramos, Springfield
+@ Tenth Hampden
+Carlos Gonzalez, Springfield
+@ Eleventh Hampden
+Bud L. Williams, Springfield
+Nicole D. Coakley, Springfield
+Johnnie R.S. McKnight, Springfield
+@ Twelfth Hampden
+Angelo J. Puppolo, Jr., Springfield
+Michael Lachenmeyer, Springfield
+@ First Hampshire
+Lindsay N. Sabadosa, Northampton
+@ Second Hampshire
+Homar Gomez, Easthampton
+@ Third Hampshire
+Mindy Domb, Amherst
+@ First Middlesex
+Margaret R. Scarsdale, Pepperell
+@ Second Middlesex
+James Arciero, Westford
+@ Third Middlesex
+Kate Hogan, Stow
+@ Fourth Middlesex
+Danielle W. Gregoire, Marlborough
+@ Fifth Middlesex
+David Paul Linsky, Natick
+@ Sixth Middlesex
+Priscila S. Sousa, Framingham
+@ Seventh Middlesex
+Jack Patrick Lewis, Framingham
+@ Eighth Middlesex
+James C. Arena-DeRosa, Holliston
+@ Ninth Middlesex
+Thomas M. Stanley, Waltham
+@ Tenth Middlesex
+John J. Lawn, Watertown
+Alison Margaret Leary, Newton
+@ Eleventh Middlesex
+Amy Mah Sangiolo, Newton
+@ Twelfth Middlesex
+Greg Schwartz, Newton
+@ Thirteenth Middlesex
+Ravi Simon, Sudbury
+@ Fourteenth Middlesex
+Simon J. Cataldo, Concord
+@ Fifteenth Middlesex
+Michelle Ciccolo, Lexington
+@ Sixteenth Middlesex
+Lorena G. Betts, Chelmsford
+Corey Michael Robinson, Lowell
+@ Seventeenth Middlesex
+Harini Sankaran Aiyer, Lowell
+John M. Drinkwater, Lowell
+Anthony John Leite, Lowell
+@ Eighteenth Middlesex
+Tara Hong, Lowell
+Sokhary Chan Chau, Lowell
+@ Nineteenth Middlesex
+David Allen Robertson, Wilmington
+@ Twentieth Middlesex
+Joseph Markey, Lynnfield
+@ Twenty-First Middlesex
+Kenneth Ira Gordon, Bedford
+@ Twenty-Second Middlesex
+Daniel Ronald Darris-O'Connor, Billerica
+@ Twenty-Third Middlesex
+Sean Garballey, Arlington
+@ Twenty-Fourth Middlesex
+David M. Rogers, Cambridge
+Nomita Ganguly, Belmont
+@ Twenty-Fifth Middlesex
+Marjorie C. Decker, Cambridge
+Evan MacKay, Cambridge
+@ Twenty-Sixth Middlesex
+Mike Connolly, Cambridge
+Neil S. Miller, Cambridge
+@ Twenty-Seventh Middlesex
+Ben Ewen-Campen, Somerville
+Olivia Gilligan-Corsetti, Somerville
+@ Twenty-Eighth Middlesex
+Joseph W. McGonagle, Everett
+@ Twenty-Ninth Middlesex
+Steven Charles Owens, Watertown
+@ Thirtieth Middlesex
+Richard M. Haggerty, Woburn
+Jadon Wilson, Reading
+@ Thirty-First Middlesex
+Michael Seamus Day, Stoneham
+@ Thirty-Second Middlesex
+John Higgins, Malden
+Leila Bhatti Migliorelli, Melrose
+@ Thirty-Third Middlesex
+Steven Ultrino, Malden
+@ Thirty-Fourth Middlesex
+Will Mbah, Somerville
+Christopher Ryan Oates, Somerville
+Paul Ruseau, Medford
+@ Thirty-Fifth Middlesex
+Paul J. Donato, Medford
+@ Thirty-Sixth Middlesex
+Colleen M. Garry, Dracut
+@ Thirty-Seventh Middlesex
+Danillo A. Sena, Acton
+@ First Norfolk
+Bruce J. Ayers, Quincy
+@ Second Norfolk
+Tackey Chan, Quincy
+@ Third Norfolk
+Ronald Mariano, Quincy
+@ Fourth Norfolk
+James Michael Murphy, Weymouth
+@ Fifth Norfolk
+Mark J. Cusack, Braintree
+@ Sixth Norfolk
+Stephen Mathew Cavey, Stoughton
+Lisa R. Lopez, Canton
+Michael C. Loughran, Canton
+@ Seventh Norfolk
+Richard Gerard Wells, Jr., Milton
+Clinton Graham, Milton
+@ Eighth Norfolk
+Ted Philips, Sharon
+@ Ninth Norfolk
+Thomas R. Melville, Medfield
+@ Tenth Norfolk
+Jeffrey N. Roy, Franklin
+@ Eleventh Norfolk
+Paul McMurtry, Dedham
+@ Twelfth Norfolk
+John Healy Rogers, Norwood
+@ Thirteenth Norfolk
+Joshua Brian Tarsky, Needham
+@ Fourteenth Norfolk
+Alice Hanlon Peisch, Wellesley
+@ Fifteenth Norfolk
+Tommy Vitolo, Brookline
+@ First Plymouth
+Michelle L. Badger, Plymouth
+@ Second Plymouth
+Sarah G. Hewins, Carver
+@ Third Plymouth
+Joan Meschino, Hull
+@ Fourth Plymouth
+Patrick Joseph Kearney, Scituate
+Kathleen Ann Baxter, Scituate
+@ Fifth Plymouth
+Lori Childs, Rockland
+@ Sixth Plymouth
+Jessica Marie Rushing, Pembroke
+@ Seventh Plymouth
+Rosemary Aahanna-Hill, Whitman
+@ Eighth Plymouth
+Dennis C. Gallagher, Bridgewater
+@ Ninth Plymouth
+Bridget Marie Plouffe, Brockton
+@ Tenth Plymouth
+Michelle Marie DuBois, Brockton
+Tony Andrade Rodrigues, Brockton
+@ Eleventh Plymouth
+Rita A. Mendes, Brockton
+@ Twelfth Plymouth
+Kathleen LaNatra, Kingston
+@ First Suffolk
+Adrian C. Madaro, Boston
+@ Second Suffolk
+Daniel J. Ryan, Boston
+@ Third Suffolk
+Aaron Michlewitz, Boston
+@ Fourth Suffolk
+David M. Biele, Boston
+@ Fifth Suffolk
+Christopher J. Worrell, Boston
+@ Sixth Suffolk
+Russell Earl Holmes, Boston
+@ Seventh Suffolk
+Chynah T. Tyler, Boston
+@ Eighth Suffolk
+Jay D. Livingstone, Boston
+@ Ninth Suffolk
+John Francis Moran, Boston
+@ Tenth Suffolk
+William F. MacGregor, Boston
+@ Eleventh Suffolk
+Judith Garcia, Chelsea
+@ Twelfth Suffolk
+Brandy Fluker Reid, Boston
+@ Thirteenth Suffolk
+Daniel J. Hunt, Boston
+@ Fourteenth Suffolk
+Rob Consalvo, Boston
+@ Fifteenth Suffolk
+Samantha Montaño, Boston
+Steven Ray Berry, Boston
+@ Sixteenth Suffolk
+Jessica Ann Giannino, Revere
+@ Seventeenth Suffolk
+Kevin G. Honan, Boston
+@ Eighteenth Suffolk
+Michael J. Moran, Boston
+@ Nineteenth Suffolk
+Jeffrey Rosario Turco, Winthrop
+LeeAllen Matthew Meyer, Winthrop
+@ First Worcester
+Krista Suzanne Ferrante, Princeton
+@ Second Worcester
+Michael Joseph Nicholson, Gardner
+@ Third Worcester
+Michael P. Kushmerek, Fitchburg
+@ Fourth Worcester
+Natalie Marie Higgins, Leominster
+@ Sixth Worcester
+Jeanne Renaud Costello, Charlton
+@ Seventh Worcester
+Nicholas Lazzaro, Millbury
+@ Tenth Worcester
+Brian W. Murray, Milford
+@ Twelfth Worcester
+Meghan Kilcoyne, Clinton
+@ Thirteenth Worcester
+John J. Mahoney, Worcester
+@ Fourteenth Worcester
+James J. O'Day, West Boylston
+Barur R. Rajeshkumar, West Boylston
+@ Fifteenth Worcester
+Mary S. Keefe, Worcester
+Ronald B. Waddell, Jr., Worcester
+@ Sixteenth Worcester
+Daniel M. Donahue, Worcester
+@ Seventeenth Worcester
+David Henry Argosky LeBoeuf, Worcester
+@ Eighteenth Worcester
+Jenifer Heck, Sutton
+@ Nineteenth Worcester
+Kate Donaghue, Westborough
+
+[Republican]
+
+$ U.S. Senate
+John Deaton, Bolton
+
+$ Governor
+Michael Roger Minogue, Hamilton
+Brian Shortsleeve, Barnstable
+
+$ U.S. House
+@ 3
+Gary J. Grossi, Acton
+@ 4
+Thomas Stalcup, Brookline
+@ 6
+Micah Quinney Jones, Essex
+@ 8
+Robert Gerald Burke, Dedham
+@ 9
+R. Tyler MacAllister, Mattapoisett
+
+$ Governor's Council
+@ Second
+Francis Thomas Crimmins, Jr., Stoughton
+@ Seventh
+Margaret M. Abboud, Worcester
+
+$ State Senate
+@ First Bristol & Plymouth
+Gabriel Boomer Amaral, Fall River
+Manny Silva, Somerset
+@ Second Bristol & Plymouth
+Robert Scott McConnell, Fairhaven
+@ Third Bristol & Plymouth
+Kelly A. Dooner, Taunton
+@ First Essex & Middlesex
+Bruce E. Tarr, Gloucester
+@ Second Essex & Middlesex
+Theodore T. Semesnyei, Amesbury
+@ First Middlesex
+Sam Meas, Lowell
+@ Middlesex & Worcester
+Joseph Timothy Shea, Acton
+@ Plymouth & Barnstable
+Kari Della MacRae, Bourne
+@ First Plymouth & Norfolk
+Patrick M. O'Connor, Weymouth
+@ Worcester & Hampden
+Ryan C. Fattman, Sutton
+@ Worcester & Hampshire
+Peter J. Durant, Spencer
+
+$ State Representative
+@ Third Barnstable
+David T. Vieira, Falmouth
+@ Fifth Barnstable
+Steven G. Xiarhos, Barnstable
+@ First Bristol
+Michael Sean Chaisson, Foxborough
+@ Third Bristol
+Lawrence Joseph Quintal, Taunton
+@ Fourth Bristol
+Steven S. Howitt, Seekonk
+@ Fifth Bristol
+Justin E. Thurber, Somerset
+@ Sixth Bristol
+Robert G. Anctil, Freetown
+@ Seventh Bristol
+Talos D. Farris, Fall River
+@ Eighth Bristol
+Jesse W. St. Gelais, Acushnet
+Christopher Thrasher, Westport
+@ Ninth Bristol
+Henry George Bousquet, New Bedford
+Chester M. Tam, Dartmouth
+@ Twelfth Bristol
+Norman J. Orrall, Lakeville
+@ Second Essex
+Daniel James Kelly, Ipswich
+@ Fifth Essex
+Christina Delisio, Manchester-By-The-Sea
+@ Ninth Essex
+Donald H. Wong, Saugus
+@ Fifteenth Essex
+Ronald L. Heiseler, III, Haverhill
+@ First Hampden
+Todd M. Smola, Warren
+@ Second Hampden
+Peter Warren, Monson
+@ Third Hampden
+Nicholas A. Boldyga, Southwick
+@ Fourth Hampden
+Kelly W. Pease, Westfield
+@ First Middlesex
+Christopher M. Lyons, Ashby
+Glenn L. McLeod, Lunenburg
+@ Fifth Middlesex
+Luisa A. Cestari, Natick
+@ Sixteenth Middlesex
+Karla J. Miller, Lowell
+@ Twentieth Middlesex
+Trevor David Currier, Middleton
+@ Twenty-Second Middlesex
+Marc T. Lombardo, Billerica
+@ Thirty-First Middlesex
+Stephen G. Ternullo, Stoneham
+@ Thirty-Fifth Middlesex
+James C. Seibel, Medford
+@ Second Norfolk
+Sharon Marie Cintolo, Quincy
+@ Ninth Norfolk
+Marcus S. Vaughn, Wrentham
+@ First Plymouth
+David Michael Golden, Jr., Plymouth
+@ Second Plymouth
+John Robert Gaskey, Carver
+Mark E. Townsend, Carver
+@ Fifth Plymouth
+David F. DeCoste, Norwell
+@ Sixth Plymouth
+Kenneth Peter Sweezey, Duxbury
+@ Seventh Plymouth
+Alyson M. Sullivan-Almeida, Abington
+@ Eighth Plymouth
+John Edward Norris, Bridgewater
+@ Ninth Plymouth
+Lawrence Peter Novak, Brockton
+@ Twelfth Plymouth
+Eric J. Meschino, Plymouth
+@ First Worcester
+Stephanie R. Mulroy, Holden
+@ Fourth Worcester
+Josh William Bowdridge, Leominster
+@ Fifth Worcester
+Donald Roger Berthiaume, Jr., Spencer
+@ Sixth Worcester
+John J. Marsi, Jr., Charlton
+@ Seventh Worcester
+Paul K. Frost, Auburn
+@ Eighth Worcester
+Michael J. Soter, Bellingham
+@ Ninth Worcester
+David Kent Muradian, Jr., Grafton
+@ Eleventh Worcester
+Hannah Elizabeth Kane, Shrewsbury
+@ Twelfth Worcester
+Lisa K. Mair, Berlin
+@ Eighteenth Worcester
+Joseph D. McKenna, Sutton
