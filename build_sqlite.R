@@ -73,6 +73,77 @@ dbWriteTable(
     )
 )
 
+## --- primary_election ---
+primary_election_file <- "data/ma_primary_election_summaries.csv.gz"
+if (file.exists(primary_election_file)) {
+    cat("Loading primary_election...\n")
+    primary_election <- read_csv(
+        primary_election_file,
+        show_col_types = FALSE
+    )
+    dbWriteTable(
+        elec_db,
+        "primary_election",
+        (primary_election %>%
+         mutate(election_date = format(election_date, "%Y-%m-%d"))),
+        field.types = c(
+            office_id = "INTEGER",
+            district_id = "INTEGER",
+            election_id = "INTEGER",
+            total_votes = "INTEGER",
+            blank_votes = "INTEGER",
+            all_other_votes = "INTEGER",
+            num_candidates = "INTEGER",
+            winner_id = "INTEGER",
+            winner_votes = "INTEGER"
+        )
+    )
+    dbExecute(
+        elec_db,
+        "CREATE UNIQUE INDEX idx_primary_election_pk
+             ON primary_election (election_id)"
+    )
+} else {
+    cat(str_glue("Skipping primary_election ({primary_election_file} not found).\n\n"))
+}
+
+## --- primary_election_candidate ---
+primary_candidate_file <- "data/ma_primary_election_candidates.csv.gz"
+if (file.exists(primary_candidate_file)) {
+    cat("Loading primary_election_candidate...\n")
+    primary_election_candidate <- read_csv(
+        primary_candidate_file,
+        show_col_types = FALSE
+    )
+    dbWriteTable(
+        elec_db,
+        "primary_election_candidate",
+        (primary_election_candidate %>%
+         mutate(election_date = format(election_date, "%Y-%m-%d"))),
+        field.types = c(
+            office_id = "INTEGER",
+            district_id = "INTEGER",
+            election_id = "INTEGER",
+            total_votes = "INTEGER",
+            blank_votes = "INTEGER",
+            all_other_votes = "INTEGER",
+            num_candidates = "INTEGER",
+            candidate_id = "INTEGER",
+            num_votes = "INTEGER",
+            num_elections = "INTEGER",
+            winner_id = "INTEGER",
+            winner_votes = "INTEGER"
+        )
+    )
+    dbExecute(
+        elec_db,
+        "CREATE UNIQUE INDEX idx_primary_election_candidate_pk
+             ON primary_election_candidate (election_id, candidate_id)"
+    )
+} else {
+    cat(str_glue("Skipping primary_election_candidate ({primary_candidate_file} not found).\n\n"))
+}
+
 ## --- district_demographics ---
 district_demographics_file <- "data/demographics/ma_district_demographics.csv.gz"
 if (file.exists(district_demographics_file)) {

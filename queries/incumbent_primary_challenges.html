@@ -1,0 +1,795 @@
+<title>Beacon Hill Primary Challenges</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --ground:    #E9ECF1;
+  --surface:   #FFFFFF;
+  --surface-2: #F3F5F8;
+  --line:      #CFD6E0;
+  --line-soft: #E1E6ED;
+  --ink:       #171D28;
+  --ink-2:     #3C4658;
+  --muted:     #5C6779;
+  --brass:     #8A6D14;
+  --brass-dim: #B79A3E;
+  --upset:     #A32E24;
+  --upset-bg:  #F6E4E1;
+  --hold:      #37637A;
+  --hold-bg:   #E3ECF2;
+  --shadow:    0 1px 2px rgba(23,29,40,.06), 0 8px 24px -12px rgba(23,29,40,.18);
+  --focus:     #8A6D14;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:    #0F131A;
+    --surface:   #161C26;
+    --surface-2: #1D2530;
+    --line:      #2C3644;
+    --line-soft: #222B37;
+    --ink:       #E4E8EF;
+    --ink-2:     #B6C0CE;
+    --muted:     #8B96A8;
+    --brass:     #C9A227;
+    --brass-dim: #8F7524;
+    --upset:     #E0685A;
+    --upset-bg:  #3A1F1C;
+    --hold:      #7BA8C2;
+    --hold-bg:   #1B2C36;
+    --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    --focus:     #C9A227;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:    #0F131A;
+  --surface:   #161C26;
+  --surface-2: #1D2530;
+  --line:      #2C3644;
+  --line-soft: #222B37;
+  --ink:       #E4E8EF;
+  --ink-2:     #B6C0CE;
+  --muted:     #8B96A8;
+  --brass:     #C9A227;
+  --brass-dim: #8F7524;
+  --upset:     #E0685A;
+  --upset-bg:  #3A1F1C;
+  --hold:      #7BA8C2;
+  --hold-bg:   #1B2C36;
+  --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --focus:     #C9A227;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ---------- masthead ---------- */
+.masthead { display: flex; flex-direction: column; gap: 14px; }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--brass);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.eyebrow::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--brass-dim), transparent);
+}
+
+h1 {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, 5vw, 50px);
+  line-height: 1.02;
+  letter-spacing: -.024em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.standfirst {
+  max-width: 66ch;
+  color: var(--ink-2);
+  font-size: 16px;
+  margin: 0;
+}
+.standfirst b { color: var(--ink); font-weight: 600; }
+
+/* ---------- stat strip ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stat {
+  background: var(--surface);
+  padding: 14px 16px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stat-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.stat-value {
+  font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value small { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.stat-note { font-size: 12px; color: var(--muted); }
+
+/* ---------- controls ---------- */
+.controls {
+  background: var(--ground);
+  padding: 2px 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.field.grow { flex: 1 1 260px; min-width: 200px; }
+
+input[type="search"], select {
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 8px 10px;
+  height: 36px;
+  width: 100%;
+  appearance: none;
+}
+select {
+  padding-right: 30px;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 16px) 15px, calc(100% - 11px) 15px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+input[type="search"]::placeholder { color: var(--muted); }
+input:focus-visible, select:focus-visible, button:focus-visible, th button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: inherit;
+}
+.toggle[aria-pressed="true"] {
+  border-color: var(--brass);
+  color: var(--brass);
+  background: var(--surface-2);
+}
+.toggle .box {
+  width: 13px; height: 13px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  position: relative;
+  flex: none;
+}
+.toggle[aria-pressed="true"] .box::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.reset {
+  height: 36px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.reset:hover { color: var(--ink); border-color: var(--muted); }
+
+.count {
+  margin-left: auto;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--muted);
+  padding-bottom: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.count b { color: var(--ink); font-weight: 600; }
+
+/* ---------- table ---------- */
+.table-wrap {
+  overflow: auto;
+  /* tall enough to scan, capped so the page never becomes one long table;
+     the floor keeps it usable on short viewports */
+  max-height: min(76vh, 900px);
+  min-height: 320px;
+  overscroll-behavior: contain;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+}
+table { border-collapse: collapse; width: 100%; min-width: 1080px; }
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  padding: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+thead th button {
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 11px 12px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: inherit;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+thead th.num button { justify-content: flex-end; }
+thead th button:hover { color: var(--ink); }
+thead th[aria-sort] button { color: var(--brass); }
+.caret { font-size: 9px; opacity: 0; }
+thead th[aria-sort] .caret { opacity: 1; }
+
+tbody tr { border-bottom: 1px solid var(--line-soft); }
+tbody tr:last-child { border-bottom: 0; }
+tbody tr:hover { background: var(--surface-2); }
+td { padding: 9px 12px; vertical-align: middle; }
+td.num {
+  text-align: right;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.cycle { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; font-variant-numeric: tabular-nums; }
+.district { font-size: 14px; white-space: nowrap; }
+.chamber { display: block; font-size: 11px; color: var(--muted); }
+
+.name { font-size: 14px; font-weight: 500; white-space: nowrap; }
+.name .home { display: block; font-size: 11px; font-weight: 400; color: var(--muted); }
+.won { color: var(--ink); }
+.lost { color: var(--muted); }
+
+.chip {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--muted);
+}
+
+.pill {
+  display: inline-block;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.pill.upset { color: var(--upset); background: var(--upset-bg); }
+.pill.hold  { color: var(--hold);  background: var(--hold-bg); }
+
+.flag {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--brass);
+  border: 1px solid var(--brass-dim);
+  border-radius: 2px;
+  padding: 0 3px;
+  margin-left: 5px;
+  vertical-align: 1px;
+}
+
+/* margin cell: figure alongside a diverging bar centred on zero, so the
+   number never sits on top of its own fill */
+.margin-cell { width: 208px; min-width: 208px; }
+.margin-cell .inner { display: flex; align-items: center; gap: 10px; }
+
+.val {
+  flex: none;
+  width: 52px;
+  text-align: right;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.val.neg { color: var(--upset); }
+.val.pos { color: var(--hold); }
+
+.bar {
+  position: relative;
+  flex: 1 1 auto;
+  height: 15px;
+  min-width: 90px;
+}
+.bar .track {
+  position: absolute;
+  inset: 5px 0;
+  background: var(--line-soft);
+  border-radius: 1px;
+}
+.bar .axis {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+.bar .fill {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  border-radius: 1px;
+  min-width: 1px;
+}
+.bar .fill.neg { background: var(--upset); }
+.bar .fill.pos { background: var(--hold); }
+
+.pvi { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; color: var(--ink-2); }
+.pvi.none { color: var(--muted); opacity: .55; }
+
+.empty { padding: 48px 16px; text-align: center; color: var(--muted); }
+.empty strong { display: block; color: var(--ink); font-size: 16px; margin-bottom: 4px; font-weight: 600; }
+
+/* ---------- notes ---------- */
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+}
+.notes h2 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin: 0 0 7px;
+  font-weight: 500;
+}
+.notes p { margin: 0 0 8px; }
+.notes b { color: var(--ink-2); font-weight: 600; }
+.notes code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+@media (max-width: 720px) {
+  .wrap { padding: 28px 14px 56px; }
+  .count { margin-left: 0; width: 100%; padding-bottom: 0; }
+}
+</style>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Massachusetts General Court &middot; 1996&ndash;2024</div>
+    <h1>When the challenge came from inside the party</h1>
+    <p class="standfirst">Every state legislative primary in which a sitting representative or senator
+    faced a challenger of their own party. <b>278 contests, 35 upsets.</b> Sorted by margin, so the
+    incumbents who lost sit at the top and the safest sit at the bottom.</p>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Summary of the filtered contests"></section>
+
+  <div class="controls">
+    <div class="field grow">
+      <label for="q">Search</label>
+      <input type="search" id="q" placeholder="Incumbent, challenger, district, city&hellip;" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-cycle">Cycle</label>
+      <select id="f-cycle"><option value="">All cycles</option></select>
+    </div>
+    <div class="field">
+      <label for="f-chamber">Chamber</label>
+      <select id="f-chamber">
+        <option value="">Both</option>
+        <option value="House">House</option>
+        <option value="Senate">Senate</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-party">Party</label>
+      <select id="f-party">
+        <option value="">Either</option>
+        <option value="D">Democratic</option>
+        <option value="R">Republican</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="f-result">Result</label>
+      <select id="f-result">
+        <option value="">Any</option>
+        <option value="1">Upset &mdash; incumbent lost</option>
+        <option value="0">Held &mdash; incumbent won</option>
+      </select>
+    </div>
+    <button type="button" class="toggle" id="f-close" aria-pressed="false">
+      <span class="box" aria-hidden="true"></span> Within 10 pts
+    </button>
+    <button type="button" class="reset" id="reset">Reset</button>
+    <div class="count" id="count"></div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th data-key="yr"  class="num"><button type="button">Cycle <span class="caret"></span></button></th>
+          <th data-key="d"><button type="button">District <span class="caret"></span></button></th>
+          <th data-key="p"><button type="button">Party <span class="caret"></span></button></th>
+          <th data-key="inc"><button type="button">Incumbent <span class="caret"></span></button></th>
+          <th data-key="ip" class="num"><button type="button">Inc&nbsp;% <span class="caret"></span></button></th>
+          <th data-key="cha"><button type="button">Top challenger <span class="caret"></span></button></th>
+          <th data-key="cp" class="num"><button type="button">Chal&nbsp;% <span class="caret"></span></button></th>
+          <th data-key="m"><button type="button">Margin <span class="caret"></span></button></th>
+          <th data-key="up"><button type="button">Result <span class="caret"></span></button></th>
+          <th data-key="tm" class="num"><button type="button">Terms <span class="caret"></span></button></th>
+          <th data-key="tv" class="num"><button type="button">Turnout <span class="caret"></span></button></th>
+          <th data-key="pvi" class="num"><button type="button">PVI <span class="caret"></span></button></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h2>How incumbency is derived</h2>
+      <p>The primary tables carry no incumbency flag. A candidate counts as the sitting member if they
+      won the most recent general election &mdash; regular or special &mdash; for that office and district
+      before the primary date. Matching is on office plus candidate, not district, so a legislator
+      renumbered by redistricting is still recognised.</p>
+    </div>
+    <div>
+      <h2>Write-ins count</h2>
+      <p>Massachusetts primaries are winnable on a sticker campaign. Kenneth Gordon beat Rep. Charles
+      Murphy in the 2012 Twenty-First Middlesex Democratic primary as a write-in, so filtering write-ins
+      out would drop real defeats. Challengers who ran as write-ins are marked <span class="flag">W/I</span>.</p>
+    </div>
+    <div>
+      <h2>Two gaps to know</h2>
+      <p><b>2006 and 2016 are incomplete.</b> Those cycles are badly under-collected upstream: about 19
+      State Rep incumbents on the ballot in 2006 against roughly 140 in a normal cycle. Read them as
+      missing data, not quiet cycles.</p>
+      <p><b>PVI resolves only for 2024.</b> District names in the 2008&ndash;2022 PVI vintages are mangled
+      upstream, so earlier rows show <code>&ndash;</code>.</p>
+    </div>
+    <div>
+      <h2>Reading the margin</h2>
+      <p>Margin is the incumbent's share minus the top challenger's, in percentage points. Bars run left
+      of the axis in <b>garnet</b> where the challenger finished ahead and right in <b>steel</b> where the
+      incumbent did. Same-party contests only; specials are marked <span class="flag">SP</span>.</p>
+    </div>
+  </section>
+
+</div>
+<script>window.__CHALLENGES__=[{"yr":1996,"ch":"House","d":"6th Bristol","p":"D","sp":0,"inc":"Albert R. Herren","ict":null,"iv":404,"ip":0.19630709426627793,"cha":"David B. Sullivan","cct":null,"cv":1630,"cp":0.7920310981535471,"wi":0,"m":-0.5957240038872692,"up":1,"nc":1,"tv":3244,"tm":2,"pvi":null},{"yr":2008,"ch":"Senate","d":"4th Middlesex","p":"D","sp":0,"inc":"Jim Marzilli","ict":"Arlington","iv":1293,"ip":0.05863413749319789,"cha":"Kenneth J. Donnelly","cct":"Arlington","cv":11982,"cp":0.5433520769091239,"wi":0,"m":-0.484717939415926,"up":1,"nc":2,"tv":23281,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"9th Hampden","p":"D","sp":0,"inc":"Christopher P. Asselin","ict":"Springfield","iv":594,"ip":0.15404564315352698,"cha":"Sean Curran","cct":"Springfield","cv":2047,"cp":0.5308609958506224,"wi":0,"m":-0.37681535269709543,"up":1,"nc":2,"tv":3888,"tm":2,"pvi":null},{"yr":1996,"ch":"House","d":"10th Middlesex","p":"D","sp":0,"inc":"Anthony M. Mandile","ict":null,"iv":1482,"ip":0.3372013651877133,"cha":"Peter J. Koutoujian","cct":null,"cv":2913,"cp":0.6627986348122867,"wi":0,"m":-0.3255972696245734,"up":1,"nc":1,"tv":4477,"tm":1,"pvi":null},{"yr":2012,"ch":"House","d":"5th Hampden","p":"D","sp":0,"inc":"Michael F. Kane","ict":"Holyoke","iv":999,"ip":0.3355727242190124,"cha":"Aaron Vega","cct":"Holyoke","cv":1947,"cp":0.6540141081625798,"wi":0,"m":-0.31844138394356736,"up":1,"nc":1,"tv":3534,"tm":6,"pvi":null},{"yr":1998,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Alvin E. Thompson","ict":null,"iv":1366,"ip":0.1920697412823397,"cha":"Jarrett T. Barrios","cct":null,"cv":3462,"cp":0.48678290213723285,"wi":0,"m":-0.2947131608548932,"up":1,"nc":3,"tv":7648,"tm":3,"pvi":null},{"yr":2002,"ch":"House","d":"1st Essex","p":"D","sp":0,"inc":"Paul E. Tirone","ict":null,"iv":2148,"ip":0.3710485403351183,"cha":"Michael A. Costello","cct":null,"cv":3631,"cp":0.6272240456037312,"wi":0,"m":-0.25617550526861294,"up":1,"nc":1,"tv":5994,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"4th Essex","p":"R","sp":0,"inc":"Forrester A. Clark, Jr.","ict":null,"iv":1659,"ip":0.3834065172174717,"cha":"Bradford R. Hill","cct":null,"cv":2667,"cp":0.6163623757799861,"wi":0,"m":-0.23295585856251438,"up":1,"nc":1,"tv":4528,"tm":2,"pvi":null},{"yr":2008,"ch":"House","d":"30th Middlesex","p":"D","sp":0,"inc":"Patrick Natale","ict":"Woburn","iv":2344,"ip":0.4028183536690153,"cha":"James J. Dwyer","cct":"Woburn","cv":3473,"cp":0.5968379446640316,"wi":0,"m":-0.1940195909950163,"up":1,"nc":1,"tv":5903,"tm":2,"pvi":null},{"yr":2024,"ch":"House","d":"2nd Plymouth","p":"R","sp":0,"inc":"Susan Williams Gifford","ict":"Wareham","iv":1258,"ip":0.40963855421686746,"cha":"John Robert Gaskey","cct":"Carver","cv":1811,"cp":0.5897101921198307,"wi":0,"m":-0.1800716379029632,"up":1,"nc":1,"tv":3121,"tm":11,"pvi":"R+2"},{"yr":2000,"ch":"House","d":"9th Hampden","p":"D","sp":0,"inc":"Jack Righty Keough","ict":null,"iv":1915,"ip":0.41253769926755707,"cha":"Christopher P. Asselin","cct":null,"cv":2720,"cp":0.5859543300301594,"wi":0,"m":-0.17341663076260233,"up":1,"nc":1,"tv":4729,"tm":1,"pvi":null},{"yr":2002,"ch":"House","d":"12th Bristol","p":"D","sp":0,"inc":"George Rogers","ict":null,"iv":1549,"ip":0.41561577676415346,"cha":"Mark A. Howland","cct":null,"cv":2163,"cp":0.5803595385028173,"wi":0,"m":-0.16474376173866384,"up":1,"nc":1,"tv":4001,"tm":2,"pvi":null},{"yr":2020,"ch":"House","d":"17th Middlesex","p":"D","sp":0,"inc":"David M. Nangle","ict":"Lowell","iv":1986,"ip":0.3194980694980695,"cha":"Vanna Howard","cct":"Lowell","cv":2724,"cp":0.43822393822393824,"wi":0,"m":-0.11872586872586871,"up":1,"nc":2,"tv":6519,"tm":11,"pvi":null},{"yr":2012,"ch":"House","d":"2nd Barnstable","p":"D","sp":0,"inc":"Demetrius J. Atsalis","ict":"Barnstable","iv":1624,"ip":0.4409448818897638,"cha":"Brian R. Mannal","cct":"Barnstable","cv":2058,"cp":0.5587836003258213,"wi":0,"m":-0.11783871843605753,"up":1,"nc":1,"tv":3741,"tm":7,"pvi":null},{"yr":2018,"ch":"House","d":"9th Suffolk","p":"D","sp":0,"inc":"Byron Rushing","ict":"Boston","iv":1761,"ip":0.37733019070066426,"cha":"Jon Santiago","cct":"Boston","cv":2236,"cp":0.479108635097493,"wi":0,"m":-0.10177844439682876,"up":1,"nc":2,"tv":5308,"tm":12,"pvi":null},{"yr":2000,"ch":"House","d":"5th Hampden","p":"D","sp":0,"inc":"Evelyn G. Chesky","ict":null,"iv":1798,"ip":0.4326275264677575,"cha":"Michael F. Kane","cct":null,"cv":2211,"cp":0.5320019249278152,"wi":0,"m":-0.09937439846005769,"up":1,"nc":2,"tv":4335,"tm":4,"pvi":null},{"yr":2004,"ch":"House","d":"12th Bristol","p":"D","sp":0,"inc":"Mark A. Howland","ict":"Freetown","iv":1021,"ip":0.34953782951044166,"cha":"Stephen R. Canessa","cct":"Lakeville","cv":1301,"cp":0.4453954125299555,"wi":0,"m":-0.09585758301951386,"up":1,"nc":2,"tv":2966,"tm":1,"pvi":null},{"yr":2012,"ch":"House","d":"21st Middlesex","p":"D","sp":0,"inc":"Charles A. Murphy","ict":"Burlington","iv":724,"ip":0.31491953023053504,"cha":"Kenneth I. Gordon","cct":"Bedford","cv":919,"cp":0.39973901696389735,"wi":1,"m":-0.08481948673336231,"up":1,"nc":2,"tv":2648,"tm":8,"pvi":null},{"yr":2014,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Wayne A. Matewsky","ict":"Everett","iv":1763,"ip":0.4570910033704952,"cha":"Joseph W. Mcgonagle, Jr","cct":"Everett","cv":2086,"cp":0.5408348457350273,"wi":0,"m":-0.08374384236453208,"up":1,"nc":1,"tv":4012,"tm":1,"pvi":null},{"yr":2008,"ch":"House","d":"5th Essex","p":"D","sp":0,"inc":"Anthony J. Verga","ict":"Gloucester","iv":3133,"ip":0.39563076145978027,"cha":"Ann-Margaret Ferrante","cct":"Gloucester","cv":3724,"cp":0.4702613966409901,"wi":0,"m":-0.07463063518120983,"up":1,"nc":2,"tv":8009,"tm":7,"pvi":null},{"yr":2024,"ch":"House","d":"18th Middlesex","p":"D","sp":0,"inc":"Rady Mom","ict":"Lowell","iv":1010,"ip":0.40159045725646125,"cha":"Tara Thorn Hong","cct":"Lowell","cv":1191,"cp":0.473558648111332,"wi":0,"m":-0.07196819085487077,"up":1,"nc":2,"tv":2616,"tm":5,"pvi":"D+16"},{"yr":1996,"ch":"House","d":"7th Norfolk","p":"D","sp":0,"inc":"M. Joseph Manning","ict":null,"iv":3662,"ip":0.46542958820538893,"cha":"Brian A. Joyce","cct":null,"cv":4205,"cp":0.534443314692425,"wi":0,"m":-0.06901372648703608,"up":1,"nc":1,"tv":7943,"tm":2,"pvi":null},{"yr":2010,"ch":"House","d":"6th Middlesex","p":"D","sp":0,"inc":"Pam Richardson","ict":"Framingham","iv":1678,"ip":0.46937062937062934,"cha":"Chris Walsh","cct":"Framingham","cv":1886,"cp":0.5275524475524476,"wi":0,"m":-0.05818181818181822,"up":1,"nc":1,"tv":3634,"tm":2,"pvi":null},{"yr":2022,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"Marcos A. Devers","ict":"Lawrence","iv":1350,"ip":0.4695652173913043,"cha":"Francisco E. Paulino","cct":"Methuen","cv":1511,"cp":0.5255652173913044,"wi":0,"m":-0.05600000000000005,"up":1,"nc":1,"tv":3019,"tm":6,"pvi":null},{"yr":2012,"ch":"House","d":"14th Essex","p":"D","sp":0,"inc":"David M. Torrisi","ict":"North Andover","iv":1438,"ip":0.4722495894909688,"cha":"Diana DiZoglio","cct":"Methuen","cv":1602,"cp":0.5261083743842364,"wi":0,"m":-0.05385878489326762,"up":1,"nc":1,"tv":3119,"tm":7,"pvi":null},{"yr":2020,"ch":"Senate","d":"Hampden","p":"D","sp":0,"inc":"James T. Welch","ict":"West Springfield","iv":10397,"ip":0.4730639730639731,"cha":"Adam Gomez","cct":"Springfield","cv":11522,"cp":0.5242515242515242,"wi":0,"m":-0.05118755118755114,"up":1,"nc":1,"tv":23172,"tm":5,"pvi":null},{"yr":2000,"ch":"House","d":"15th Norfolk","p":"D","sp":0,"inc":"Ronny M. Sydney","ict":null,"iv":2336,"ip":0.4813517411910158,"cha":"Frank Israel Smizik","cct":null,"cv":2517,"cp":0.5186482588089841,"wi":0,"m":-0.03729651761796832,"up":1,"nc":1,"tv":4939,"tm":1,"pvi":null},{"yr":2002,"ch":"House","d":"11th Norfolk","p":"D","sp":0,"inc":"Maryanne Lewis","ict":null,"iv":4362,"ip":0.48547579298831384,"cha":"Robert K. Coughlin","cct":null,"cv":4618,"cp":0.5139677239844185,"wi":0,"m":-0.028491930996104642,"up":1,"nc":1,"tv":9287,"tm":4,"pvi":null},{"yr":2004,"ch":"House","d":"34th Middlesex","p":"D","sp":0,"inc":"Vincent Paul Ciampa","ict":"Somerville","iv":2218,"ip":0.48930068387381426,"cha":"Carl M. Sciortino, Jr.","cct":"Somerville","cv":2311,"cp":0.5098168983013457,"wi":0,"m":-0.020516214427531432,"up":1,"nc":1,"tv":4622,"tm":6,"pvi":null},{"yr":1996,"ch":"House","d":"4th Essex","p":"R","sp":0,"inc":"James D. Colt","ict":null,"iv":1408,"ip":0.4893986791797011,"cha":"Forrester A. Clark, Jr.","cct":null,"cv":1466,"cp":0.5095585679527286,"wi":0,"m":-0.02015988877302749,"up":1,"nc":1,"tv":2933,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"M. Paul Iannuccillo","ict":null,"iv":1268,"ip":0.4905222437137331,"cha":"Jose L. Santiago","cct":null,"cv":1317,"cp":0.5094777562862669,"wi":0,"m":-0.018955512572533806,"up":1,"nc":1,"tv":2860,"tm":3,"pvi":null},{"yr":2008,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Dianne Wilkerson","ict":"Boston","iv":8858,"ip":0.49364690147124385,"cha":"Sonia Rosa Chang-Diaz","cct":"Boston","cv":9071,"cp":0.5055171645118145,"wi":0,"m":-0.01187026304057065,"up":1,"nc":1,"tv":18388,"tm":8,"pvi":null},{"yr":2018,"ch":"House","d":"11th Bristol","p":"D","sp":0,"inc":"Robert M. Koczera","ict":"New Bedford","iv":1022,"ip":0.4939584340260996,"cha":"Christopher Hendricks","cct":"New Bedford","cv":1046,"cp":0.5055582406959884,"wi":0,"m":-0.011599806669888801,"up":1,"nc":1,"tv":2141,"tm":13,"pvi":null},{"yr":2012,"ch":"House","d":"7th Bristol","p":"D","sp":0,"inc":"Kevin Aguiar","ict":"Fall River","iv":2127,"ip":0.49661452253093624,"cha":"Alan Silvia","cct":"Fall River","cv":2153,"cp":0.5026850338547747,"wi":0,"m":-0.006070511323838457,"up":1,"nc":1,"tv":4400,"tm":3,"pvi":null},{"yr":1998,"ch":"House","d":"15th Norfolk","p":"D","sp":0,"inc":"John A. Businger","ict":null,"iv":2943,"ip":0.497044418172606,"cha":"Ronny M. Sydney","cct":null,"cv":2978,"cp":0.502955581827394,"wi":0,"m":-0.005911163654787999,"up":1,"nc":1,"tv":6174,"tm":3,"pvi":null},{"yr":2024,"ch":"House","d":"25th Middlesex","p":"D","sp":0,"inc":"Marjorie C. Decker","ict":"Cambridge","iv":3471,"ip":0.5027520278099652,"cha":"Evan Mackay","cct":"Cambridge","cv":3430,"cp":0.49681344148319817,"wi":0,"m":0.005938586326767026,"up":0,"nc":1,"tv":7034,"tm":6,"pvi":"D+44"},{"yr":2022,"ch":"House","d":"35th Middlesex","p":"D","sp":0,"inc":"Paul J. Donato, Sr.","ict":"Medford","iv":3036,"ip":0.5039840637450199,"cha":"Nichole Dawn Mossalam","cct":"Malden","cv":2986,"cp":0.4956839309428951,"wi":0,"m":0.008300132802124827,"up":0,"nc":1,"tv":6137,"tm":11,"pvi":null},{"yr":2004,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Edward G. Connolly","ict":"Everett","iv":2736,"ip":0.5056366660506376,"cha":"Stephen Stat Smith","cct":"Everett","cv":2669,"cp":0.49325448161153207,"wi":0,"m":0.012382184439105548,"up":0,"nc":1,"tv":5470,"tm":7,"pvi":null},{"yr":2010,"ch":"Senate","d":"Middlesex, Suffolk and Essex","p":"D","sp":0,"inc":"Sal N. DiDomenico","ict":"Everett","iv":7014,"ip":0.5059145989613387,"cha":"Timothy Flaherty","cct":"Cambridge","cv":6829,"cp":0.4925706866705136,"wi":0,"m":0.0133439122908251,"up":0,"nc":1,"tv":14786,"tm":1,"pvi":null},{"yr":1996,"ch":"House","d":"37th Middlesex","p":"D","sp":0,"inc":"Vincent Paul Ciampa","ict":null,"iv":1498,"ip":0.41866964784795974,"cha":"Joshua C. O'Brien","cct":null,"cv":1447,"cp":0.4044158747903857,"wi":0,"m":0.014253773057574026,"up":0,"nc":2,"tv":3660,"tm":2,"pvi":null},{"yr":2022,"ch":"House","d":"18th Middlesex","p":"D","sp":0,"inc":"Rady Mom","ict":"Lowell","iv":1030,"ip":0.4357021996615905,"cha":"Tara Thorn Hong","cct":"Lowell","cv":974,"cp":0.4120135363790186,"wi":0,"m":0.02368866328257191,"up":0,"nc":2,"tv":2447,"tm":4,"pvi":null},{"yr":2008,"ch":"House","d":"6th Middlesex","p":"D","sp":0,"inc":"Pam Richardson","ict":"Framingham","iv":1779,"ip":0.3781887755102041,"cha":"Chris Walsh","cct":"Framingham","cv":1641,"cp":0.34885204081632654,"wi":0,"m":0.029336734693877542,"up":0,"nc":2,"tv":4776,"tm":1,"pvi":null},{"yr":2018,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Joseph W. Mcgonagle, Jr","ict":"Everett","iv":1974,"ip":0.4222459893048128,"cha":"Gerly Adrien","cct":"Everett","cv":1802,"cp":0.38545454545454544,"wi":0,"m":0.036791443850267336,"up":0,"nc":2,"tv":4784,"tm":2,"pvi":null},{"yr":2000,"ch":"House","d":"12th Bristol","p":"D","sp":0,"inc":"George Rogers","ict":null,"iv":1834,"ip":0.5234018264840182,"cha":"Paul Koczera","cct":null,"cv":1664,"cp":0.4748858447488584,"wi":0,"m":0.04851598173515981,"up":0,"nc":1,"tv":3569,"tm":1,"pvi":null},{"yr":2010,"ch":"House","d":"10th Plymouth","p":"D","sp":0,"inc":"Christine E. Canavan","ict":"Brockton","iv":1477,"ip":0.5237588652482269,"cha":"Matthew P. Albanese","cct":"West Bridgewater","cv":1340,"cp":0.475177304964539,"wi":0,"m":0.048581560283687875,"up":0,"nc":1,"tv":2933,"tm":9,"pvi":null},{"yr":1996,"ch":"House","d":"5th Plymouth","p":"D","sp":0,"inc":"Janet W. O'Brien","ict":null,"iv":2300,"ip":0.5246350364963503,"cha":"Robert J. Nyman","cct":null,"cv":2082,"cp":0.4749087591240876,"wi":0,"m":0.04972627737226276,"up":0,"nc":1,"tv":4465,"tm":2,"pvi":null},{"yr":1998,"ch":"House","d":"37th Middlesex","p":"D","sp":0,"inc":"Vincent Paul Ciampa","ict":null,"iv":2917,"ip":0.5256803027572535,"cha":"Joshua C. O'Brien","cct":null,"cv":2627,"cp":0.4734186339881059,"wi":0,"m":0.05226166876914762,"up":0,"nc":1,"tv":6018,"tm":3,"pvi":null},{"yr":2020,"ch":"House","d":"10th Middlesex","p":"D","sp":0,"inc":"John J. Lawn, Jr.","ict":"Watertown","iv":4133,"ip":0.5271011350593037,"cha":"Alison Leary","cct":"Newton","cv":3702,"cp":0.4721336564213749,"wi":0,"m":0.05496747863792878,"up":0,"nc":1,"tv":8392,"tm":5,"pvi":null},{"yr":2006,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Dianne Wilkerson","ict":"Boston","iv":6478,"ip":0.4998071136486382,"cha":"Sonia Rosa Chang-Diaz","cct":"Boston","cv":5711,"cp":0.4406295810508448,"wi":1,"m":0.0591775325977934,"up":0,"nc":3,"tv":25606,"tm":7,"pvi":null},{"yr":2022,"ch":"House","d":"9th Middlesex","p":"D","sp":0,"inc":"Thomas M. Stanley","ict":"Waltham","iv":2643,"ip":0.5298716920609463,"cha":"Heather A. May","cct":"Waltham","cv":2343,"cp":0.4697273456295109,"wi":0,"m":0.0601443464314354,"up":0,"nc":1,"tv":5161,"tm":11,"pvi":"D+18"},{"yr":2018,"ch":"House","d":"12th Suffolk","p":"D","sp":0,"inc":"Dan Cullinane","ict":"Boston","iv":3667,"ip":0.5273224043715847,"cha":"Jovan J. Lacet","cct":"Boston","cv":3247,"cp":0.4669255104975554,"wi":0,"m":0.060396893874029356,"up":0,"nc":1,"tv":7701,"tm":3,"pvi":null},{"yr":2018,"ch":"House","d":"18th Middlesex","p":"D","sp":0,"inc":"Rady Mom","ict":"Lowell","iv":1315,"ip":0.34936238044633366,"cha":"Rithy Uong","cct":"Lowell","cv":1077,"cp":0.2861317747077577,"wi":0,"m":0.06323060573857597,"up":0,"nc":3,"tv":4092,"tm":2,"pvi":null},{"yr":2014,"ch":"House","d":"16th Worcester","p":"D","sp":0,"inc":"Daniel M. Donahue","ict":"Worcester","iv":1679,"ip":0.5314973092750871,"cha":"Joshua Perro","cct":"Worcester","cv":1474,"cp":0.4666033554922443,"wi":0,"m":0.0648939537828428,"up":0,"nc":1,"tv":3222,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"33rd Middlesex","p":"D","sp":0,"inc":"Carol A. Donovan","ict":null,"iv":2920,"ip":0.5324580598103574,"cha":"Scott Galvin","cct":null,"cv":2564,"cp":0.4675419401896426,"wi":0,"m":0.06491611962071481,"up":0,"nc":1,"tv":5722,"tm":3,"pvi":null},{"yr":2024,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Bud L. Williams","ict":"Springfield","iv":1768,"ip":0.5355952741593456,"cha":"Johnnie Rs McKnight","cct":"Springfield","cv":1523,"cp":0.4613753408058165,"wi":0,"m":0.07421993335352911,"up":0,"nc":1,"tv":3403,"tm":4,"pvi":"D+26"},{"yr":2016,"ch":"House","d":"3rd Berkshire","p":"D","sp":0,"inc":"Tricia Farley-Bouvier","ict":"Pittsfield","iv":2692,"ip":0.537432621281693,"cha":"Michael E. Bloomberg","cct":"Pittsfield","cv":2309,"cp":0.4609702535436215,"wi":0,"m":0.07646236773807152,"up":0,"nc":1,"tv":5061,"tm":3,"pvi":null},{"yr":2010,"ch":"House","d":"7th Bristol","p":"D","sp":0,"inc":"Kevin Aguiar","ict":"Fall River","iv":1969,"ip":0.5379781420765027,"cha":"Alan Silvia","cct":"Fall River","cv":1689,"cp":0.4614754098360655,"wi":0,"m":0.07650273224043724,"up":0,"nc":1,"tv":3887,"tm":2,"pvi":null},{"yr":2020,"ch":"House","d":"17th Suffolk","p":"D","sp":0,"inc":"Kevin G. Honan","ict":"Boston","iv":4409,"ip":0.5398555161013836,"cha":"Jordan Cameron Meehan","cct":"Boston","cv":3754,"cp":0.4596547079711032,"wi":0,"m":0.08020080813028041,"up":0,"nc":1,"tv":8457,"tm":13,"pvi":null},{"yr":2002,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"Jose L. Santiago","ict":null,"iv":1026,"ip":0.421875,"cha":"Patrick J. Blanchette","cct":null,"cv":825,"cp":0.3392269736842105,"wi":0,"m":0.08264802631578949,"up":0,"nc":2,"tv":2748,"tm":2,"pvi":null},{"yr":2004,"ch":"House","d":"26th Middlesex","p":"D","sp":0,"inc":"Timothy J. Toomey, Jr.","ict":"Cambridge","iv":3183,"ip":0.542896128261982,"cha":"Avi E. Green","cct":"Cambridge","cv":2676,"cp":0.45642162715333445,"wi":0,"m":0.08647450110864752,"up":0,"nc":1,"tv":5923,"tm":6,"pvi":null},{"yr":2008,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Stephen Stat Smith","ict":"Everett","iv":3132,"ip":0.5446009389671361,"cha":"Wayne A. Matewsky","cct":"Everett","cv":2609,"cp":0.453660233002956,"wi":0,"m":0.09094070596418014,"up":0,"nc":1,"tv":5897,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"27th Middlesex","p":"D","sp":0,"inc":"Alice K. Wolf","ict":null,"iv":5289,"ip":0.5453701794184368,"cha":"Anthony D. Galluccio","cct":null,"cv":4405,"cp":0.454217364405032,"wi":0,"m":0.09115281501340478,"up":0,"nc":1,"tv":9980,"tm":1,"pvi":null},{"yr":2008,"ch":"House","d":"34th Middlesex","p":"D","sp":0,"inc":"Carl M. Sciortino, Jr.","ict":"Medford","iv":2678,"ip":0.5451954397394136,"cha":"Robert C. Trane","cct":"Somerville","cv":2218,"cp":0.4515472312703583,"wi":0,"m":0.09364820846905536,"up":0,"nc":1,"tv":5313,"tm":2,"pvi":null},{"yr":2010,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Stephen Stat Smith","ict":"Everett","iv":2500,"ip":0.547645125958379,"cha":"John F. Hanlon","cct":"Everett","cv":2051,"cp":0.4492880613362541,"wi":0,"m":0.0983570646221249,"up":0,"nc":1,"tv":4861,"tm":2,"pvi":null},{"yr":1996,"ch":"House","d":"11th Bristol","p":"D","sp":0,"inc":"Robert M. Koczera","ict":null,"iv":2426,"ip":0.5501133786848073,"cha":"David J. Gerwatowski","cct":null,"cv":1984,"cp":0.44988662131519275,"wi":0,"m":0.1002267573696145,"up":0,"nc":1,"tv":4509,"tm":2,"pvi":null},{"yr":1998,"ch":"House","d":"5th Hampden","p":"D","sp":0,"inc":"Evelyn G. Chesky","ict":null,"iv":2234,"ip":0.5494343334972946,"cha":"John P. Barrett, III","cct":null,"cv":1825,"cp":0.4488440727988195,"wi":0,"m":0.10059026069847515,"up":0,"nc":1,"tv":4285,"tm":3,"pvi":null},{"yr":2010,"ch":"House","d":"9th Essex","p":"D","sp":0,"inc":"Mark V. Falzone","ict":"Saugus","iv":2725,"ip":0.5492844184640193,"cha":"Anthony V. Guardia","cct":"Wakefield","cv":2202,"cp":0.44386212457165897,"wi":0,"m":0.10542229389236035,"up":0,"nc":1,"tv":5096,"tm":5,"pvi":null},{"yr":1996,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Alvin E. Thompson","ict":null,"iv":877,"ip":0.3075035063113605,"cha":"David Hoicka","cct":null,"cv":568,"cp":0.19915848527349228,"wi":0,"m":0.1083450210378682,"up":0,"nc":4,"tv":3035,"tm":2,"pvi":null},{"yr":2018,"ch":"Senate","d":"5th Middlesex","p":"D","sp":0,"inc":"Jason M. Lewis","ict":"Winchester","iv":9647,"ip":0.5540750100511171,"cha":"Samantha Hammar","cct":"Melrose","cv":7734,"cp":0.44420194130147606,"wi":0,"m":0.10987306874964109,"up":0,"nc":1,"tv":18801,"tm":3,"pvi":null},{"yr":2008,"ch":"House","d":"15th Essex","p":"D","sp":0,"inc":"Linda Dean Campbell","ict":"Methuen","iv":2482,"ip":0.5555058191584602,"cha":"Christopher DiBella","cct":"Methuen","cv":1982,"cp":0.4435989256938227,"wi":0,"m":0.1119068934646375,"up":0,"nc":1,"tv":4524,"tm":1,"pvi":null},{"yr":2020,"ch":"House","d":"35th Middlesex","p":"D","sp":0,"inc":"Paul J. Donato, Sr.","ict":"Medford","iv":5250,"ip":0.5556731583403896,"cha":"Nichole Dawn Mossalam","cct":"Malden","cv":4188,"cp":0.443268416596105,"wi":0,"m":0.11240474174428455,"up":0,"nc":1,"tv":9880,"tm":10,"pvi":null},{"yr":2020,"ch":"House","d":"4th Middlesex","p":"D","sp":0,"inc":"Danielle W. Gregoire","ict":"Marlborough","iv":4187,"ip":0.5593107133315522,"cha":"Jeanne M. Cahill","cct":"Northborough","cv":3292,"cp":0.439754207854662,"wi":0,"m":0.11955650547689023,"up":0,"nc":1,"tv":7990,"tm":5,"pvi":null},{"yr":2020,"ch":"House","d":"24th Middlesex","p":"D","sp":0,"inc":"David M. Rogers","ict":"Cambridge","iv":7591,"ip":0.5601387249114522,"cha":"Jennifer A. Fries","cct":"Cambridge","cv":5950,"cp":0.4390495867768595,"wi":0,"m":0.12108913813459271,"up":0,"nc":1,"tv":14956,"tm":4,"pvi":null},{"yr":2008,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"William Lantigua","ict":"Lawrence","iv":1785,"ip":0.5614973262032086,"cha":"Marcos A. Devers","cct":"Lawrence","cv":1386,"cp":0.4359861591695502,"wi":0,"m":0.1255111670336584,"up":0,"nc":1,"tv":3223,"tm":3,"pvi":null},{"yr":1998,"ch":"Senate","d":"Suffolk and Norfolk","p":"D","sp":0,"inc":"Brian A. Joyce","ict":null,"iv":13965,"ip":0.5221731977265929,"cha":"Maureen E. Feeney","cct":null,"cv":10505,"cp":0.3927983846844152,"wi":0,"m":0.12937481304217768,"up":0,"nc":2,"tv":28685,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"16th Worcester","p":"D","sp":0,"inc":"John P. Fresolo","ict":"Worcester","iv":2708,"ip":0.5644018340975406,"cha":"Melissa J. Murgo","cct":"Worcester","cv":2087,"cp":0.43497290537724054,"wi":0,"m":0.1294289287203001,"up":0,"nc":1,"tv":4859,"tm":3,"pvi":null},{"yr":2018,"ch":"House","d":"14th Suffolk","p":"D","sp":0,"inc":"Angelo M. Scaccia","ict":"Boston","iv":2787,"ip":0.39492702281422704,"cha":"Gretchen Van Ness","cct":"Boston","cv":1851,"cp":0.262292758962732,"wi":0,"m":0.13263426385149502,"up":0,"nc":4,"tv":7781,"tm":13,"pvi":null},{"yr":2012,"ch":"House","d":"2nd Franklin","p":"D","sp":0,"inc":"Denise Andrews","ict":"Orange","iv":1657,"ip":0.47793481396019616,"cha":"Rebecca J. Bialecki","cct":"Orange","cv":1174,"cp":0.3386212864147678,"wi":0,"m":0.13931352754542836,"up":0,"nc":3,"tv":3537,"tm":1,"pvi":null},{"yr":2020,"ch":"Senate","d":"2nd Plymouth and Bristol","p":"D","sp":0,"inc":"Michael D. Brady","ict":"Brockton","iv":14736,"ip":0.5714507309884825,"cha":"Moises M. Rodrigues","cct":"Brockton","cv":11037,"cp":0.4280063597936945,"wi":0,"m":0.14344437119478803,"up":0,"nc":1,"tv":27358,"tm":3,"pvi":null},{"yr":1996,"ch":"House","d":"38th Middlesex","p":"D","sp":0,"inc":"Anthony P. Giglio","ict":null,"iv":1769,"ip":0.5307530753075308,"cha":"Sabino Cataldo","cct":null,"cv":1276,"cp":0.38283828382838286,"wi":0,"m":0.14791479147914793,"up":0,"nc":2,"tv":3529,"tm":2,"pvi":null},{"yr":2024,"ch":"House","d":"9th Middlesex","p":"D","sp":0,"inc":"Thomas M. Stanley","ict":"Waltham","iv":2748,"ip":0.5736951983298538,"cha":"Heather A. May","cct":"Waltham","cv":2038,"cp":0.4254697286012526,"wi":0,"m":0.14822546972860123,"up":0,"nc":1,"tv":4881,"tm":12,"pvi":"D+19"},{"yr":2020,"ch":"House","d":"2nd Suffolk","p":"D","sp":0,"inc":"Daniel Joseph Ryan","ict":"Boston","iv":4397,"ip":0.5743958197256694,"cha":"Damali Vidot","cct":"Chelsea","cv":3246,"cp":0.4240365774003919,"wi":0,"m":0.15035924232527753,"up":0,"nc":1,"tv":8154,"tm":4,"pvi":null},{"yr":2020,"ch":"House","d":"10th Plymouth","p":"D","sp":0,"inc":"Michelle M. Dubois","ict":"Brockton","iv":4100,"ip":0.5797511312217195,"cha":"John F. Lally","cct":"Brockton","cv":2963,"cp":0.4189762443438914,"wi":0,"m":0.1607748868778281,"up":0,"nc":1,"tv":7451,"tm":3,"pvi":null},{"yr":2020,"ch":"House","d":"34th Middlesex","p":"D","sp":0,"inc":"Christine P. Barber","ict":"Somerville","iv":6051,"ip":0.5797643000862317,"cha":"Anna Callahan","cct":"Somerville","cv":4370,"cp":0.41870269234454344,"wi":0,"m":0.16106160774168826,"up":0,"nc":1,"tv":11245,"tm":3,"pvi":null},{"yr":2004,"ch":"House","d":"12th Essex","p":"D","sp":0,"inc":"Joyce A. Spiliotis","ict":"Peabody","iv":2670,"ip":0.4771265189421015,"cha":"Anne M. Manning","cct":"Peabody","cv":1749,"cp":0.3125446747676912,"wi":0,"m":0.1645818441744103,"up":0,"nc":2,"tv":5637,"tm":1,"pvi":null},{"yr":2018,"ch":"Senate","d":"Hampden","p":"D","sp":0,"inc":"James T. Welch","ict":"West Springfield","iv":5909,"ip":0.5824544110399211,"cha":"Amaad Isiah Rivera","cct":"Springfield","cv":4198,"cp":0.41379990142927553,"wi":0,"m":0.1686545096106456,"up":0,"nc":1,"tv":11074,"tm":4,"pvi":null},{"yr":1998,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Charlotte Golar Richie","ict":null,"iv":1218,"ip":0.5847335573691791,"cha":"Althea Garrison","cct":null,"cv":865,"cp":0.4152664426308209,"wi":0,"m":0.16946711473835818,"up":0,"nc":1,"tv":2502,"tm":2,"pvi":null},{"yr":2002,"ch":"House","d":"7th Essex","p":"D","sp":0,"inc":"J. Michael Ruane","ict":null,"iv":4005,"ip":0.5861261524952437,"cha":"Heather B. Pickard","cct":null,"cv":2827,"cp":0.4137274989023854,"wi":0,"m":0.17239865359285828,"up":0,"nc":1,"tv":7151,"tm":5,"pvi":null},{"yr":2002,"ch":"House","d":"6th Bristol","p":"D","sp":0,"inc":"David B. Sullivan","ict":null,"iv":3217,"ip":0.590166941845533,"cha":"Joseph D. Camara","cct":null,"cv":2226,"cp":0.40836543753439736,"wi":0,"m":0.18180150431113562,"up":0,"nc":1,"tv":5646,"tm":3,"pvi":null},{"yr":2004,"ch":"House","d":"9th Essex","p":"D","sp":0,"inc":"Mark V. Falzone","ict":"Saugus","iv":2437,"ip":0.5906446921958313,"cha":"Debra C. Panetta","cct":"Saugus","cv":1677,"cp":0.4064469219583131,"wi":0,"m":0.18419777023751815,"up":0,"nc":1,"tv":4173,"tm":2,"pvi":null},{"yr":2024,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"Francisco E. Paulino","ict":"Methuen","iv":1581,"ip":0.589265747297801,"cha":"Marcos A. Devers","cct":"Lawrence","cv":1082,"cp":0.40327991054789414,"wi":0,"m":0.18598583674990687,"up":0,"nc":1,"tv":2747,"tm":1,"pvi":"D+11"},{"yr":2002,"ch":"House","d":"9th Essex","p":"D","sp":0,"inc":"Mark V. Falzone","ict":null,"iv":4359,"ip":0.5929805468643722,"cha":"Stephen P. Maio","cct":null,"cv":2974,"cp":0.40457080669296697,"wi":0,"m":0.18840974017140522,"up":0,"nc":1,"tv":7660,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"25th Middlesex","p":"D","sp":0,"inc":"Jim Marzilli","ict":null,"iv":5138,"ip":0.594744762125246,"cha":"Michael J. Keefe","cct":null,"cv":3499,"cp":0.4050237295983331,"wi":0,"m":0.18972103252691286,"up":0,"nc":1,"tv":8975,"tm":3,"pvi":null},{"yr":2024,"ch":"House","d":"35th Middlesex","p":"D","sp":0,"inc":"Paul J. Donato, Sr.","ict":"Medford","iv":3278,"ip":0.5459693537641572,"cha":"Nichole Dawn Mossalam","cct":"Malden","cv":2137,"cp":0.35592938041305794,"wi":0,"m":0.1900399733510993,"up":0,"nc":2,"tv":6109,"tm":12,"pvi":"D+21"},{"yr":2014,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":"Springfield","iv":1477,"ip":0.5941271118262269,"cha":"Larry Lawson","cct":"Springfield","cv":1001,"cp":0.4026548672566372,"wi":0,"m":0.19147224456958972,"up":0,"nc":1,"tv":2773,"tm":11,"pvi":null},{"yr":2014,"ch":"House","d":"7th Suffolk","p":"D","sp":0,"inc":"Gloria L. Fox","ict":"Boston","iv":1027,"ip":0.4951783992285439,"cha":"Rufus J. Faulk","cct":"Boston","cv":629,"cp":0.30327868852459017,"wi":0,"m":0.19189971070395373,"up":0,"nc":2,"tv":2260,"tm":11,"pvi":null},{"yr":2014,"ch":"House","d":"14th Essex","p":"D","sp":0,"inc":"Diana DiZoglio","ict":"Methuen","iv":1973,"ip":0.5349783080260304,"cha":"Phil Decologero","cct":"North Andover","cv":1247,"cp":0.3381236442516269,"wi":0,"m":0.19685466377440353,"up":0,"nc":2,"tv":3868,"tm":1,"pvi":null},{"yr":2002,"ch":"House","d":"8th Suffolk","p":"D","sp":0,"inc":"Paul C. Demakis","ict":null,"iv":3048,"ip":0.5998819130092502,"cha":"Marjorie C. Decker","cct":null,"cv":2031,"cp":0.3997244636882503,"wi":0,"m":0.20015744932099988,"up":0,"nc":1,"tv":5401,"tm":4,"pvi":null},{"yr":1998,"ch":"House","d":"6th Bristol","p":"D","sp":0,"inc":"David B. Sullivan","ict":null,"iv":3367,"ip":0.6022178501162583,"cha":"Bradford L. Kilby","cct":null,"cv":2224,"cp":0.3977821498837417,"wi":0,"m":0.20443570023251656,"up":0,"nc":1,"tv":5602,"tm":1,"pvi":null},{"yr":2014,"ch":"House","d":"15th Worcester","p":"D","sp":0,"inc":"Mary S. Keefe","ict":"Worcester","iv":1343,"ip":0.5654736842105264,"cha":"Philip P. Palmieri","cct":"Worcester","cv":846,"cp":0.3562105263157895,"wi":0,"m":0.20926315789473687,"up":0,"nc":2,"tv":2446,"tm":1,"pvi":null},{"yr":2006,"ch":"Senate","d":"4th Middlesex","p":"D","sp":0,"inc":"Robert A. Havern, III","ict":"Arlington","iv":15722,"ip":0.6029530201342281,"cha":"Joanna Gonsalves","cct":"Woburn","cv":10244,"cp":0.3928667305848514,"wi":0,"m":0.21008628954937675,"up":0,"nc":1,"tv":29308,"tm":8,"pvi":null},{"yr":2008,"ch":"House","d":"22nd Middlesex","p":"D","sp":0,"inc":"William G. Greene, Jr.","ict":"Billerica","iv":2619,"ip":0.6047102285846225,"cha":"James F. O'Donnell, Jr.","cct":"Billerica","cv":1709,"cp":0.39459709074116833,"wi":0,"m":0.2101131378434542,"up":0,"nc":1,"tv":4428,"tm":8,"pvi":null},{"yr":2022,"ch":"Senate","d":"Norfolk, Plymouth & Bristol","p":"D","sp":0,"inc":"Walter F. Timilty, Jr.","ict":"Milton","iv":10732,"ip":0.6045515998197386,"cha":"Kathleen Crogan-Camara","cct":"Randolph","cv":7002,"cp":0.3944344299233889,"wi":0,"m":0.2101171698963497,"up":0,"nc":1,"tv":18735,"tm":3,"pvi":"D+11"},{"yr":2020,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Joseph W. Mcgonagle, Jr","ict":"Everett","iv":3464,"ip":0.6054885509526307,"cha":"Michael J. McLaughlin","cct":"Everett","cv":2229,"cp":0.3896171997902465,"wi":0,"m":0.21587135116238415,"up":0,"nc":1,"tv":6032,"tm":3,"pvi":null},{"yr":2012,"ch":"Senate","d":"Hampden","p":"D","sp":0,"inc":"James T. Welch","ict":"West Springfield","iv":6224,"ip":0.6114549562825425,"cha":"Melvin A. Edwards","cct":"Springfield","cv":3936,"cp":0.3866784556439729,"wi":0,"m":0.22477650063856963,"up":0,"nc":1,"tv":11042,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"22nd Middlesex","p":"D","sp":0,"inc":"William G. Greene, Jr.","ict":"Billerica","iv":1743,"ip":0.6133004926108374,"cha":"Evelyn M. Haines","cct":"Billerica","cv":1095,"cp":0.3852920478536242,"wi":0,"m":0.2280084447572132,"up":0,"nc":1,"tv":2865,"tm":6,"pvi":null},{"yr":2000,"ch":"Senate","d":"1st Bristol","p":"D","sp":0,"inc":"Joan M. Menard","ict":null,"iv":10505,"ip":0.6142197275331813,"cha":"John Barry McDonald","cct":null,"cv":6594,"cp":0.38554639536923346,"wi":0,"m":0.22867333216394786,"up":0,"nc":1,"tv":17527,"tm":1,"pvi":null},{"yr":2020,"ch":"House","d":"5th Norfolk","p":"D","sp":0,"inc":"Mark J. Cusack","ict":"Braintree","iv":5354,"ip":0.6142726021110602,"cha":"Paul C. Hennessy","cct":"Braintree","cv":3342,"cp":0.38343276732446074,"wi":0,"m":0.23083983478659942,"up":0,"nc":1,"tv":9765,"tm":5,"pvi":null},{"yr":2022,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Joseph W. Mcgonagle, Jr","ict":"Everett","iv":1661,"ip":0.6163265306122448,"cha":"Guerline Alcy","cct":"Everett","cv":1028,"cp":0.38144712430426714,"wi":0,"m":0.2348794063079777,"up":0,"nc":1,"tv":2791,"tm":4,"pvi":null},{"yr":2022,"ch":"House","d":"6th Norfolk","p":"D","sp":0,"inc":"William C. Galvin","ict":"Canton","iv":3034,"ip":0.6191836734693877,"cha":"Tamisha L. Civil","cct":"Stoughton","cv":1863,"cp":0.380204081632653,"wi":0,"m":0.23897959183673473,"up":0,"nc":1,"tv":5013,"tm":15,"pvi":"D+12"},{"yr":2014,"ch":"House","d":"9th Bristol","p":"D","sp":0,"inc":"Christopher M. Markey","ict":"Dartmouth","iv":1924,"ip":0.6228552929750728,"cha":"Alan D. Garcia","cct":"Dartmouth","cv":1161,"cp":0.3758497895759146,"wi":0,"m":0.24700550339915822,"up":0,"nc":1,"tv":3275,"tm":2,"pvi":null},{"yr":2022,"ch":"House","d":"15th Norfolk","p":"D","sp":0,"inc":"Tommy Vitolo","ict":"Brookline","iv":4796,"ip":0.6266004703423047,"cha":"Raul Fernandez","cct":"Brookline","cv":2850,"cp":0.3723543245361902,"wi":0,"m":0.2542461458061145,"up":0,"nc":1,"tv":7881,"tm":2,"pvi":null},{"yr":2002,"ch":"House","d":"7th Norfolk","p":"D","sp":0,"inc":"Walter F. Timilty, Jr.","ict":null,"iv":5120,"ip":0.6284521909905487,"cha":"Joseph P. McEttrick","cct":null,"cv":3022,"cp":0.3709340861666871,"wi":0,"m":0.2575181048238616,"up":0,"nc":1,"tv":8656,"tm":2,"pvi":null},{"yr":1996,"ch":"House","d":"3rd Worcester","p":"D","sp":0,"inc":"Emile J. Goguen","ict":null,"iv":2016,"ip":0.631974921630094,"cha":"Luke A. Conry","cct":null,"cv":1174,"cp":0.36802507836990594,"wi":0,"m":0.2639498432601881,"up":0,"nc":1,"tv":3766,"tm":2,"pvi":null},{"yr":2008,"ch":"House","d":"35th Middlesex","p":"D","sp":0,"inc":"Paul J. Donato, Sr.","ict":"Medford","iv":3458,"ip":0.5965154390201829,"cha":"Patrick William McCabe","cct":"Medford","cv":1869,"cp":0.3224081421424875,"wi":0,"m":0.2741072968776954,"up":0,"nc":2,"tv":5877,"tm":4,"pvi":null},{"yr":2022,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Bud L. Williams","ict":"Springfield","iv":1798,"ip":0.6375886524822695,"cha":"Jynai McDonald","cct":"Springfield","cv":1015,"cp":0.3599290780141844,"wi":0,"m":0.2776595744680851,"up":0,"nc":1,"tv":2920,"tm":3,"pvi":"D+29"},{"yr":2010,"ch":"House","d":"3rd Hampden","p":"D","sp":0,"inc":"Rosemary Sandlin","ict":"Agawam","iv":2101,"ip":0.6358958837772397,"cha":"Mark Del A. Negro","cct":"Agawam","cv":1183,"cp":0.3580508474576271,"wi":0,"m":0.2778450363196126,"up":0,"nc":1,"tv":3443,"tm":2,"pvi":null},{"yr":1998,"ch":"House","d":"12th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":null,"iv":1386,"ip":0.6226415094339622,"cha":"Morris Jones","cct":null,"cv":765,"cp":0.3436657681940701,"wi":0,"m":0.27897574123989216,"up":0,"nc":2,"tv":2314,"tm":3,"pvi":null},{"yr":2004,"ch":"House","d":"36th Middlesex","p":"D","sp":0,"inc":"Colleen M. Garry","ict":"Dracut","iv":2583,"ip":0.6401486988847583,"cha":"Barry Myers","cct":"Dracut","cv":1447,"cp":0.35861214374225525,"wi":0,"m":0.2815365551425031,"up":0,"nc":1,"tv":4070,"tm":5,"pvi":null},{"yr":2020,"ch":"House","d":"17th Essex","p":"D","sp":0,"inc":"Frank A. Moran","ict":"Lawrence","iv":3788,"ip":0.6425784563189143,"cha":"Marianela Rivera","cct":"Lawrence","cv":2098,"cp":0.3558948261238338,"wi":0,"m":0.28668363019508053,"up":0,"nc":1,"tv":6204,"tm":4,"pvi":null},{"yr":2020,"ch":"House","d":"6th Norfolk","p":"D","sp":0,"inc":"William C. Galvin","ict":"Canton","iv":5870,"ip":0.6437815310375082,"cha":"Tamisha L. Civil","cct":"Stoughton","cv":3248,"cp":0.35621846896249176,"wi":0,"m":0.2875630620750165,"up":0,"nc":1,"tv":9545,"tm":14,"pvi":null},{"yr":1998,"ch":"House","d":"12th Essex","p":"D","sp":0,"inc":"John P. Slattery","ict":null,"iv":3307,"ip":0.5847922192749779,"cha":"Robert J. Wood","cct":null,"cv":1663,"cp":0.2940760389036251,"wi":0,"m":0.29071618037135283,"up":0,"nc":2,"tv":5873,"tm":2,"pvi":null},{"yr":2000,"ch":"House","d":"6th Essex","p":"D","sp":0,"inc":"Michael P. Cahill","ict":null,"iv":1817,"ip":0.6457000710732054,"cha":"Stella Mae R. Seamans","cct":null,"cv":996,"cp":0.35394456289978676,"wi":0,"m":0.2917555081734186,"up":0,"nc":1,"tv":2921,"tm":4,"pvi":null},{"yr":2022,"ch":"House","d":"21st Middlesex","p":"D","sp":0,"inc":"Kenneth I. Gordon","ict":"Bedford","iv":3915,"ip":0.6510893065025778,"cha":"Timothy P. Sullivan","cct":"Burlington","cv":2096,"cp":0.34857808082487945,"wi":0,"m":0.30251122567769834,"up":0,"nc":1,"tv":6243,"tm":5,"pvi":null},{"yr":1996,"ch":"House","d":"13th Hampden","p":"R","sp":0,"inc":"Valerie Barsom","ict":null,"iv":707,"ip":0.6363636363636364,"cha":"Gale D. Candaras","cct":null,"cv":370,"cp":0.33303330333033304,"wi":1,"m":0.3033303330333033,"up":0,"nc":1,"tv":1171,"tm":2,"pvi":null},{"yr":2008,"ch":"House","d":"8th Worcester","p":"D","sp":0,"inc":"Paul Kujawski","ict":"Webster","iv":1646,"ip":0.6529155097183658,"cha":"Richard E. Preston","cct":"Douglas","cv":874,"cp":0.346687822292741,"wi":0,"m":0.3062276874256248,"up":0,"nc":1,"tv":2565,"tm":8,"pvi":null},{"yr":2014,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Evandro C. Carvalho","ict":"Boston","iv":1637,"ip":0.6529716792979657,"cha":"Althea Garrison","cct":"Boston","cv":859,"cp":0.34264060630235343,"wi":0,"m":0.3103310729956123,"up":0,"nc":1,"tv":2881,"tm":1,"pvi":null},{"yr":2008,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":"Springfield","iv":1221,"ip":0.5453327378293881,"cha":"Chelan D. Brown","cct":"Springfield","cv":520,"cp":0.23224653863331848,"wi":0,"m":0.3130861991960696,"up":0,"nc":2,"tv":2316,"tm":8,"pvi":null},{"yr":2002,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":null,"iv":2100,"ip":0.6377163680534467,"cha":"Bud L. Williams","cct":null,"cv":1034,"cp":0.31399939265107807,"wi":0,"m":0.3237169754023686,"up":0,"nc":2,"tv":3491,"tm":5,"pvi":null},{"yr":2002,"ch":"House","d":"11th Suffolk","p":"D","sp":0,"inc":"Elizabeth A. Malia","ict":null,"iv":3139,"ip":0.6058675931287396,"cha":"Rafael P. McLaughlin","cct":null,"cv":1440,"cp":0.2779386218876665,"wi":0,"m":0.3279289712410731,"up":0,"nc":2,"tv":6321,"tm":3,"pvi":null},{"yr":2002,"ch":"House","d":"23rd Middlesex","p":"D","sp":0,"inc":"Jim Marzilli","ict":null,"iv":5873,"ip":0.6639158941894642,"cha":"Richard Arena","cct":null,"cv":2967,"cp":0.3354058331449243,"wi":0,"m":0.3285100610445399,"up":0,"nc":1,"tv":9680,"tm":5,"pvi":null},{"yr":2014,"ch":"House","d":"2nd Suffolk","p":"D","sp":0,"inc":"Daniel Joseph Ryan","ict":"Boston","iv":2549,"ip":0.6658829676071055,"cha":"Roy A. Avellaneda","cct":"Chelsea","cv":1275,"cp":0.3330721003134796,"wi":0,"m":0.3328108672936259,"up":0,"nc":1,"tv":4126,"tm":1,"pvi":null},{"yr":1998,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Dianne Wilkerson","ict":null,"iv":6299,"ip":0.5366331572669961,"cha":"Caleb Desrosiers","cct":null,"cv":2392,"cp":0.20378258647128983,"wi":0,"m":0.3328505707957063,"up":0,"nc":3,"tv":14119,"tm":3,"pvi":null},{"yr":1998,"ch":"House","d":"31st Middlesex","p":"D","sp":0,"inc":"Edward G. Connolly","ict":null,"iv":4949,"ip":0.6672509100714574,"cha":"Michael K. Marchese","cct":null,"cv":2468,"cp":0.3327490899285425,"wi":0,"m":0.3345018201429149,"up":0,"nc":1,"tv":7733,"tm":4,"pvi":null},{"yr":1998,"ch":"House","d":"10th Hampden","p":"D","sp":0,"inc":"Anthony M. Scibelli","ict":null,"iv":873,"ip":0.6648895658796649,"cha":"Cesar Ruiz, Jr.","cct":null,"cv":429,"cp":0.32673267326732675,"wi":0,"m":0.3381568926123381,"up":0,"nc":1,"tv":1485,"tm":3,"pvi":null},{"yr":2008,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Marie St. Fleur","ict":"Boston","iv":1443,"ip":0.6671289875173371,"cha":"Roy A. Owens","cct":"Boston","cv":711,"cp":0.3287101248266297,"wi":0,"m":0.33841886269070737,"up":0,"nc":1,"tv":2358,"tm":5,"pvi":null},{"yr":2024,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Joseph W. Mcgonagle, Jr","ict":"Everett","iv":1493,"ip":0.6695067264573991,"cha":"Michael K. Marchese","cct":"Everett","cv":719,"cp":0.32242152466367713,"wi":0,"m":0.34708520179372193,"up":0,"nc":1,"tv":2342,"tm":5,"pvi":"D+17"},{"yr":2020,"ch":"House","d":"4th Norfolk","p":"D","sp":0,"inc":"James Michael Murphy","ict":"Weymouth","iv":6401,"ip":0.6744284058581814,"cha":"Melissa B. Smith","cct":"Hingham","cv":3082,"cp":0.32472869033821516,"wi":0,"m":0.34969971551996626,"up":0,"nc":1,"tv":10205,"tm":7,"pvi":null},{"yr":1996,"ch":"Senate","d":"Middlesex, Norfolk & Worcester","p":"D","sp":0,"inc":"David P. Magnani","ict":null,"iv":6079,"ip":0.6755195021669075,"cha":"John F. Moran","cct":null,"cv":2913,"cp":0.3237026336259584,"wi":0,"m":0.35181686854094907,"up":0,"nc":1,"tv":9406,"tm":2,"pvi":null},{"yr":2008,"ch":"House","d":"6th Bristol","p":"D","sp":0,"inc":"David B. Sullivan","ict":"Fall River","iv":3250,"ip":0.6762380357885975,"cha":"Linda M. Pereira","cct":"Fall River","cv":1551,"cp":0.3227215980024969,"wi":0,"m":0.35351643778610065,"up":0,"nc":1,"tv":5032,"tm":6,"pvi":null},{"yr":2012,"ch":"House","d":"2nd Worcester","p":"R","sp":0,"inc":"Richard M. Bastien","ict":"Gardner","iv":969,"ip":0.6757322175732218,"cha":"Scott J. Graves","cct":"Gardner","cv":462,"cp":0.32217573221757323,"wi":0,"m":0.35355648535564854,"up":0,"nc":1,"tv":1461,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"8th Essex","p":"D","sp":0,"inc":"Douglas W. Petersen","ict":"Marblehead","iv":3764,"ip":0.676491732566499,"cha":"Marc Paster","cct":"Swampscott","cv":1795,"cp":0.3226096333572969,"wi":0,"m":0.35388209920920205,"up":0,"nc":1,"tv":5594,"tm":6,"pvi":null},{"yr":1998,"ch":"House","d":"20th Middlesex","p":"D","sp":0,"inc":"James R. Miceli","ict":null,"iv":4777,"ip":0.6762457531143827,"cha":"Michael J. Newhouse","cct":null,"cv":2273,"cp":0.3217723669309173,"wi":0,"m":0.3544733861834654,"up":0,"nc":1,"tv":7196,"tm":3,"pvi":null},{"yr":2004,"ch":"House","d":"9th Middlesex","p":"D","sp":0,"inc":"Thomas M. Stanley","ict":"Waltham","iv":3220,"ip":0.6760445097627545,"cha":"Kathleen B. McMenimen","cct":"Waltham","cv":1526,"cp":0.32038631114843585,"wi":0,"m":0.3556581986143187,"up":0,"nc":1,"tv":4812,"tm":2,"pvi":null},{"yr":2020,"ch":"Senate","d":"Norfolk, Bristol and Plymouth","p":"D","sp":0,"inc":"Walter F. Timilty, Jr.","ict":"Milton","iv":25222,"ip":0.6800765766980343,"cha":"Jarred Philip Rose","cct":"Stoughton","cv":11819,"cp":0.3186830965028177,"wi":0,"m":0.36139348019521667,"up":0,"nc":1,"tv":40422,"tm":2,"pvi":null},{"yr":2014,"ch":"Senate","d":"1st Essex","p":"D","sp":0,"inc":"Kathleen  A. O'Connor Ives","ict":"Newburyport","iv":9052,"ip":0.6804480192437796,"cha":"Jessica L. Finocchiaro","cct":"Methuen","cv":4229,"cp":0.31789821844696686,"wi":0,"m":0.36254980079681276,"up":0,"nc":1,"tv":14511,"tm":1,"pvi":null},{"yr":2020,"ch":"House","d":"12th Norfolk","p":"D","sp":0,"inc":"John H. Rogers","ict":"Norwood","iv":6587,"ip":0.6824492333195192,"cha":"Michael Eugene Dooley","cct":"Norwood","cv":3052,"cp":0.31620389556568584,"wi":0,"m":0.3662453377538334,"up":0,"nc":1,"tv":10475,"tm":14,"pvi":null},{"yr":1999,"ch":"House","d":"5th Suffolk","p":"D","sp":1,"inc":"Marie St. Fleur","ict":null,"iv":1009,"ip":0.5798850574712644,"cha":"Barry Lawton","cct":null,"cv":361,"cp":0.2074712643678161,"wi":0,"m":0.3724137931034483,"up":0,"nc":3,"tv":1763,"tm":1,"pvi":null},{"yr":2000,"ch":"House","d":"25th Middlesex","p":"D","sp":0,"inc":"Jim Marzilli","ict":null,"iv":3317,"ip":0.6860392967942089,"cha":"Richard Arena","cct":null,"cv":1512,"cp":0.3127197518097208,"wi":0,"m":0.37331954498448816,"up":0,"nc":1,"tv":5032,"tm":4,"pvi":null},{"yr":2012,"ch":"House","d":"6th Plymouth","p":"R","sp":0,"inc":"Daniel K. Webster","ict":"Hanson","iv":1443,"ip":0.5526618153963998,"cha":"Karen E. Barry","cct":"Duxbury","cv":464,"cp":0.17770968977403293,"wi":1,"m":0.3749521256223669,"up":0,"nc":1,"tv":2784,"tm":5,"pvi":null},{"yr":2020,"ch":"House","d":"3rd Hampden","p":"R","sp":0,"inc":"Nicholas A. Boldyga","ict":"Southwick","iv":2533,"ip":0.687194791101465,"cha":"Dino R. Mercadante","cct":"Agawam","cv":1149,"cp":0.3117200217037439,"wi":0,"m":0.37547476939772106,"up":0,"nc":1,"tv":3722,"tm":5,"pvi":null},{"yr":2024,"ch":"House","d":"27th Middlesex","p":"D","sp":0,"inc":"Erika Uyterhoeven","ict":"Somerville","iv":5787,"ip":0.686965811965812,"cha":"Kathleen M. Hornby","cct":"Somerville","cv":2606,"cp":0.3093542260208927,"wi":0,"m":0.3776115859449193,"up":0,"nc":1,"tv":8622,"tm":2,"pvi":"D+40"},{"yr":1998,"ch":"House","d":"9th Suffolk","p":"D","sp":0,"inc":"Byron Rushing","ict":null,"iv":2163,"ip":0.5990030462475768,"cha":"Mark E. Walsh","cct":null,"cv":778,"cp":0.21545278316255884,"wi":0,"m":0.383550263085018,"up":0,"nc":2,"tv":4156,"tm":2,"pvi":null},{"yr":2022,"ch":"Senate","d":"Second Plymouth & Norfolk","p":"D","sp":0,"inc":"Michael D. Brady","ict":"Brockton","iv":8827,"ip":0.6950941018977872,"cha":"Katrina M. Huff-Larmond","cct":"Randolph","cv":3861,"cp":0.3040396881644224,"wi":0,"m":0.3910544137333648,"up":0,"nc":1,"tv":13521,"tm":4,"pvi":"D+14"},{"yr":1998,"ch":"House","d":"11th Plymouth","p":"D","sp":0,"inc":"Geraldine Creedon","ict":null,"iv":1299,"ip":0.6995153473344103,"cha":"Steven M. Gabriel","cct":null,"cv":556,"cp":0.29940764674205705,"wi":0,"m":0.4001077005923533,"up":0,"nc":1,"tv":2118,"tm":2,"pvi":null},{"yr":2002,"ch":"House","d":"3rd Barnstable","p":"D","sp":0,"inc":"Matthew C. Patrick","ict":null,"iv":3215,"ip":0.7039632143639151,"cha":"George R. Costa","cct":null,"cv":1350,"cp":0.29559886139697833,"wi":0,"m":0.40836435296693674,"up":0,"nc":1,"tv":4875,"tm":1,"pvi":null},{"yr":2024,"ch":"Senate","d":"Hampden","p":"D","sp":0,"inc":"Adam Gomez","ict":"Springfield","iv":7236,"ip":0.7036856948361373,"cha":"Malo L. Brown","cct":"Springfield","cv":3011,"cp":0.2928133813089565,"wi":0,"m":0.4108723135271808,"up":0,"nc":1,"tv":10644,"tm":2,"pvi":"D+18"},{"yr":2012,"ch":"House","d":"31st Middlesex","p":"D","sp":0,"inc":"Jason M. Lewis","ict":"Winchester","iv":2856,"ip":0.7113325031133251,"cha":"John F. Depinto","cct":"Stoneham","cv":1156,"cp":0.287920298879203,"wi":0,"m":0.42341220423412207,"up":0,"nc":1,"tv":4102,"tm":2,"pvi":null},{"yr":2012,"ch":"House","d":"7th Suffolk","p":"D","sp":0,"inc":"Gloria L. Fox","ict":"Boston","iv":1374,"ip":0.6640889318511358,"cha":"Rufus Jackson Faulk","cct":"Boston","cv":494,"cp":0.2387626872885452,"wi":0,"m":0.4253262445625906,"up":0,"nc":2,"tv":2190,"tm":10,"pvi":null},{"yr":2022,"ch":"House","d":"1st Berkshire","p":"D","sp":0,"inc":"John P. Barrett, III","ict":"North Adams","iv":4818,"ip":0.7148367952522255,"cha":"Paula R. Kingsbury-Evans","cct":"North Adams","cv":1918,"cp":0.28456973293768545,"wi":0,"m":0.4302670623145401,"up":0,"nc":1,"tv":7146,"tm":3,"pvi":"D+17"},{"yr":1998,"ch":"Senate","d":"4th Middlesex","p":"D","sp":0,"inc":"Robert A. Havern, III","ict":null,"iv":14530,"ip":0.7170705226274491,"cha":"David McKenna","cct":null,"cv":5722,"cp":0.2823866159996052,"wi":0,"m":0.4346839066278439,"up":0,"nc":1,"tv":23636,"tm":4,"pvi":null},{"yr":2008,"ch":"House","d":"12th Worcester","p":"D","sp":0,"inc":"Harold P. Naughton, Jr.","ict":"Clinton","iv":3990,"ip":0.7195671776375113,"cha":"Stephen J. Kerrigan","cct":"Lancaster","cv":1551,"cp":0.27971145175834083,"wi":0,"m":0.4398557258791705,"up":0,"nc":1,"tv":5631,"tm":7,"pvi":null},{"yr":2010,"ch":"Senate","d":"1st Middlesex and Norfolk","p":"D","sp":0,"inc":"Cynthia Stone Creem","ict":"Newton","iv":12622,"ip":0.7194892549734937,"cha":"Charles S. Rudnick","cct":"Newton","cv":4905,"cp":0.27959870033631645,"wi":0,"m":0.43989055463717724,"up":0,"nc":1,"tv":18512,"tm":6,"pvi":null},{"yr":2000,"ch":"House","d":"12th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":null,"iv":1441,"ip":0.6470588235294118,"cha":"H. Lavalle Smith","cct":null,"cv":446,"cp":0.2002694207453974,"wi":0,"m":0.4467894027840144,"up":0,"nc":2,"tv":2260,"tm":4,"pvi":null},{"yr":2002,"ch":"House","d":"13th Bristol","p":"D","sp":0,"inc":"Antonio F.D. Cabral","ict":null,"iv":3729,"ip":0.7243589743589743,"cha":"Duarte D. Silva","cct":null,"cv":1415,"cp":0.2748640248640249,"wi":0,"m":0.44949494949494945,"up":0,"nc":1,"tv":5392,"tm":5,"pvi":null},{"yr":2022,"ch":"House","d":"5th Essex","p":"D","sp":0,"inc":"Ann-Margaret Ferrante","ict":"Gloucester","iv":5258,"ip":0.7249414035571488,"cha":"D. Nathaniel Mulcahy","cct":"Rockport","cv":1994,"cp":0.27492072245967186,"wi":0,"m":0.4500206810974769,"up":0,"nc":1,"tv":7587,"tm":7,"pvi":"D+16"},{"yr":2018,"ch":"House","d":"23rd Middlesex","p":"D","sp":0,"inc":"Sean Garballey","ict":"Arlington","iv":6840,"ip":0.7255754747003288,"cha":"Lori Lennon","cct":"Arlington","cv":2582,"cp":0.27389413387079664,"wi":0,"m":0.45168134082953215,"up":0,"nc":1,"tv":9828,"tm":6,"pvi":null},{"yr":2000,"ch":"House","d":"6th Worcester","p":"D","sp":0,"inc":"Mark J. Carron","ict":null,"iv":3375,"ip":0.7258064516129032,"cha":"Scott S. Lazo","cct":null,"cv":1274,"cp":0.2739784946236559,"wi":0,"m":0.4518279569892473,"up":0,"nc":1,"tv":4744,"tm":1,"pvi":null},{"yr":2024,"ch":"House","d":"5th Middlesex","p":"D","sp":0,"inc":"David Paul Linsky","ict":"Natick","iv":4047,"ip":0.7259192825112107,"cha":"Jaymin A. Patel","cct":"Natick","cv":1521,"cp":0.27282511210762334,"wi":0,"m":0.4530941704035874,"up":0,"nc":1,"tv":5760,"tm":13,"pvi":"D+26"},{"yr":2002,"ch":"House","d":"14th Essex","p":"D","sp":0,"inc":"David M. Torrisi","ict":null,"iv":2735,"ip":0.7273936170212766,"cha":"Graydon McCormick","cct":null,"cv":1016,"cp":0.2702127659574468,"wi":0,"m":0.4571808510638298,"up":0,"nc":1,"tv":4325,"tm":2,"pvi":null},{"yr":1998,"ch":"Senate","d":"Suffolk and Middlesex","p":"D","sp":0,"inc":"Robert E. Travaglini","ict":null,"iv":11787,"ip":0.7301616799851329,"cha":"Ralaph A. Loez","cct":null,"cv":4336,"cp":0.2685993929257263,"wi":0,"m":0.4615622870594066,"up":0,"nc":1,"tv":20873,"tm":3,"pvi":null},{"yr":1998,"ch":"House","d":"15th Worcester","p":"D","sp":0,"inc":"Vincent A. Pedone","ict":null,"iv":2668,"ip":0.7321624588364435,"cha":"Joseph C. O'Brien","cct":null,"cv":975,"cp":0.267563117453348,"wi":0,"m":0.4645993413830955,"up":0,"nc":1,"tv":3817,"tm":3,"pvi":null},{"yr":1996,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Charlotte Golar Richie","ict":null,"iv":828,"ip":0.7340425531914894,"cha":"Irene L. Roman","cct":null,"cv":300,"cp":0.26595744680851063,"wi":0,"m":0.46808510638297873,"up":0,"nc":1,"tv":1296,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"3rd Worcester","p":"D","sp":0,"inc":"Emile J. Goguen","ict":"Fitchburg","iv":2565,"ip":0.7087593257806024,"cha":"Susan M. Koeck","cct":"Fitchburg","cv":862,"cp":0.23818734457032328,"wi":0,"m":0.4705719812102791,"up":0,"nc":2,"tv":3677,"tm":6,"pvi":null},{"yr":2008,"ch":"House","d":"10th Suffolk","p":"D","sp":0,"inc":"Michael F. Rush","ict":"Boston","iv":3375,"ip":0.7346538963865912,"cha":"Pamela S. Julian","cct":"Brookline","cv":1212,"cp":0.26382237701349587,"wi":0,"m":0.4708315193730953,"up":0,"nc":1,"tv":4943,"tm":3,"pvi":null},{"yr":2014,"ch":"House","d":"14th Suffolk","p":"D","sp":0,"inc":"Angelo M. Scaccia","ict":"Boston","iv":2741,"ip":0.7336723768736617,"cha":"Anthony Joseph Solimine","cct":"Boston","cv":976,"cp":0.26124197002141325,"wi":0,"m":0.47243040685224846,"up":0,"nc":1,"tv":4674,"tm":11,"pvi":null},{"yr":2014,"ch":"House","d":"12th Suffolk","p":"D","sp":0,"inc":"Dan Cullinane","ict":"Boston","iv":3093,"ip":0.666882276843467,"cha":"Corey J. Allen","cct":"Boston","cv":887,"cp":0.191246226821906,"wi":0,"m":0.475636050021561,"up":0,"nc":3,"tv":5222,"tm":1,"pvi":null},{"yr":2022,"ch":"House","d":"9th Bristol","p":"D","sp":0,"inc":"Christopher M. Markey","ict":"Dartmouth","iv":3624,"ip":0.7380855397148676,"cha":"Cameron Scott Costa","cct":"New Bedford","cv":1283,"cp":0.26130346232179225,"wi":0,"m":0.4767820773930753,"up":0,"nc":1,"tv":5068,"tm":6,"pvi":"D+4"},{"yr":2006,"ch":"House","d":"7th Bristol","p":"D","sp":0,"inc":"Robert Correia","ict":"Fall River","iv":3213,"ip":0.6927554980595084,"cha":"Kevin Aguiar","cct":"Fall River","cv":991,"cp":0.21366968520914187,"wi":0,"m":0.47908581285036655,"up":0,"nc":2,"tv":4905,"tm":7,"pvi":null},{"yr":2018,"ch":"House","d":"36th Middlesex","p":"D","sp":0,"inc":"Colleen M. Garry","ict":"Dracut","iv":4127,"ip":0.7432018728615163,"cha":"Sabrina Adena Heisey","cct":"Dracut","cv":1461,"cp":0.2631010264721772,"wi":0,"m":0.4801008463893391,"up":0,"nc":1,"tv":5798,"tm":12,"pvi":null},{"yr":2012,"ch":"House","d":"9th Hampden","p":"D","sp":0,"inc":"Sean Curran","ict":"Springfield","iv":2500,"ip":0.7378984651711924,"cha":"Joseph R. Fountain","cct":"Springfield","cv":868,"cp":0.256198347107438,"wi":0,"m":0.4817001180637544,"up":0,"nc":1,"tv":3811,"tm":4,"pvi":null},{"yr":2018,"ch":"House","d":"11th Suffolk","p":"D","sp":0,"inc":"Elizabeth A. Malia","ict":"Boston","iv":5166,"ip":0.6600229973169797,"cha":"Ture R. Turnbull","cct":"Boston","cv":1383,"cp":0.1766960521272518,"wi":0,"m":0.48332694518972785,"up":0,"nc":2,"tv":8678,"tm":11,"pvi":null},{"yr":1996,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Paul E. Caron","ict":null,"iv":860,"ip":0.7445887445887446,"cha":"Thomas A. McCarthy","cct":null,"cv":295,"cp":0.2554112554112554,"wi":0,"m":0.48917748917748916,"up":0,"nc":1,"tv":1215,"tm":2,"pvi":null},{"yr":2018,"ch":"House","d":"2nd Bristol","p":"D","sp":0,"inc":"James K. Hawkins","ict":"Attleboro","iv":1743,"ip":0.7445536095685604,"cha":"Sara Lynn Reynolds","cct":"Attleboro","cv":596,"cp":0.25459205467748824,"wi":0,"m":0.4899615548910722,"up":0,"nc":1,"tv":2410,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"8th Worcester","p":"D","sp":0,"inc":"Paul Kujawski","ict":"Webster","iv":2738,"ip":0.7316942811330839,"cha":"Mark G. Dowgiewicz","cct":"Webster","cv":887,"cp":0.23703901656867984,"wi":1,"m":0.494655264564404,"up":0,"nc":1,"tv":4176,"tm":6,"pvi":null},{"yr":2022,"ch":"Senate","d":"2nd Essex","p":"D","sp":0,"inc":"Joan B. Lovely","ict":"Salem","iv":17429,"ip":0.7476086303779007,"cha":"Kyle Alexander Davis","cct":"Danvers","cv":5858,"cp":0.25127611204049244,"wi":0,"m":0.49633251833740827,"up":0,"nc":1,"tv":24437,"tm":5,"pvi":"D+12"},{"yr":2004,"ch":"House","d":"17th Middlesex","p":"D","sp":0,"inc":"David M. Nangle","ict":"Lowell","iv":1667,"ip":0.7485406376290974,"cha":"Kenneth F. Sheehan, Jr.","cct":"Lowell","cv":558,"cp":0.25056129321957793,"wi":0,"m":0.49797934440951946,"up":0,"nc":1,"tv":2266,"tm":3,"pvi":null},{"yr":2002,"ch":"House","d":"28th Middlesex","p":"D","sp":0,"inc":"Edward G. Connolly","ict":null,"iv":4943,"ip":0.7523592085235921,"cha":"Barbara J. Collins","cct":null,"cv":1627,"cp":0.2476407914764079,"wi":0,"m":0.5047184170471841,"up":0,"nc":1,"tv":7197,"tm":6,"pvi":null},{"yr":2002,"ch":"House","d":"17th Essex","p":"D","sp":0,"inc":"Barry R. Finegold","ict":null,"iv":3067,"ip":0.7543039842597147,"cha":"Michael A. Frishman","cct":null,"cv":997,"cp":0.24520413182488932,"wi":0,"m":0.5090998524348254,"up":0,"nc":1,"tv":4524,"tm":3,"pvi":null},{"yr":2022,"ch":"House","d":"6th Suffolk","p":"D","sp":0,"inc":"Russell E. Holmes","ict":"Boston","iv":3242,"ip":0.7534278410411341,"cha":"Haris Hassan Hardaway","cct":"Boston","cv":1044,"cp":0.24262142691145713,"wi":0,"m":0.510806414129677,"up":0,"nc":1,"tv":4803,"tm":6,"pvi":"D+42"},{"yr":2008,"ch":"House","d":"7th Bristol","p":"D","sp":0,"inc":"Kevin Aguiar","ict":"Fall River","iv":2564,"ip":0.757235676314235,"cha":"John J. Rodrigues","cct":"Fall River","cv":819,"cp":0.24187832250443,"wi":0,"m":0.5153573538098051,"up":0,"nc":1,"tv":3633,"tm":1,"pvi":null},{"yr":2024,"ch":"House","d":"6th Suffolk","p":"D","sp":0,"inc":"Russell E. Holmes","ict":"Boston","iv":2254,"ip":0.7247588424437299,"cha":"Haris H. Hardaway","cct":"Boston","cv":650,"cp":0.2090032154340836,"wi":0,"m":0.5157556270096463,"up":0,"nc":2,"tv":3321,"tm":7,"pvi":"D+39"},{"yr":2010,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Sonia Rosa Chang-Diaz","ict":"Boston","iv":10022,"ip":0.7605676557638309,"cha":"Hassan A. Williams","cct":"Boston","cv":3134,"cp":0.2378386582681946,"wi":0,"m":0.5227289974956363,"up":0,"nc":1,"tv":14264,"tm":1,"pvi":null},{"yr":2012,"ch":"Senate","d":"1st Bristol and Plymouth","p":"D","sp":0,"inc":"Michael J. Rodrigues","ict":"Westport","iv":9401,"ip":0.7614612020087478,"cha":"David P. Meade, Jr.","cct":"Fall River","cv":2925,"cp":0.23691884011015713,"wi":0,"m":0.5245423618985907,"up":0,"nc":1,"tv":13898,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"1st Norfolk","p":"D","sp":0,"inc":"Bruce J. Ayers","ict":"Quincy","iv":3228,"ip":0.7629402032616402,"cha":"Paul J. Meoni","cct":"Randolph","cv":1000,"cp":0.2363507445048452,"wi":0,"m":0.5265894587567951,"up":0,"nc":1,"tv":4315,"tm":3,"pvi":null},{"yr":2022,"ch":"House","d":"1st Essex","p":"R","sp":0,"inc":"James M. Kelcourse","ict":"Amesbury","iv":1598,"ip":0.7280182232346242,"cha":"Charles Fitzwater","cct":"Salisbury","cv":441,"cp":0.2009111617312073,"wi":1,"m":0.5271070615034169,"up":0,"nc":2,"tv":2627,"tm":4,"pvi":"D+12"},{"yr":2008,"ch":"House","d":"6th Suffolk","p":"D","sp":0,"inc":"Willie Mae Allen","ict":"Boston","iv":1951,"ip":0.7630035197497067,"cha":"Faustina Kathy Gabriel","cct":"Boston","cv":603,"cp":0.23582323034806413,"wi":0,"m":0.5271802894016426,"up":0,"nc":1,"tv":2789,"tm":1,"pvi":null},{"yr":2006,"ch":"Senate","d":"1st Worcester","p":"D","sp":0,"inc":"Harriette L. Chandler","ict":"Worcester","iv":16874,"ip":0.7652954782529819,"cha":"Deirdre Healy","cct":"Worcester","cv":5153,"cp":0.23370674407002584,"wi":0,"m":0.5315887341829562,"up":0,"nc":1,"tv":23849,"tm":3,"pvi":null},{"yr":2004,"ch":"House","d":"11th Hampden","p":"D","sp":0,"inc":"Benjamin Swan","ict":"Springfield","iv":893,"ip":0.764554794520548,"cha":"Larry Lawson","cct":"Springfield","cv":271,"cp":0.2320205479452055,"wi":0,"m":0.5325342465753424,"up":0,"nc":1,"tv":1236,"tm":6,"pvi":null},{"yr":2010,"ch":"House","d":"11th Bristol","p":"D","sp":0,"inc":"Robert M. Koczera","ict":"New Bedford","iv":1924,"ip":0.7653142402545744,"cha":"Sean J. Burke","cct":"New Bedford","cv":580,"cp":0.2307080350039777,"wi":0,"m":0.5346062052505967,"up":0,"nc":1,"tv":2729,"tm":9,"pvi":null},{"yr":2012,"ch":"House","d":"14th Suffolk","p":"D","sp":0,"inc":"Angelo M. Scaccia","ict":"Boston","iv":1986,"ip":0.7659082144234477,"cha":"Anthony Joseph Solimine","cct":"Boston","cv":594,"cp":0.22907828769764751,"wi":0,"m":0.5368299267258002,"up":0,"nc":1,"tv":3129,"tm":10,"pvi":null},{"yr":2014,"ch":"Senate","d":"1st Worcester","p":"D","sp":0,"inc":"Harriette L. Chandler","ict":"Worcester","iv":8366,"ip":0.7491045845272206,"cha":"Sean M. Maher","cct":"Worcester","cv":2351,"cp":0.2105121776504298,"wi":0,"m":0.5385924068767909,"up":0,"nc":2,"tv":11936,"tm":7,"pvi":null},{"yr":2016,"ch":"Senate","d":"Plymouth and Norfolk","p":"R","sp":0,"inc":"Patrick M. O'Connor","ict":"Weymouth","iv":3868,"ip":0.7686804451510334,"cha":"Stephen D. Gill","cct":"Marshfield","cv":1131,"cp":0.22476152623211448,"wi":0,"m":0.5439189189189189,"up":0,"nc":1,"tv":5263,"tm":1,"pvi":null},{"yr":2020,"ch":"House","d":"6th Essex","p":"D","sp":0,"inc":"Jerald A. Parisella","ict":"Beverly","iv":7201,"ip":0.7718113612004287,"cha":"Richard Canavan-Wagner","cct":"Beverly","cv":2114,"cp":0.22658092175777064,"wi":0,"m":0.545230439442658,"up":0,"nc":1,"tv":9887,"tm":5,"pvi":null},{"yr":2018,"ch":"House","d":"10th Hampden","p":"D","sp":0,"inc":"Carlos Gonzalez","ict":"Springfield","iv":855,"ip":0.6081081081081081,"cha":"Ivette Hernandez","cct":"Springfield","cv":81,"cp":0.05761024182076813,"wi":1,"m":0.55049786628734,"up":0,"nc":1,"tv":2713,"tm":2,"pvi":null},{"yr":1996,"ch":"House","d":"1st Hampden","p":"D","sp":0,"inc":"Patrick F. Landers, III","ict":null,"iv":1207,"ip":0.7797157622739018,"cha":"James R. Foley","cct":null,"cv":341,"cp":0.2202842377260982,"wi":0,"m":0.5594315245478036,"up":0,"nc":1,"tv":1657,"tm":2,"pvi":null},{"yr":1996,"ch":"House","d":"7th Bristol","p":"D","sp":0,"inc":"Robert Correia","ict":null,"iv":1285,"ip":0.7811550151975684,"cha":"John J. Rodrigues","cct":null,"cv":360,"cp":0.2188449848024316,"wi":0,"m":0.5623100303951367,"up":0,"nc":1,"tv":2608,"tm":2,"pvi":null},{"yr":1998,"ch":"House","d":"38th Middlesex","p":"D","sp":0,"inc":"Anthony P. Giglio","ict":null,"iv":3431,"ip":0.7180828798660528,"cha":"Francis R. Stone","cct":null,"cv":720,"cp":0.1506906655504395,"wi":0,"m":0.5673922143156133,"up":0,"nc":2,"tv":5285,"tm":3,"pvi":null},{"yr":2022,"ch":"House","d":"1st Norfolk","p":"D","sp":0,"inc":"Bruce J. Ayers","ict":"Quincy","iv":3378,"ip":0.7830319888734353,"cha":"Casey A. Dooley","cct":"Quincy","cv":927,"cp":0.2148817802503477,"wi":0,"m":0.5681502086230876,"up":0,"nc":1,"tv":4651,"tm":12,"pvi":"D+17"},{"yr":2014,"ch":"House","d":"2nd Essex","p":"R","sp":0,"inc":"Leonard Mirra","ict":"West Newbury","iv":1509,"ip":0.7847113884555382,"cha":"Edward H. Watson","cct":"Groveland","cv":414,"cp":0.21528861154446177,"wi":0,"m":0.5694227769110765,"up":0,"nc":1,"tv":2052,"tm":1,"pvi":null},{"yr":1998,"ch":"House","d":"19th Middlesex","p":"D","sp":0,"inc":"Kevin J. Murphy","ict":null,"iv":1877,"ip":0.7843710823234433,"cha":"Patrick A. O'Connor","cct":null,"cv":514,"cp":0.21479314667781027,"wi":0,"m":0.5695779356456331,"up":0,"nc":1,"tv":2568,"tm":1,"pvi":null},{"yr":2002,"ch":"Senate","d":"Norfolk, Bristol and Plymouth","p":"D","sp":0,"inc":"Brian A. Joyce","ict":null,"iv":19046,"ip":0.785337291769751,"cha":"Peri J. O'Connor","cct":null,"cv":5202,"cp":0.2144977733795151,"wi":0,"m":0.570839518390236,"up":0,"nc":1,"tv":26340,"tm":3,"pvi":null},{"yr":2012,"ch":"House","d":"10th Bristol","p":"D","sp":0,"inc":"William M. Straus","ict":"Mattapoisett","iv":2918,"ip":0.785887422569351,"cha":"Abilio Bill Soares","cct":"Fairhaven","cv":791,"cp":0.2130352814435766,"wi":0,"m":0.5728521411257743,"up":0,"nc":1,"tv":3858,"tm":10,"pvi":null},{"yr":2024,"ch":"Senate","d":"1st Suffolk","p":"D","sp":0,"inc":"Nicholas P. Collins","ict":"Boston","iv":10386,"ip":0.7841449603624009,"cha":"Juwan Khiry Skeens","cct":"Boston","cv":2792,"cp":0.21079652699131748,"wi":0,"m":0.5733484333710834,"up":0,"nc":1,"tv":15254,"tm":2,"pvi":"D+27"},{"yr":2004,"ch":"House","d":"15th Middlesex","p":"D","sp":0,"inc":"Jay R. Kaufman","ict":"Lexington","iv":3749,"ip":0.7843096234309623,"cha":"Ed Crowley","cct":"Woburn","cv":1002,"cp":0.2096234309623431,"wi":0,"m":0.5746861924686193,"up":0,"nc":1,"tv":4816,"tm":5,"pvi":null},{"yr":2024,"ch":"House","d":"11th Plymouth","p":"D","sp":0,"inc":"Rita A. Mendes","ict":"Brockton","iv":1709,"ip":0.787557603686636,"cha":"Fred Fontaine","cct":"Brockton","cv":460,"cp":0.2119815668202765,"wi":0,"m":0.5755760368663595,"up":0,"nc":1,"tv":2234,"tm":1,"pvi":"D+30"},{"yr":2022,"ch":"House","d":"10th Bristol","p":"D","sp":0,"inc":"William M. Straus","ict":"Mattapoisett","iv":4454,"ip":0.7884581341830412,"cha":"Richard F. Trapilo","cct":"Fairhaven","cv":1190,"cp":0.2106567534076828,"wi":0,"m":0.5778013807753584,"up":0,"nc":1,"tv":5811,"tm":15,"pvi":"D+2"},{"yr":2010,"ch":"House","d":"9th Hampden","p":"D","sp":0,"inc":"Sean Curran","ict":"Springfield","iv":2261,"ip":0.7894553072625698,"cha":"Christopher P. Asselin","cct":"Springfield","cv":590,"cp":0.20600558659217877,"wi":0,"m":0.583449720670391,"up":0,"nc":1,"tv":3081,"tm":3,"pvi":null},{"yr":2018,"ch":"House","d":"5th Barnstable","p":"R","sp":0,"inc":"Randy Hunt","ict":"Sandwich","iv":3183,"ip":0.7927770859277709,"cha":"Ronald R. Beaty, Jr.","cct":"Barnstable","cv":828,"cp":0.2062266500622665,"wi":0,"m":0.5865504358655044,"up":0,"nc":1,"tv":4165,"tm":4,"pvi":null},{"yr":2020,"ch":"House","d":"5th Middlesex","p":"D","sp":0,"inc":"David Paul Linsky","ict":"Natick","iv":9514,"ip":0.7962838968865082,"cha":"Jaymin A. Patel","cct":"Natick","cv":2430,"cp":0.20338131904921325,"wi":0,"m":0.5929025778372949,"up":0,"nc":1,"tv":12842,"tm":11,"pvi":null},{"yr":2016,"ch":"Senate","d":"2nd Middlesex","p":"D","sp":0,"inc":"Patricia D. Jehlen","ict":"Somerville","iv":15189,"ip":0.7957355406538139,"cha":"Leland Cheung","cct":"Cambridge","cv":3861,"cp":0.2022736797988265,"wi":0,"m":0.5934618608549874,"up":0,"nc":1,"tv":19524,"tm":6,"pvi":null},{"yr":2002,"ch":"House","d":"11th Middlesex","p":"D","sp":0,"inc":"Kay S. Khan","ict":null,"iv":5770,"ip":0.7971815418623929,"cha":"Zygmunt P. Choroszy, Jr.","cct":null,"cv":1468,"cp":0.20281845813760707,"wi":0,"m":0.5943630837247857,"up":0,"nc":1,"tv":8367,"tm":4,"pvi":null},{"yr":2016,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Sonia Rosa Chang-Diaz","ict":"Boston","iv":7376,"ip":0.7949989221815046,"cha":"Roy A. Owens","cct":"Boston","cv":1859,"cp":0.20036645828842423,"wi":0,"m":0.5946324638930803,"up":0,"nc":1,"tv":10187,"tm":4,"pvi":null},{"yr":2018,"ch":"House","d":"13th Norfolk","p":"D","sp":0,"inc":"Denise C. Garlick","ict":"Needham","iv":5595,"ip":0.7998570407433881,"cha":"Theodore L. Steinberg","cct":"Needham","cv":1396,"cp":0.1995711222301644,"wi":0,"m":0.6002859185132238,"up":0,"nc":1,"tv":7175,"tm":4,"pvi":null},{"yr":2024,"ch":"Senate","d":"2nd Bristol and Plymouth","p":"D","sp":0,"inc":"Mark C. Montigny","ict":"New Bedford","iv":8616,"ip":0.8004459308807135,"cha":"Molly Kivi","cct":"New Bedford","cv":2126,"cp":0.1975102192493497,"wi":0,"m":0.6029357116313638,"up":0,"nc":1,"tv":11130,"tm":15,"pvi":"D+4"},{"yr":2014,"ch":"House","d":"8th Hampden","p":"D","sp":0,"inc":"Joseph F. Wagner","ict":"Chicopee","iv":2458,"ip":0.8027433050293925,"cha":"William C. Courchesne","cct":"Chicopee","cv":600,"cp":0.1959503592423253,"wi":0,"m":0.6067929457870672,"up":0,"nc":1,"tv":3219,"tm":12,"pvi":null},{"yr":2002,"ch":"House","d":"13th Suffolk","p":"D","sp":0,"inc":"Martin J. Walsh","ict":null,"iv":3760,"ip":0.8066938425230638,"cha":"Edward L. Geary, Jr.","cct":null,"cv":901,"cp":0.19330615747693627,"wi":0,"m":0.6133876850461275,"up":0,"nc":1,"tv":5442,"tm":3,"pvi":null},{"yr":2014,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Sonia Rosa Chang-Diaz","ict":"Boston","iv":10900,"ip":0.8058553896199911,"cha":"Roy A. Owens","cct":"Boston","cv":2584,"cp":0.19103947952092268,"wi":0,"m":0.6148159100990684,"up":0,"nc":1,"tv":15958,"tm":3,"pvi":null},{"yr":2002,"ch":"Senate","d":"1st Suffolk","p":"D","sp":0,"inc":"John A. Hart, Jr.","ict":null,"iv":13295,"ip":0.8098312724614729,"cha":"Carol Y. Mallory-Causey","cct":null,"cv":3121,"cp":0.1901078150697448,"wi":0,"m":0.6197234573917281,"up":0,"nc":1,"tv":22586,"tm":1,"pvi":null},{"yr":2010,"ch":"House","d":"15th Suffolk","p":"D","sp":0,"inc":"Jeffrey Sanchez","ict":"Boston","iv":3204,"ip":0.8099089989888777,"cha":"Jeffrey A. Herman","cct":"Boston","cv":745,"cp":0.1883215369059656,"wi":0,"m":0.621587462082912,"up":0,"nc":1,"tv":4513,"tm":4,"pvi":null},{"yr":2008,"ch":"House","d":"14th Norfolk","p":"D","sp":0,"inc":"Alice Hanlon Peisch","ict":"Wellesley","iv":3291,"ip":0.8111905348779886,"cha":"Lawrence R. Kaplan","cct":"Wellesley","cv":762,"cp":0.1878235149124969,"wi":0,"m":0.6233670199654917,"up":0,"nc":1,"tv":4141,"tm":3,"pvi":null},{"yr":2022,"ch":"Senate","d":"First Plymouth & Norfolk","p":"R","sp":0,"inc":"Patrick M. O'Connor","ict":"Weymouth","iv":10126,"ip":0.8111182313361103,"cha":"Ronald J. Patuto","cct":"Marshfield","cv":2340,"cp":0.18743992310157,"wi":0,"m":0.6236783082345403,"up":0,"nc":1,"tv":13051,"tm":4,"pvi":"D+9"},{"yr":1998,"ch":"House","d":"4th Worcester","p":"D","sp":0,"inc":"Mary Jane Simmons","ict":null,"iv":3587,"ip":0.8128257421255382,"cha":"Virginia A. Tocci","cct":null,"cv":826,"cp":0.18717425787446185,"wi":0,"m":0.6256514842510763,"up":0,"nc":1,"tv":4545,"tm":3,"pvi":null},{"yr":2018,"ch":"House","d":"9th Hampden","p":"D","sp":0,"inc":"Jose F. Tosado","ict":"Springfield","iv":2628,"ip":0.8101109741060419,"cha":"Mark A. Kenyon","cct":"Springfield","cv":594,"cp":0.18310727496917387,"wi":0,"m":0.627003699136868,"up":0,"nc":1,"tv":3539,"tm":2,"pvi":null},{"yr":2024,"ch":"House","d":"7th Worcester","p":"R","sp":0,"inc":"Paul K. Frost","ict":"Auburn","iv":2107,"ip":0.8150870406189555,"cha":"Michelle L. Frigon","cct":"Millbury","cv":476,"cp":0.1841392649903288,"wi":0,"m":0.6309477756286268,"up":0,"nc":1,"tv":2644,"tm":14,"pvi":"D+1"},{"yr":2000,"ch":"House","d":"6th Suffolk","p":"D","sp":0,"inc":"Shirley Owens-Hicks","ict":null,"iv":980,"ip":0.8180300500834724,"cha":"Shirley Shillingford","cct":null,"cv":218,"cp":0.1819699499165275,"wi":0,"m":0.6360601001669449,"up":0,"nc":1,"tv":1326,"tm":4,"pvi":null},{"yr":2020,"ch":"Senate","d":"2nd Middlesex","p":"D","sp":0,"inc":"Patricia D. Jehlen","ict":"Somerville","iv":41723,"ip":0.8172647496670062,"cha":"Gary P. Fisher","cct":"Cambridge","cv":9231,"cp":0.18081563895635824,"wi":0,"m":0.636449110710648,"up":0,"nc":1,"tv":55810,"tm":8,"pvi":null},{"yr":2002,"ch":"House","d":"21st Middlesex","p":"D","sp":0,"inc":"Charles A. Murphy","ict":null,"iv":3590,"ip":0.8205714285714286,"cha":"Terrence L. Parker","cct":null,"cv":785,"cp":0.17942857142857144,"wi":0,"m":0.6411428571428572,"up":0,"nc":1,"tv":4755,"tm":3,"pvi":null},{"yr":2000,"ch":"House","d":"3rd Essex","p":"D","sp":0,"inc":"Brian S. Dempsey","ict":null,"iv":2940,"ip":0.8260747400955325,"cha":"Michael J. Early","cct":null,"cv":619,"cp":0.17392525990446756,"wi":0,"m":0.652149480191065,"up":0,"nc":1,"tv":3611,"tm":4,"pvi":null},{"yr":2008,"ch":"Senate","d":"2nd Bristol and Plymouth","p":"D","sp":0,"inc":"Mark C. Montigny","ict":"New Bedford","iv":9767,"ip":0.826031799729364,"cha":"Raimundo Delgado","cct":"New Bedford","cv":2037,"cp":0.1722767253044655,"wi":0,"m":0.6537550744248986,"up":0,"nc":1,"tv":12623,"tm":7,"pvi":null},{"yr":2016,"ch":"Senate","d":"1st Essex","p":"D","sp":0,"inc":"Kathleen  A. O'Connor Ives","ict":"Newburyport","iv":6173,"ip":0.8292584631918324,"cha":"Adele F. Martino","cct":"Haverhill","cv":1264,"cp":0.16980118216012896,"wi":0,"m":0.6594572810317034,"up":0,"nc":1,"tv":8056,"tm":2,"pvi":null},{"yr":2014,"ch":"House","d":"25th Middlesex","p":"D","sp":0,"inc":"Marjorie C. Decker","ict":"Cambridge","iv":3546,"ip":0.8323943661971831,"cha":"Lesley Rebecca Phillips","cct":"Cambridge","cv":709,"cp":0.16643192488262912,"wi":0,"m":0.665962441314554,"up":0,"nc":1,"tv":4882,"tm":1,"pvi":null},{"yr":2012,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Sonia Rosa Chang-Diaz","ict":"Boston","iv":8904,"ip":0.8317608594114899,"cha":"Roy A. Owens","cct":"Boston","cv":1773,"cp":0.16562354040168145,"wi":0,"m":0.6661373190098084,"up":0,"nc":1,"tv":11667,"tm":2,"pvi":null},{"yr":2024,"ch":"House","d":"7th Middlesex","p":"D","sp":0,"inc":"Jack Patrick Lewis","ict":"Framingham","iv":4527,"ip":0.8332413031474324,"cha":"Carlton I. Phelps, Jr","cct":"Ashland","cv":903,"cp":0.1662065157371618,"wi":0,"m":0.6670347874102706,"up":0,"nc":1,"tv":5651,"tm":4,"pvi":"D+21"},{"yr":2004,"ch":"House","d":"2nd Worcester","p":"D","sp":0,"inc":"Brian Knuuttila","ict":"Gardner","iv":2466,"ip":0.8350829664747714,"cha":"Doreen C. Noble","cct":"Gardner","cv":487,"cp":0.16491703352522857,"wi":0,"m":0.6701659329495429,"up":0,"nc":1,"tv":2984,"tm":4,"pvi":null},{"yr":2024,"ch":"House","d":"8th Suffolk","p":"D","sp":0,"inc":"Jay D. Livingstone","ict":"Boston","iv":2532,"ip":0.8255624388653408,"cha":"Lisa Jeanne Graf","cct":"Boston","cv":465,"cp":0.15161395500489078,"wi":0,"m":0.6739484838604499,"up":0,"nc":2,"tv":3293,"tm":6,"pvi":"D+34"},{"yr":2012,"ch":"House","d":"16th Essex","p":"D","sp":0,"inc":"Marcos A. Devers","ict":"Lawrence","iv":1484,"ip":0.8341765036537381,"cha":"Chally Ramos","cct":"Lawrence","cv":278,"cp":0.15626756604834177,"wi":0,"m":0.6779089376053963,"up":0,"nc":1,"tv":1889,"tm":2,"pvi":null},{"yr":1998,"ch":"House","d":"36th Middlesex","p":"D","sp":0,"inc":"Christopher G. Fallon","ict":null,"iv":3441,"ip":0.8404982901807523,"cha":"Orlando Conforti","cct":null,"cv":649,"cp":0.1585246702491451,"wi":0,"m":0.6819736199316072,"up":0,"nc":1,"tv":4426,"tm":1,"pvi":null},{"yr":2018,"ch":"House","d":"6th Essex","p":"D","sp":0,"inc":"Jerald A. Parisella","ict":"Beverly","iv":3193,"ip":0.8407056345444971,"cha":"Euplio R. Marciano","cct":"Beverly","cv":585,"cp":0.15402843601895735,"wi":0,"m":0.6866771985255398,"up":0,"nc":1,"tv":3974,"tm":4,"pvi":null},{"yr":2004,"ch":"House","d":"2nd Suffolk","p":"D","sp":0,"inc":"Eugene L. O'Flaherty","ict":"Chelsea","iv":2631,"ip":0.8440808469682387,"cha":"Kathryn Duggan","cct":"Boston","cv":484,"cp":0.15527751042669233,"wi":0,"m":0.6888033365415464,"up":0,"nc":1,"tv":3334,"tm":1,"pvi":null},{"yr":2002,"ch":"House","d":"3rd Berkshire","p":"D","sp":0,"inc":"Peter J. Larkin","ict":null,"iv":2395,"ip":0.8450952717007763,"cha":"Eric Guttormsen","cct":null,"cv":439,"cp":0.15490472829922372,"wi":0,"m":0.6901905434015525,"up":0,"nc":1,"tv":3199,"tm":5,"pvi":null},{"yr":1998,"ch":"House","d":"10th Middlesex","p":"D","sp":0,"inc":"Peter J. Koutoujian","ict":null,"iv":3357,"ip":0.846444780635401,"cha":"Jeffrey B. Rubin","cct":null,"cv":609,"cp":0.1535552193645991,"wi":0,"m":0.6928895612708019,"up":0,"nc":1,"tv":4483,"tm":1,"pvi":null},{"yr":2000,"ch":"Senate","d":"2nd Suffolk","p":"D","sp":0,"inc":"Dianne Wilkerson","ict":null,"iv":2951,"ip":0.8509227220299884,"cha":"Hassan A. Williams","cct":null,"cv":517,"cp":0.14907727797001152,"wi":0,"m":0.7018454440599768,"up":0,"nc":1,"tv":4046,"tm":4,"pvi":null},{"yr":2000,"ch":"House","d":"20th Middlesex","p":"D","sp":0,"inc":"James R. Miceli","ict":null,"iv":2586,"ip":0.8509378084896347,"cha":"Salvatore P. Marino","cct":null,"cv":450,"cp":0.14807502467917075,"wi":0,"m":0.702862783810464,"up":0,"nc":1,"tv":3088,"tm":4,"pvi":null},{"yr":2018,"ch":"House","d":"25th Middlesex","p":"D","sp":0,"inc":"Marjorie C. Decker","ict":"Cambridge","iv":5735,"ip":0.8507639816051031,"cha":"Lesley Rebecca Phillips","cct":"Cambridge","cv":993,"cp":0.14730752113929685,"wi":0,"m":0.7034564604658062,"up":0,"nc":1,"tv":7502,"tm":3,"pvi":null},{"yr":2022,"ch":"House","d":"27th Middlesex","p":"D","sp":0,"inc":"Erika Uyterhoeven","ict":"Somerville","iv":6715,"ip":0.8643326039387309,"cha":"Jason Daniel Mackey","cct":"Somerville","cv":1040,"cp":0.1338653623374952,"wi":0,"m":0.7304672416012357,"up":0,"nc":1,"tv":8145,"tm":1,"pvi":null},{"yr":2012,"ch":"Senate","d":"Plymouth and Barnstable","p":"D","sp":0,"inc":"Therese Murray","ict":"Plymouth","iv":9176,"ip":0.867050930737976,"cha":"Stephen Michael Palmer","cct":"Plymouth","cv":1400,"cp":0.13228763110649155,"wi":0,"m":0.7347632996314845,"up":0,"nc":1,"tv":10848,"tm":10,"pvi":null},{"yr":2012,"ch":"House","d":"27th Middlesex","p":"D","sp":0,"inc":"Denise Provost","ict":"Somerville","iv":3651,"ip":0.8672209026128266,"cha":"Harry Kortikere","cct":"Somerville","cv":545,"cp":0.12945368171021376,"wi":0,"m":0.7377672209026128,"up":0,"nc":1,"tv":4471,"tm":4,"pvi":null},{"yr":1998,"ch":"House","d":"4th Middlesex","p":"D","sp":0,"inc":"Stephen P. LeDuc","ict":null,"iv":2701,"ip":0.8687680926342876,"cha":"Michael H. Ossing","cct":null,"cv":404,"cp":0.12994532003859763,"wi":0,"m":0.73882277259569,"up":0,"nc":1,"tv":3303,"tm":1,"pvi":null},{"yr":2018,"ch":"Senate","d":"Berkshire, Hampshire and Franklin","p":"D","sp":0,"inc":"Adam G. Hinds","ict":"Pittsfield","iv":21273,"ip":0.8712015726103693,"cha":"Thomas P. Wickham","cct":"Lee","cv":3039,"cp":0.12445736751576704,"wi":0,"m":0.7467442050946023,"up":0,"nc":1,"tv":26816,"tm":1,"pvi":null},{"yr":2006,"ch":"House","d":"4th Berkshire","p":"D","sp":0,"inc":"William \"Smitty\" Pignatelli","ict":"Lenox","iv":5918,"ip":0.8793462109955423,"cha":"Patrick Long","cct":"Great Barrington","cv":810,"cp":0.12035661218424965,"wi":0,"m":0.7589895988112927,"up":0,"nc":1,"tv":7215,"tm":2,"pvi":null},{"yr":2022,"ch":"House","d":"4th Barnstable","p":"D","sp":0,"inc":"Sarah K. Peake","ict":"Provincetown","iv":8008,"ip":0.8857427275743833,"cha":"Jack Stanton","cct":"Provincetown","cv":1029,"cp":0.11381484349076428,"wi":0,"m":0.771927884083619,"up":0,"nc":1,"tv":9176,"tm":8,"pvi":"D+16"},{"yr":2012,"ch":"House","d":"13th Middlesex","p":"D","sp":0,"inc":"Thomas P. Conroy","ict":"Wayland","iv":1951,"ip":0.8868181818181818,"cha":"Steven Hakar","cct":"Framingham","cv":247,"cp":0.11227272727272727,"wi":0,"m":0.7745454545454545,"up":0,"nc":1,"tv":2351,"tm":3,"pvi":null},{"yr":2010,"ch":"House","d":"12th Middlesex","p":"D","sp":0,"inc":"Ruth B. Balser","ict":"Newton","iv":4393,"ip":0.891979695431472,"cha":"John F. Bortone","cct":"Newton","cv":530,"cp":0.10761421319796954,"wi":0,"m":0.7843654822335024,"up":0,"nc":1,"tv":5173,"tm":6,"pvi":null},{"yr":2012,"ch":"House","d":"10th Essex","p":"D","sp":0,"inc":"Robert F. Fennell","ict":"Lynn","iv":1614,"ip":0.8951747088186356,"cha":"Gardy Jean-Francois","cct":"Lynn","cv":169,"cp":0.093732667775929,"wi":1,"m":0.8014420410427066,"up":0,"nc":1,"tv":1917,"tm":9,"pvi":null},{"yr":2010,"ch":"Senate","d":"2nd Suffolk and Middlesex","p":"D","sp":0,"inc":"Steven A. Tolman","ict":"Boston","iv":8805,"ip":0.9204474179385324,"cha":"William B. Feegbeh","cct":"Boston","cv":742,"cp":0.07756638093246916,"wi":0,"m":0.8428810370060632,"up":0,"nc":1,"tv":10562,"tm":6,"pvi":null},{"yr":2018,"ch":"House","d":"3rd Middlesex","p":"D","sp":0,"inc":"Kate Hogan","ict":"Stow","iv":5343,"ip":0.9242345614945512,"cha":"Edward J. Basile","cct":"Bolton","cv":433,"cp":0.07490053623940494,"wi":0,"m":0.8493340252551462,"up":0,"nc":1,"tv":6070,"tm":5,"pvi":null},{"yr":2012,"ch":"House","d":"14th Norfolk","p":"D","sp":0,"inc":"Alice Hanlon Peisch","ict":"Wellesley","iv":2619,"ip":0.9254416961130744,"cha":"Jerome B. Carr","cct":"Wellesley","cv":208,"cp":0.0734982332155477,"wi":0,"m":0.8519434628975266,"up":0,"nc":1,"tv":2961,"tm":5,"pvi":null},{"yr":2012,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Carlos Tony Henriquez","ict":"Boston","iv":1346,"ip":0.9076196898179366,"cha":"Althea Garrison","cct":"Boston","cv":63,"cp":0.04248145650708024,"wi":1,"m":0.8651382333108564,"up":0,"nc":1,"tv":1992,"tm":1,"pvi":null},{"yr":2004,"ch":"House","d":"11th Suffolk","p":"D","sp":0,"inc":"Elizabeth A. Malia","ict":"Boston","iv":2505,"ip":0.943858327053504,"cha":"David Ebony-Allen Barkley","cct":"Boston","cv":43,"cp":0.01620195930670685,"wi":1,"m":0.9276563677467972,"up":0,"nc":1,"tv":3601,"tm":4,"pvi":null},{"yr":2004,"ch":"House","d":"5th Suffolk","p":"D","sp":0,"inc":"Marie St. Fleur","ict":"Boston","iv":1696,"ip":0.9625425652667424,"cha":"Roy A. Owens","cct":"Boston","cv":28,"cp":0.01589103291713961,"wi":1,"m":0.9466515323496029,"up":0,"nc":1,"tv":2287,"tm":3,"pvi":null},{"yr":2016,"ch":"Senate","d":"1st Suffolk and Middlesex","p":"D","sp":0,"inc":"Joseph A. Boncore","ict":"Winthrop","iv":5042,"ip":0.9567362428842504,"cha":"Claudia P. Sierra","cct":"Boston","cv":44,"cp":0.00834914611005692,"wi":1,"m":0.9483870967741935,"up":0,"nc":1,"tv":6948,"tm":1,"pvi":null},{"yr":2018,"ch":"House","d":"3rd Berkshire","p":"D","sp":0,"inc":"Tricia Farley-Bouvier","ict":"Pittsfield","iv":4569,"ip":0.9769082745349584,"cha":"Steven E. Como","cct":"Pittsfield","cv":27,"cp":0.00577293136626042,"wi":1,"m":0.971135343168698,"up":0,"nc":1,"tv":6466,"tm":4,"pvi":null},{"yr":2004,"ch":"Senate","d":"1st Suffolk","p":"D","sp":0,"inc":"John A. Hart, Jr.","ict":"Boston","iv":11126,"ip":0.9749386610585348,"cha":"Carol Y. Mallory-Causey","cct":"Boston","cv":27,"cp":0.00236593059936908,"wi":1,"m":0.9725727304591657,"up":0,"nc":1,"tv":15624,"tm":2,"pvi":null},{"yr":2010,"ch":"House","d":"17th Suffolk","p":"D","sp":0,"inc":"Kevin G. Honan","ict":"Boston","iv":1445,"ip":0.9789972899728996,"cha":"Sarah Elizabeth Sullivan","cct":"Boston","cv":6,"cp":0.0040650406504065,"wi":1,"m":0.9749322493224931,"up":0,"nc":1,"tv":1643,"tm":8,"pvi":null},{"yr":2008,"ch":"House","d":"8th Bristol","p":"D","sp":0,"inc":"Michael J. Rodrigues","ict":"Westport","iv":2560,"ip":0.9865125240847784,"cha":"Mike Raposa","cct":"Fall River","cv":18,"cp":0.00693641618497109,"wi":1,"m":0.9795761078998073,"up":0,"nc":1,"tv":3329,"tm":7,"pvi":null},{"yr":2008,"ch":"Senate","d":"1st Suffolk","p":"D","sp":0,"inc":"John A. Hart, Jr.","ict":"Boston","iv":9355,"ip":0.982049128700399,"cha":"Althea Garrison","cct":"Boston","cv":23,"cp":0.00241444467772412,"wi":1,"m":0.9796346840226748,"up":0,"nc":1,"tv":13284,"tm":4,"pvi":null},{"yr":2006,"ch":"Senate","d":"Middlesex, Suffolk and Essex","p":"D","sp":0,"inc":"Jarrett T. Barrios","ict":"Cambridge","iv":15665,"ip":0.994855836402896,"cha":"David Cleveland","cct":"Chelsea","cv":2,"cp":0.00012701638511367967,"wi":1,"m":0.9947288200177823,"up":0,"nc":1,"tv":22687,"tm":2,"pvi":null}];</script>
+<script>
+(function () {
+  "use strict";
+
+  var DATA = window.__CHALLENGES__;
+  var MAXBAR = 1.0; // margins span roughly -0.60 to +0.99
+
+  var els = {
+    rows:    document.getElementById("rows"),
+    stats:   document.getElementById("stats"),
+    count:   document.getElementById("count"),
+    q:       document.getElementById("q"),
+    cycle:   document.getElementById("f-cycle"),
+    chamber: document.getElementById("f-chamber"),
+    party:   document.getElementById("f-party"),
+    result:  document.getElementById("f-result"),
+    close:   document.getElementById("f-close"),
+    reset:   document.getElementById("reset"),
+    table:   document.getElementById("table")
+  };
+
+  // default: margin ascending -> biggest challenger wins first
+  var sort = { key: "m", dir: 1 };
+  var closeOnly = false;
+
+  // ---- cycle options, newest first
+  var cycles = DATA.map(function (r) { return r.yr; })
+    .filter(function (v, i, a) { return a.indexOf(v) === i; })
+    .sort(function (a, b) { return b - a; });
+  cycles.forEach(function (y) {
+    var o = document.createElement("option");
+    o.value = String(y);
+    o.textContent = String(y);
+    els.cycle.appendChild(o);
+  });
+
+  function pct(v) { return (v * 100).toFixed(1); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function signed(v) {
+    var n = (v * 100).toFixed(1);
+    return v > 0 ? "+" + n : n;
+  }
+
+  function haystack(r) {
+    if (r._h === undefined) {
+      r._h = [r.inc, r.cha, r.d, r.ict, r.cct, r.ch, String(r.yr)]
+        .filter(Boolean).join(" ").toLowerCase();
+    }
+    return r._h;
+  }
+
+  function filtered() {
+    var q = els.q.value.trim().toLowerCase();
+    var cy = els.cycle.value, chv = els.chamber.value;
+    var pv = els.party.value, rv = els.result.value;
+
+    return DATA.filter(function (r) {
+      if (q && haystack(r).indexOf(q) === -1) return false;
+      if (cy && String(r.yr) !== cy) return false;
+      if (chv && r.ch !== chv) return false;
+      if (pv && r.p !== pv) return false;
+      if (rv !== "" && String(r.up) !== rv) return false;
+      if (closeOnly && Math.abs(r.m) >= 0.10) return false;
+      return true;
+    });
+  }
+
+  function sorted(list) {
+    var k = sort.key, dir = sort.dir;
+    return list.slice().sort(function (a, b) {
+      var x = a[k], y = b[k];
+      // nulls (e.g. missing PVI) always sink
+      if (x === null && y === null) return a.m - b.m;
+      if (x === null) return 1;
+      if (y === null) return -1;
+      if (k === "pvi") { x = a.pvi_n_calc; y = b.pvi_n_calc; }
+      var c = (typeof x === "number" && typeof y === "number")
+        ? x - y
+        : String(x).localeCompare(String(y));
+      return c === 0 ? a.m - b.m : c * dir;
+    });
+  }
+
+  // numeric PVI for sorting, parsed from the display string
+  DATA.forEach(function (r) {
+    if (!r.pvi) { r.pvi_n_calc = null; return; }
+    if (r.pvi === "EVEN") { r.pvi_n_calc = 0; return; }
+    var m = /^([DR])\+(\d+(?:\.\d+)?)$/.exec(r.pvi);
+    r.pvi_n_calc = m ? (m[1] === "D" ? 1 : -1) * parseFloat(m[2]) : null;
+  });
+
+  function marginCell(m) {
+    var neg = m < 0;
+    var w = Math.min(Math.abs(m) / MAXBAR, 1) * 50;
+    var side = neg ? "right:50%;" : "left:50%;";
+    var cls = neg ? "neg" : "pos";
+    return '<div class="inner">' +
+      '<span class="val ' + cls + '">' + signed(m) + "</span>" +
+      '<span class="bar">' +
+        '<span class="track"></span>' +
+        '<span class="axis"></span>' +
+        '<span class="fill ' + cls + '" style="' + side + "width:" + w.toFixed(2) + '%"></span>' +
+      "</span></div>";
+  }
+
+  function nameCell(name, city, won) {
+    return '<span class="name ' + (won ? "won" : "lost") + '">' + esc(name) +
+      (city ? '<span class="home">' + esc(city) + "</span>" : "") + "</span>";
+  }
+
+  function render() {
+    var list = sorted(filtered());
+
+    els.count.innerHTML = "<b>" + list.length + "</b> of " + DATA.length + " contests";
+
+    // live stats over the filtered set
+    var ups = list.filter(function (r) { return r.up === 1; }).length;
+    var margins = list.map(function (r) { return r.m; }).sort(function (a, b) { return a - b; });
+    var med = margins.length
+      ? (margins.length % 2
+          ? margins[(margins.length - 1) / 2]
+          : (margins[margins.length / 2 - 1] + margins[margins.length / 2]) / 2)
+      : null;
+    var closest = list.length
+      ? list.slice().sort(function (a, b) { return Math.abs(a.m) - Math.abs(b.m); })[0]
+      : null;
+
+    els.stats.innerHTML =
+      stat("Contests", list.length, list.length === 1 ? "primary challenge" : "primary challenges") +
+      stat("Upsets", ups, list.length ? (100 * ups / list.length).toFixed(0) + "% of contests" : "&mdash;") +
+      stat("Median margin", med === null ? "&mdash;" : signed(med) + "<small> pts</small>", "incumbent minus challenger") +
+      stat("Closest", closest ? signed(closest.m) + "<small> pts</small>" : "&mdash;",
+           closest ? esc(closest.d) + " &middot; " + closest.yr : "&mdash;");
+
+    if (!list.length) {
+      els.rows.innerHTML = '<tr><td colspan="12" class="empty"><strong>No contests match</strong>' +
+        "Try a broader search or clear the filters.</td></tr>";
+      return;
+    }
+
+    var html = list.map(function (r) {
+      var incWon = r.up === 0;
+      return "<tr>" +
+        '<td class="num"><span class="cycle">' + r.yr + "</span>" +
+          (r.sp ? '<span class="flag">SP</span>' : "") + "</td>" +
+        '<td><span class="district">' + esc(r.d) + '</span><span class="chamber">' + r.ch + "</span></td>" +
+        '<td><span class="chip">' + r.p + "</span></td>" +
+        "<td>" + nameCell(r.inc, r.ict, incWon) + "</td>" +
+        '<td class="num">' + pct(r.ip) + "</td>" +
+        "<td>" + nameCell(r.cha, r.cct, !incWon) +
+          (r.wi ? '<span class="flag">W/I</span>' : "") + "</td>" +
+        '<td class="num">' + pct(r.cp) + "</td>" +
+        '<td class="margin-cell">' + marginCell(r.m) + "</td>" +
+        '<td><span class="pill ' + (incWon ? "hold" : "upset") + '">' +
+          (incWon ? "Held" : "Upset") + "</span></td>" +
+        '<td class="num">' + r.tm + "</td>" +
+        '<td class="num">' + r.tv.toLocaleString("en-US") + "</td>" +
+        '<td class="num"><span class="pvi' + (r.pvi ? "" : " none") + '">' +
+          (r.pvi ? esc(r.pvi) : "&ndash;") + "</span></td>" +
+        "</tr>";
+    }).join("");
+
+    els.rows.innerHTML = html;
+  }
+
+  function stat(label, value, note) {
+    return '<div class="stat"><span class="stat-label">' + label + "</span>" +
+      '<span class="stat-value">' + value + "</span>" +
+      '<span class="stat-note">' + note + "</span></div>";
+  }
+
+  // ---- sorting
+  var headers = els.table.querySelectorAll("thead th[data-key]");
+  function paintSort() {
+    headers.forEach(function (th) {
+      var caret = th.querySelector(".caret");
+      if (th.dataset.key === sort.key) {
+        th.setAttribute("aria-sort", sort.dir === 1 ? "ascending" : "descending");
+        caret.innerHTML = sort.dir === 1 ? "&#9650;" : "&#9660;";
+      } else {
+        th.removeAttribute("aria-sort");
+        caret.innerHTML = "";
+      }
+    });
+  }
+  headers.forEach(function (th) {
+    th.querySelector("button").addEventListener("click", function () {
+      var k = th.dataset.key;
+      if (sort.key === k) {
+        sort.dir = -sort.dir;
+      } else {
+        sort.key = k;
+        // text sorts read better A-Z; numeric ones biggest-first, except margin
+        sort.dir = (k === "d" || k === "inc" || k === "cha" || k === "p" || k === "m") ? 1 : -1;
+      }
+      paintSort();
+      render();
+    });
+  });
+
+  // ---- controls
+  ["input", "change"].forEach(function (ev) {
+    els.q.addEventListener(ev, render);
+  });
+  [els.cycle, els.chamber, els.party, els.result].forEach(function (s) {
+    s.addEventListener("change", render);
+  });
+  els.close.addEventListener("click", function () {
+    closeOnly = !closeOnly;
+    els.close.setAttribute("aria-pressed", String(closeOnly));
+    render();
+  });
+  els.reset.addEventListener("click", function () {
+    els.q.value = "";
+    els.cycle.value = els.chamber.value = els.party.value = els.result.value = "";
+    closeOnly = false;
+    els.close.setAttribute("aria-pressed", "false");
+    sort = { key: "m", dir: 1 };
+    paintSort();
+    render();
+  });
+
+  paintSort();
+  render();
+})();
+</script>

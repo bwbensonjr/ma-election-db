@@ -16,7 +16,8 @@ primary_elections:
 	uv run python election_stats.py --stage Primaries --min-year=1996
 
 # --- Stage 2: transform raw CSVs into summaries -----------------------
-summaries: data/ma_general_election_summaries.csv.gz
+summaries: data/ma_general_election_summaries.csv.gz \
+    data/ma_primary_election_summaries.csv.gz
 
 data/ma_general_election_summaries.csv.gz \
 data/ma_general_election_candidates.csv.gz \
@@ -25,6 +26,13 @@ data/ma_election_districts.csv: elections.R \
     data/ma_candidates.csv.gz \
     data/candidate-id-map.csv
 	Rscript elections.R
+
+data/ma_primary_election_summaries.csv.gz \
+data/ma_primary_election_candidates.csv.gz: primary_elections.R \
+    data/ma_primary_elections.csv.gz \
+    data/ma_primary_candidates.csv.gz \
+    data/candidate-id-map.csv
+	Rscript primary_elections.R
 
 # --- Stage 3: demographics (requires CENSUS_API_KEY) -------------------
 # Always re-runs when invoked directly; takes 15-30 min on first run
@@ -73,6 +81,8 @@ sqlite: data/ma_elections.sqlite
 data/ma_elections.sqlite: build_sqlite.R \
     data/ma_general_election_summaries.csv.gz \
     data/ma_general_election_candidates.csv.gz \
+    data/ma_primary_election_summaries.csv.gz \
+    data/ma_primary_election_candidates.csv.gz \
     data/demographics/ma_district_demographics.csv.gz \
     data/demographics/ma_precinct_demographics.csv.gz \
     data/pvi/ma_district_pvi.csv.gz \

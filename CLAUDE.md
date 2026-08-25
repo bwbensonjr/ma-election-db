@@ -44,9 +44,9 @@ Rscript elections.R
 Rscript build_sqlite.R
 ```
 
-### Primary elections processing (work in progress)
+### Primary elections processing
 ```bash
-# Process primary election data
+# Transform raw primary CSVs into summaries (feeds the SQLite primary tables)
 Rscript primary_elections.R
 ```
 
@@ -172,6 +172,7 @@ python find_dup_candidates.py
   produced by the other stages
 - Single writer for the SQLite file - no other script opens the database
 - Writes tables: `general_election`, `election_candidate`,
+  `primary_election`, `primary_election_candidate`,
   `district_demographics`, `precinct_demographics`, `district_pvi`,
   `precinct_district`, `precinct_presidential_vote`,
   `national_presidential_baseline`, `district_summary`
@@ -240,6 +241,25 @@ python find_dup_candidates.py
 - Links candidates to elections with full details
 - Includes is_incumbent, is_winner, is_write_in, district_id_prev flags
 
+**primary_election / primary_election_candidate tables** (from primary_elections.R)
+- One row per party primary, and one row per candidate in a party primary
+- `party` is the primary's party (the source column `party_primary`), so a
+  district contributes one row per party per date
+- **No incumbency columns.** primary_elections.R does not compute incumbency,
+  so analyses that need it derive the sitting member from `general_election`:
+  a candidate held the seat if they won the most recent general election
+  (regular or special) for that office/district before the primary date. See
+  `queries/incumbent_primary_challenges.sql` for the reference implementation
+  and the redistricting pitfall it handles
+- Write-ins matter here in a way they do not for generals: MA primaries are
+  winnable on a sticker campaign, so `is_write_in = 1` rows include real
+  winners (Kenneth Gordon beat Rep. Charles Murphy this way in 2012). Do not
+  filter them out reflexively
+- Coverage: 1996-2026, but the 2006 and 2016 cycles are badly
+  under-collected upstream in `data/ma_primary_elections.csv.gz` - roughly 19
+  State Rep incumbents on the ballot in 2006 against ~140 in a normal cycle.
+  Treat those years as missing data rather than quiet cycles
+
 ## Dependencies
 
 **Python:**
@@ -262,6 +282,8 @@ python find_dup_candidates.py
 
 - `data/ma_general_election_summaries.csv.gz` - Analysis-ready election summaries (1 row per election)
 - `data/ma_general_election_candidates.csv.gz` - All candidates with incumbency flags
+- `data/ma_primary_election_summaries.csv.gz` - Primary election summaries (1 row per party primary, ~4,288 rows)
+- `data/ma_primary_election_candidates.csv.gz` - All primary candidates (~5,811 rows, no incumbency flags)
 - `data/demographics/ma_district_demographics.csv.gz` - District-level demographics (217 rows across 4 offices)
 - `data/demographics/ma_precinct_demographics.csv.gz` - Precinct-level demographics
 - `data/demographics/ma_city_town_demographics.csv.gz` - City/town-level demographics
@@ -331,6 +353,56 @@ CREATE TABLE `general_election` (
   `percent_write_in` REAL,
   `party_write_in` TEXT
 );
+
+-- One row per party primary. Same shape as general_election but much
+-- flatter: no per-party candidate columns and no incumbency columns.
+-- `party` is the primary's party, so one district yields one row per party.
+CREATE TABLE `primary_election` (
+  `office_branch` TEXT,
+  `office_id` INTEGER,
+  `office` TEXT,
+  `district` TEXT,
+  `district_display` TEXT,
+  `district_id` INTEGER,
+  `election_id` INTEGER,
+  `election_date` TEXT,     -- ISO 'YYYY-MM-DD', as in general_election
+  `party` TEXT,             -- 'Democratic', 'Republican', ...
+  `is_special` INTEGER,
+  `all_other_votes` INTEGER,
+  `blank_votes` INTEGER,
+  `total_votes` INTEGER,
+  `party_abbr` TEXT,
+  `num_candidates` INTEGER,
+  `winner_id` INTEGER,
+  `winner` TEXT,
+  `winner_votes` INTEGER,
+  `winner_percent` REAL
+);
+CREATE UNIQUE INDEX idx_primary_election_pk
+    ON primary_election (election_id);
+
+-- One row per candidate, per party primary. Carries the primary_election
+-- columns plus the candidate's own fields. No is_incumbent column - derive
+-- incumbency from general_election (see
+-- queries/incumbent_primary_challenges.sql).
+CREATE TABLE `primary_election_candidate` (
+  -- ... all primary_election columns, plus:
+  `candidate_id` INTEGER,
+  `name` TEXT,
+  `display_name` TEXT,
+  `first_name` TEXT,
+  `middle_name` TEXT,
+  `last_name` TEXT,
+  `num_votes` INTEGER,
+  `percent` REAL,           -- num_votes / (total_votes - blank_votes)
+  `is_winner` INTEGER,
+  `is_write_in` INTEGER,    -- 1 can still mean the winner; sticker campaigns win
+  `street_addr` TEXT,
+  `city_town` TEXT,
+  `num_elections` INTEGER
+);
+CREATE UNIQUE INDEX idx_primary_election_candidate_pk
+    ON primary_election_candidate (election_id, candidate_id);
 
 -- District-level demographics: one row per (census_year, office, district).
 -- The office column matches `general_election.office` for the 4 legislative
