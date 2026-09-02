@@ -162,16 +162,24 @@ def enrich_incumbency(df):
 
 
 def build_reference(ref_file):
-    """Return dict: office -> {district_key -> (district, district_display, district_id)}."""
+    """Return dict: office -> {district_key -> (district, district_display, district_id)}.
+
+    Each district is registered under both its canonical name ("Eighteenth
+    Essex") and its display name ("18th Essex"), so callers can join on either
+    spelling. The two coincide for districts named after their counties
+    ("Cape and Islands"), which is harmless -- both keys carry the same value.
+    """
     ref = pd.read_csv(ref_file)
     lookup = {}
     for office, grp in ref.groupby("office"):
         by_key = {}
         for _, r in grp.iterrows():
-            k = district_key(r["district"])
-            if k in by_key:
-                sys.exit(f"reference key collision in {office!r}: {k!r}")
-            by_key[k] = (r["district"], r["district_display"], int(r["district_id"]))
+            value = (r["district"], r["district_display"], int(r["district_id"]))
+            for name in (r["district"], r["district_display"]):
+                k = district_key(name)
+                if by_key.get(k, value) != value:
+                    sys.exit(f"reference key collision in {office!r}: {k!r}")
+                by_key[k] = value
         lookup[office] = by_key
     return lookup
 

@@ -101,3 +101,131 @@ her House seat to the Senate).
   party, and electionstats candidate id (the id links back to
   `election_candidate.candidate_id`)
 - `incumbent_election_date` - date the incumbent last won the seat
+
+---
+
+# 2026 State Primary Results (municipality level)
+
+Preliminary results for the September 1, 2026 primaries, one row per
+**(party, office, district, municipality, candidate)**.
+
+Output: `data/primary_2026/ma_primary_2026_results.csv.gz` (2,751 rows).
+
+## Source
+
+The Associated Press election feed that backs the Boston Globe's 2026 primary
+coverage. It is public and unauthenticated:
+
+```
+https://elections-api.bostonglobe.com/v2/elections/2026-09-01?statePostal=MA&party={dem,gop}&level=ru
+```
+
+Two requests cover the whole state. The `level=ru` parameter is what produces
+sub-state rows; `level` accepts only `ru` and `fipscode`, and `fipscode`
+returns nothing for Massachusetts.
+
+## Granularity
+
+The finest grain the feed offers is the **municipality within a district**
+(`reportingunitLevel == 2`). There is no ward or precinct tier.
+
+A city split across several districts appears once per district, holding only
+that district's precincts - Boston shows up in 16 separate Democratic State
+House races, and its per-race precinct counts sum to the citywide 275. So
+`city_town` rows are district-specific and must not be summed across races to
+get a citywide total.
+
+## Coverage, and the uncontested-race caveat
+
+**AP does not tabulate uncontested primaries.** It reports them with every
+`voteCount` at 0. Of 282 race records (212 Democratic, 70 Republican), 224 are
+uncontested and carry no real data, so the build drops them.
+
+What remains is **54 contested races** across the six offices ma-election-db
+tracks - 48 Democratic, 6 Republican - covering 1,269 race-municipality rows
+and about 2.48M votes. Four further contested races are excluded as
+out-of-schema: Democratic District Attorney (Suffolk, Norfolk) and Republican
+Lieutenant Governor and Secretary of State.
+
+## Snapshots
+
+Results are preliminary and the upstream feed mutates in place. The raw
+responses are snapshotted to `primary_2026/snapshots/ap_2026-09-01_{dem,gop}.json.gz`
+(~220 KB total) and checked in, so the CSV is reproducible from the repo
+alone. The build reads the snapshots by default.
+
+## Build
+
+```bash
+# rebuild from the checked-in snapshots (no network)
+uv run python primary_2026/build_primary_2026_results.py
+
+# refresh the snapshots from the live feed, then rebuild
+uv run python primary_2026/build_primary_2026_results.py --fetch
+```
+
+Depends on `data/primary_2026/ma_primary_2026_candidates.csv.gz`, so run
+`build_primary_2026.py` first.
+
+## Verification
+
+The build fails loudly rather than writing suspect data. It checks that each
+candidate's municipality votes sum exactly to AP's own statewide total for the
+race, that per-municipality precinct counts sum to the race total (this is what
+confirms split cities are counted once per district), that every district
+resolves against `district_reference.csv`, and that no
+(party, office, district, municipality, candidate) key repeats. All four hold
+on the current snapshot.
+
+It also warns, without failing, when a candidate does not match the
+nominations dataset or when AP's incumbency flag disagrees with ours. On the
+current snapshot there are none of either: all 2,751 rows joined, and AP and
+`ma_primary_2026_candidates.csv.gz` agree on every incumbent.
+
+## Joining to the rest of the database
+
+`office`, `office_id`, `office_branch`, `district`, `district_display`, and
+`district_id` follow the same conventions as `general_election`, so results
+join directly to `district_demographics`, `district_pvi`, and the historical
+election tables.
+
+AP's `seatName` arrives in display form (`"18th Essex"`, `"District 6"`,
+`"Class II"`), which is why `build_reference()` in `build_primary_2026.py` now
+keys each district under both its canonical name and its `district_display`.
+Governor's Council and U.S. House `"District N"` values and the U.S. Senate
+`"Class II"` are normalized in this script.
+
+## Not in SQLite
+
+These are preliminary numbers that official electionstats results will
+supersede, so there is no `build_sqlite.R` table and no `Makefile` target yet.
+Add both once the results are final.
+
+## Columns
+
+- `election_date` (`2026-09-01`), `is_special` (`0`)
+- `party`, `party_abbr` - `Democratic`/`Republican`, `D`/`R`
+- `office_branch`, `office_id`, `office` - match `general_election`
+- `district`, `district_display`, `district_id` - canonical DB district
+  (blank for Governor)
+- `city_town` - the municipality the votes come from, within this district
+- `county_fips`, `town_fips` - AP's FIPS codes for the county and municipality
+- `precincts_reporting`, `precincts_total`, `precincts_reporting_pct` - for
+  this municipality's portion of the district
+- `candidate_name`, `first_name`, `middle_name`, `last_name`
+- `ap_candidate_id` - AP `polID`; there is no electionstats id for these yet
+- `candidate_city_town` - the candidate's city of residence (distinct from
+  `city_town`, which is where the votes were cast)
+- `is_incumbent` - from the nominations dataset
+- `is_incumbent_ap` - AP's own flag, kept for cross-checking
+- `is_race_winner` - AP's district-level call, repeated on every municipality
+  row of the race; it is not a per-municipality result
+- `votes` - this candidate's votes in this municipality
+- `town_total_votes` - all candidates' votes in this municipality for this race
+- `percent` - `votes / town_total_votes`, a 0-1 fraction matching the
+  `percent_*` convention in `general_election`; blank where no votes are in yet
+- `ap_race_id`, `eevp` - AP race id and expected-vote-percent
+- `race_call_status`, `results_final` - AP's call status and whether the
+  statewide unit is final
+- `last_updated` - when AP last updated this municipality
+- `snapshot_time` - when the snapshot this row was built from was taken
