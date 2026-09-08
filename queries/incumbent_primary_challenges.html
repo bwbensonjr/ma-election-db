@@ -20,6 +20,10 @@
   --hold-bg:   #E3ECF2;
   --shadow:    0 1px 2px rgba(23,29,40,.06), 0 8px 24px -12px rgba(23,29,40,.18);
   --focus:     #8A6D14;
+  --chart-a:      #1173A6;
+  --chart-a-wash: #E4EFF6;
+  --chart-b:      #A32E24;
+  --chart-b-wash: #F6E4E1;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -39,6 +43,10 @@
     --hold-bg:   #1B2C36;
     --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
     --focus:     #C9A227;
+    --chart-a:      #3F9BD0;
+    --chart-a-wash: #16303F;
+    --chart-b:      #DE6153;
+    --chart-b-wash: #3A1F1C;
   }
 }
 :root[data-theme="dark"] {
@@ -58,6 +66,10 @@
   --hold-bg:   #1B2C36;
   --shadow:    0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
   --focus:     #C9A227;
+  --chart-a:      #3F9BD0;
+  --chart-a-wash: #16303F;
+  --chart-b:      #DE6153;
+  --chart-b-wash: #3A1F1C;
 }
 
 * { box-sizing: border-box; }
@@ -449,6 +461,206 @@ td.num {
   color: var(--ink-2);
 }
 
+/* ---------- trends ---------- */
+.trends { display: flex; flex-direction: column; gap: 18px; }
+.trend-head { display: flex; flex-direction: column; gap: 6px; }
+.trend-head h2 {
+  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(19px, 2.4vw, 25px);
+  letter-spacing: -.018em;
+  margin: 0;
+  text-wrap: balance;
+}
+.trend-head p { margin: 0; max-width: 74ch; color: var(--ink-2); }
+.trend-head em { font-style: italic; }
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.panel { background: var(--surface); margin: 0; padding: 16px 18px 10px; }
+.panel figcaption { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.panel-k {
+  align-self: flex-start;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--chart-a);
+  background: var(--chart-a-wash);
+}
+.panel-k.drift { color: var(--chart-b); background: var(--chart-b-wash); }
+.panel figcaption strong { font-size: 15px; font-weight: 600; }
+.panel-sub { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+.chart { width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* chart furniture stays recessive */
+.ax-line { stroke: var(--line); stroke-width: 1; }
+.grid-line { stroke: var(--line-soft); stroke-width: 1; }
+.tick-txt {
+  fill: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+.band-fill { fill: var(--chart-a); opacity: .085; }
+.band-mid { stroke: var(--chart-a); stroke-width: 1; stroke-dasharray: 2 3; opacity: .55; }
+.trend-fit { stroke: var(--chart-b); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: .75; }
+.series-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.series-line.a { stroke: var(--chart-a); }
+.series-line.b { stroke: var(--chart-b); }
+.series-line.projected { stroke-dasharray: 3 3; opacity: .75; }
+.dot { stroke: var(--surface); stroke-width: 2; }
+.dot.a { fill: var(--chart-a); }
+.dot.b { fill: var(--chart-b); }
+.dot.hollow.a { fill: var(--surface); stroke: var(--chart-a); }
+.dot.hollow.b { fill: var(--surface); stroke: var(--chart-b); }
+.dot.gap { fill: var(--surface); stroke: var(--muted); stroke-dasharray: 2 2; }
+.anno {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  fill: var(--muted);
+}
+.anno.on-a { fill: var(--chart-a); }
+.anno.on-b { fill: var(--chart-b); }
+.hit { fill: transparent; cursor: crosshair; }
+.crosshair { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
+.focus-dot { opacity: 0; pointer-events: none; }
+.focus-dot.a { stroke: var(--chart-a); }
+.focus-dot.b { stroke: var(--chart-b); }
+
+.tip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -100%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+  padding: 7px 9px;
+  min-width: 132px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.tip .tip-yr {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--muted);
+  display: block;
+}
+.tip .tip-v {
+  font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.tip .tip-n { display: block; color: var(--muted); font-size: 11.5px; }
+.tip .tip-flag { display: block; color: var(--brass); font-size: 11px; margin-top: 2px; }
+
+.trend-foot { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.trend-note { margin: 0; flex: 1 1 340px; font-size: 12.5px; color: var(--muted); max-width: 82ch; }
+
+.figures { overflow-x: auto; }
+.figures table { min-width: 0; }
+.figures caption {
+  text-align: left;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 8px 0;
+}
+.figures th, .figures td { padding: 5px 12px 5px 0; font-size: 12.5px; }
+.figures thead th {
+  position: static;
+  background: none;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.figures td.n {
+  text-align: right;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.figures tr.incomplete td { color: var(--muted); font-style: italic; }
+
+/* ---------- field-size section ---------- */
+.field-sec { display: flex; flex-direction: column; gap: 16px; }
+.field-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.05fr) minmax(280px, .95fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+@media (max-width: 860px) { .field-grid { grid-template-columns: 1fr; } }
+.panel.wide { padding: 16px 18px 12px; }
+.field-notes {
+  background: var(--surface);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+}
+.fact { display: flex; flex-direction: column; gap: 3px; }
+.fact-k {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.fact p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.fact b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.fact sup { font-size: .7em; }
+
+.bar-track { fill: var(--line-soft); }
+.bar-fill { fill: var(--chart-a); }
+.bar-lab {
+  fill: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+.bar-sub {
+  fill: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.bar-val {
+  fill: var(--chart-a);
+  font-family: "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.bar-val.zero { fill: var(--muted); }
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
@@ -468,6 +680,99 @@ td.num {
   </header>
 
   <section class="stats" id="stats" aria-label="Summary of the filtered contests"></section>
+
+  <section class="trends" aria-labelledby="trends-h">
+    <div class="trend-head">
+      <h2 id="trends-h">Two questions, two different answers</h2>
+      <p>Whether incumbents get challenged has not changed in thirty years. Whether the
+      challenge <em>works</em> has drifted downward &mdash; though on thirteen usable cycles
+      that drift is suggestive, not established.</p>
+    </div>
+
+    <div class="panels">
+      <figure class="panel">
+        <figcaption>
+          <span class="panel-k">Flat</span>
+          <strong>Share of sitting members who drew a challenger</strong>
+          <span class="panel-sub">No trend: &minus;0.2 pts per decade, R&sup2;&nbsp;0.005, p&nbsp;=&nbsp;0.83.
+          Steady at 11.0% &plusmn; 2.4 across thirteen complete cycles.</span>
+        </figcaption>
+        <div class="chart" id="chart-rate"></div>
+      </figure>
+
+      <figure class="panel">
+        <figcaption>
+          <span class="panel-k drift">Drifting down</span>
+          <strong>Share of challenged incumbents who lost</strong>
+          <span class="panel-sub">&minus;4.6 pts per decade, Spearman &rho;&nbsp;=&nbsp;&minus;0.72,
+          p&nbsp;=&nbsp;0.005 &mdash; but it does not survive correction for the seven
+          trends tested (Holm p&nbsp;=&nbsp;0.11).</span>
+        </figcaption>
+        <div class="chart" id="chart-defeat"></div>
+      </figure>
+    </div>
+
+    <div class="trend-foot">
+      <button type="button" class="reset" id="toggle-figures" aria-expanded="false"
+              aria-controls="figures">Show the numbers</button>
+      <p class="trend-note">Hollow markers are cycles whose primary data is incomplete upstream
+      (2006, 2016) and are excluded from every fit; the line breaks across them. The 2026 point
+      counts declared candidates for the September 1 ballot, so it is comparable only to the
+      left panel &mdash; there is no result yet to win or lose.</p>
+    </div>
+    <div id="figures" class="figures" hidden></div>
+  </section>
+
+  <section class="field-sec" aria-labelledby="field-h">
+    <div class="trend-head">
+      <h2 id="field-h">A crowded field is a symptom, not a cause &mdash; and it doubles as an escape hatch</h2>
+      <p>Incumbents facing two or more challengers lose about twice as often (21.3% against 10.8%).
+      But the extra challengers are not what beats them: a crowded field is where challengers gather
+      when a member is already weak. Because a Massachusetts primary is won on a plurality with no
+      runoff, that same crowd is what lets a beaten incumbent survive.</p>
+    </div>
+
+    <div class="field-grid">
+      <figure class="panel wide">
+        <figcaption>
+          <span class="panel-k">The decisive split</span>
+          <strong>Survival when a majority voted against the incumbent</strong>
+          <span class="panel-sub">Contests where the combined opposition out-polled the
+          incumbent. One-on-one, that is fatal every time. With the vote divided, most
+          survive anyway.</span>
+        </figcaption>
+        <div class="chart" id="chart-field"></div>
+      </figure>
+
+      <div class="field-notes">
+        <div class="fact">
+          <span class="fact-k">Why they are there</span>
+          <p>Mean vote against the incumbent: <b>31.7%</b> in a one-on-one,
+          <b>49.2%</b> in a crowded field. Challengers pile on the vulnerable
+          (Wilcoxon p&nbsp;=&nbsp;7.5&times;10<sup>&minus;10</sup>).</p>
+        </div>
+        <div class="fact">
+          <span class="fact-k">What the split is worth</span>
+          <p>Of 47 crowded contests, <b>22</b> had a majority against the incumbent but only
+          <b>10</b> ended in defeat. Had the opposition consolidated, the crowded-field defeat
+          rate would be <b>46.8%</b>, not 21.3%.</p>
+        </div>
+        <div class="fact">
+          <span class="fact-k">The hard floor</span>
+          <p>No incumbent who held a majority has ever lost &mdash; <b>0 of 231</b>. Plurality
+          rules mean the only route to beating one is a divided-but-larger opposition
+          consolidating behind a single name.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="trend-note">The raw field-size association is borderline on its own
+    (odds ratio 2.22, 95% CI 0.88&ndash;5.28, p&nbsp;=&nbsp;0.056); the survival split above is not
+    (Fisher p&nbsp;=&nbsp;0.000012). Consolidation is counterfactual &mdash; it assumes every
+    also-ran vote would transfer to one challenger, which real campaigns never manage in full.
+    Within crowded fields, the <em>degree</em> of fragmentation does not further predict the
+    outcome (p&nbsp;=&nbsp;0.67, n&nbsp;=&nbsp;47).</p>
+  </section>
 
   <div class="controls">
     <div class="field grow">
@@ -791,5 +1096,346 @@ td.num {
 
   paintSort();
   render();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+
+  // Cycle series. `bad` marks cycles whose primary data is under-collected
+  // upstream (2006, 2016) -- excluded from every fit and drawn hollow.
+  // `declared` is the 2026 September ballot: nominations, not results.
+  var SERIES = [
+    { yr: 1996, num: 15, den: 158, def: 4,  chal: 16 },
+    { yr: 1998, num: 29, den: 179, def: 4,  chal: 29 },
+    { yr: 2000, num: 13, den: 186, def: 3,  chal: 13 },
+    { yr: 2002, num: 23, den: 160, def: 3,  chal: 23 },
+    { yr: 2004, num: 19, den: 185, def: 3,  chal: 23 },
+    { yr: 2006, num: 4,  den: 57,  def: 0,  chal: 6,  bad: true },
+    { yr: 2008, num: 21, den: 182, def: 4,  chal: 23 },
+    { yr: 2010, num: 14, den: 165, def: 1,  chal: 15 },
+    { yr: 2012, num: 19, den: 190, def: 5,  chal: 23 },
+    { yr: 2014, num: 17, den: 179, def: 1,  chal: 17 },
+    { yr: 2016, num: 5,  den: 50,  def: 0,  chal: 6,  bad: true },
+    { yr: 2018, num: 19, den: 171, def: 2,  chal: 21 },
+    { yr: 2020, num: 22, den: 181, def: 2,  chal: 22 },
+    { yr: 2022, num: 21, den: 173, def: 1,  chal: 22 },
+    { yr: 2024, num: 18, den: 177, def: 2,  chal: 18 },
+    { yr: 2026, num: 26, den: 183, def: null, chal: null, declared: true }
+  ];
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(name, attrs) {
+    var n = document.createElementNS(SVGNS, name);
+    for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) {
+      n.setAttribute(k, attrs[k]);
+    }
+    return n;
+  }
+
+  var tip = document.createElement("div");
+  tip.className = "tip";
+  tip.setAttribute("role", "status");
+  document.body.appendChild(tip);
+
+  function showTip(x, y, html) {
+    tip.innerHTML = html;
+    tip.style.left = x + "px";
+    tip.style.top = (y - 12) + "px";
+    tip.style.opacity = "1";
+  }
+  function hideTip() { tip.style.opacity = "0"; }
+
+  function ols(pts) {
+    var n = pts.length, sx = 0, sy = 0, sxy = 0, sxx = 0;
+    pts.forEach(function (p) { sx += p.x; sy += p.y; sxy += p.x * p.y; sxx += p.x * p.x; });
+    var b = (n * sxy - sx * sy) / (n * sxx - sx * sx);
+    return { m: b, c: (sy - b * sx) / n };
+  }
+
+  // One line chart. `key` picks the measure; opts carries the extras each
+  // panel needs (mean band, fitted trend, projected final segment).
+  function lineChart(mount, opts) {
+    var W = 560, H = 236, P = { t: 16, r: 18, b: 26, l: 34 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+
+    var pts = SERIES.map(function (d) {
+      var v = opts.value(d);
+      return v === null ? null : { d: d, v: v };
+    }).filter(Boolean);
+
+    var years = SERIES.map(function (d) { return d.yr; });
+    var x0 = Math.min.apply(null, years), x1 = Math.max.apply(null, years);
+    if (opts.stopAt) x1 = opts.stopAt;
+    var X = function (yr) { return P.l + (yr - x0) / (x1 - x0) * iw; };
+    var Y = function (v) { return P.t + ih - (v - opts.min) / (opts.max - opts.min) * ih; };
+
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+                          "aria-label": opts.aria });
+    var g = el("g", {});
+    svg.appendChild(g);
+
+    // gridlines + y ticks
+    opts.ticks.forEach(function (t) {
+      g.appendChild(el("line", { class: "grid-line", x1: P.l, x2: P.l + iw, y1: Y(t), y2: Y(t) }));
+      var lab = el("text", { class: "tick-txt", x: P.l - 7, y: Y(t) + 3, "text-anchor": "end" });
+      lab.textContent = t + "%";
+      g.appendChild(lab);
+    });
+    g.appendChild(el("line", { class: "ax-line", x1: P.l, x2: P.l + iw, y1: Y(opts.min), y2: Y(opts.min) }));
+
+    // x ticks every 4 years, plus the final cycle
+    years.forEach(function (yr) {
+      if (yr % 4 !== 0 && yr !== x1) return;
+      if (yr > x1) return;
+      var lab = el("text", { class: "tick-txt", x: X(yr), y: P.t + ih + 15, "text-anchor": "middle" });
+      lab.textContent = "'" + String(yr).slice(2);
+      g.appendChild(lab);
+    });
+
+    var complete = pts.filter(function (p) { return !p.d.bad && !p.d.declared; });
+
+    // mean +/- 1sd band (left panel): shows the flatness directly
+    if (opts.band) {
+      var vals = complete.map(function (p) { return p.v; });
+      var mean = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+      var sd = Math.sqrt(vals.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (vals.length - 1));
+      g.appendChild(el("rect", { class: "band-fill", x: P.l, y: Y(mean + sd),
+                                width: iw, height: Y(mean - sd) - Y(mean + sd) }));
+      g.appendChild(el("line", { class: "band-mid", x1: P.l, x2: P.l + iw, y1: Y(mean), y2: Y(mean) }));
+      var bl = el("text", { class: "anno on-a", x: P.l + 4, y: Y(mean) - 6, "text-anchor": "start" });
+      bl.textContent = "mean " + mean.toFixed(1) + "%";
+      g.appendChild(bl);
+    }
+
+    // fitted trend (right panel)
+    if (opts.fit) {
+      var f = ols(complete.map(function (p) { return { x: p.d.yr, y: p.v }; }));
+      var fy0 = f.m * x0 + f.c, fy1 = f.m * x1 + f.c;
+      g.appendChild(el("line", { class: "trend-fit", x1: X(x0), y1: Y(fy0), x2: X(x1), y2: Y(fy1) }));
+      var fl = el("text", { class: "anno on-b", x: P.l + iw, y: P.t + 9, "text-anchor": "end" });
+      fl.textContent = "fitted \u2212" + Math.abs(10 * f.m).toFixed(1) + " pts/decade";
+      g.appendChild(fl);
+    }
+
+    // the line, broken across incomplete cycles
+    var runs = [], run = [];
+    pts.forEach(function (p) {
+      if (p.d.bad) { if (run.length) { runs.push(run); run = []; } return; }
+      run.push(p);
+    });
+    if (run.length) runs.push(run);
+
+    runs.forEach(function (r) {
+      var solid = r.filter(function (p) { return !p.d.declared; });
+      if (solid.length > 1) {
+        g.appendChild(el("polyline", { class: "series-line " + opts.cls,
+          points: solid.map(function (p) { return X(p.d.yr) + "," + Y(p.v); }).join(" ") }));
+      }
+      // the declared 2026 point joins with a dashed segment: not a result
+      var dec = r.filter(function (p) { return p.d.declared; });
+      if (dec.length && solid.length) {
+        var last = solid[solid.length - 1];
+        g.appendChild(el("polyline", { class: "series-line projected " + opts.cls,
+          points: X(last.d.yr) + "," + Y(last.v) + " " + X(dec[0].d.yr) + "," + Y(dec[0].v) }));
+      }
+    });
+
+    // markers: filled = usable result, hollow = declared, dashed = incomplete
+    pts.forEach(function (p) {
+      var cls = "dot " + opts.cls;
+      if (p.d.bad) cls = "dot gap";
+      else if (p.d.declared) cls = "dot hollow " + opts.cls;
+      g.appendChild(el("circle", { class: cls, cx: X(p.d.yr), cy: Y(p.v), r: 4.5 }));
+    });
+
+    // selective direct labels only
+    (opts.labels || []).forEach(function (L) {
+      var p = pts.find(function (q) { return q.d.yr === L.yr; });
+      if (!p) return;
+      var t = el("text", { class: "anno " + (L.on || ""), x: X(p.d.yr) + (L.dx || 0),
+                           y: Y(p.v) + (L.dy || -10), "text-anchor": L.anchor || "middle" });
+      t.textContent = L.text;
+      g.appendChild(t);
+    });
+
+    // hover layer: crosshair + tooltip
+    var cross = el("line", { class: "crosshair", y1: P.t, y2: P.t + ih });
+    var focus = el("circle", { class: "focus-dot " + opts.cls, r: 6.5,
+                               fill: "none", "stroke-width": 2 });
+    g.appendChild(cross);
+    g.appendChild(focus);
+
+    var hit = el("rect", { class: "hit", x: P.l, y: P.t, width: iw, height: ih });
+    g.appendChild(hit);
+
+    function nearest(clientX) {
+      var box = svg.getBoundingClientRect();
+      var sx = (clientX - box.left) / box.width * W;
+      var best = null, bd = Infinity;
+      pts.forEach(function (p) {
+        var d = Math.abs(X(p.d.yr) - sx);
+        if (d < bd) { bd = d; best = p; }
+      });
+      return best;
+    }
+    function move(ev) {
+      var p = nearest(ev.clientX);
+      if (!p) return;
+      var box = svg.getBoundingClientRect();
+      var px = box.left + X(p.d.yr) / W * box.width;
+      var py = box.top + Y(p.v) / H * box.height;
+      cross.setAttribute("x1", X(p.d.yr));
+      cross.setAttribute("x2", X(p.d.yr));
+      cross.style.opacity = ".5";
+      focus.setAttribute("cx", X(p.d.yr));
+      focus.setAttribute("cy", Y(p.v));
+      focus.style.opacity = "1";
+      showTip(px, py, opts.tip(p.d, p.v));
+    }
+    hit.addEventListener("mousemove", move);
+    hit.addEventListener("mouseleave", function () {
+      cross.style.opacity = "0";
+      focus.style.opacity = "0";
+      hideTip();
+    });
+
+    mount.appendChild(svg);
+  }
+
+  var fmt = function (v) { return v.toFixed(1) + "%"; };
+
+  lineChart(document.getElementById("chart-rate"), {
+    cls: "a",
+    value: function (d) { return 100 * d.num / d.den; },
+    min: 0, max: 18, ticks: [0, 6, 12, 18],
+    band: true,
+    aria: "Share of sitting state legislators who drew a same-party primary challenger, "
+        + "by cycle, 1996 to 2026. The series is flat, averaging 11 percent.",
+    labels: [
+      { yr: 1998, text: "16.2", on: "on-a", dy: -11 },
+      { yr: 2000, text: "7.0", on: "on-a", dy: 17 },
+      { yr: 2026, text: "declared 14.2", on: "on-a", dy: -11, anchor: "end", dx: 4 }
+    ],
+    tip: function (d, v) {
+      return '<span class="tip-yr">' + d.yr + (d.declared ? " BALLOT" : "") + '</span>' +
+        '<span class="tip-v">' + fmt(v) + '</span>' +
+        '<span class="tip-n">' + d.num + " of " + d.den + " challenged</span>" +
+        (d.bad ? '<span class="tip-flag">incomplete data</span>' :
+         d.declared ? '<span class="tip-flag">declared, not yet run</span>' : "");
+    }
+  });
+
+  lineChart(document.getElementById("chart-defeat"), {
+    cls: "b",
+    stopAt: 2024,
+    value: function (d) { return d.chal ? 100 * d.def / d.chal : null; },
+    min: 0, max: 28, ticks: [0, 7, 14, 21, 28],
+    fit: true,
+    aria: "Share of challenged incumbents who lost their primary, by cycle, 1996 to 2024. "
+        + "The series drifts downward from about 25 percent to about 10 percent.",
+    labels: [
+      { yr: 1996, text: "25.0", on: "on-b", dy: -11, anchor: "start", dx: -2 },
+      { yr: 2022, text: "4.5", on: "on-b", dy: 17 }
+    ],
+    tip: function (d, v) {
+      return '<span class="tip-yr">' + d.yr + '</span>' +
+        '<span class="tip-v">' + fmt(v) + '</span>' +
+        '<span class="tip-n">' + d.def + " of " + d.chal + " lost</span>" +
+        (d.bad ? '<span class="tip-flag">incomplete data</span>' : "");
+    }
+  });
+
+  // table view of both series, for the accessibility pass
+  (function () {
+    var host = document.getElementById("figures");
+    var rows = SERIES.map(function (d) {
+      var r = 100 * d.num / d.den;
+      var dr = d.chal ? 100 * d.def / d.chal : null;
+      return "<tr" + (d.bad ? ' class="incomplete"' : "") + "><td>" + d.yr +
+        (d.bad ? " (incomplete)" : d.declared ? " (declared)" : "") + "</td>" +
+        '<td class="n">' + d.num + " / " + d.den + "</td>" +
+        '<td class="n">' + r.toFixed(1) + "%</td>" +
+        '<td class="n">' + (d.chal === null ? "\u2013" : d.def + " / " + d.chal) + "</td>" +
+        '<td class="n">' + (dr === null ? "\u2013" : dr.toFixed(1) + "%") + "</td></tr>";
+    }).join("");
+    host.innerHTML = '<table><caption>Both series as figures</caption><thead><tr>' +
+      "<th>Cycle</th><th>Challenged / on ballot</th><th>Challenge rate</th>" +
+      "<th>Lost / challenged</th><th>Defeat rate</th></tr></thead><tbody>" +
+      rows + "</tbody></table>";
+
+    var btn = document.getElementById("toggle-figures");
+    btn.addEventListener("click", function () {
+      var open = host.hasAttribute("hidden");
+      if (open) host.removeAttribute("hidden"); else host.setAttribute("hidden", "");
+      btn.setAttribute("aria-expanded", String(open));
+      btn.textContent = open ? "Hide the numbers" : "Show the numbers";
+    });
+  })();
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var mount = document.getElementById("chart-field");
+  if (!mount) return;
+
+  // Contests where the combined opposition out-polled the incumbent,
+  // split by whether the incumbent faced one challenger or several.
+  var ROWS = [
+    { label: "One challenger",     survived: 0,  n: 25 },
+    { label: "Two or more",        survived: 12, n: 22 }
+  ];
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(t, a) {
+    var n = document.createElementNS(SVGNS, t);
+    for (var k in a) if (a[k] !== null && a[k] !== undefined) n.setAttribute(k, a[k]);
+    return n;
+  }
+
+  var W = 560, H = 178, P = { t: 14, r: 16, b: 26, l: 16 };
+  var iw = W - P.l - P.r;
+  var barH = 26, rowH = 68, trackX = P.l, trackW = iw;
+
+  var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+    "aria-label": "Among incumbents a majority voted against, none of 25 survived a "
+      + "one-on-one primary, while 12 of 22 survived when two or more challengers split "
+      + "the opposition vote." });
+
+  ROWS.forEach(function (r, i) {
+    var pct = 100 * r.survived / r.n;
+    var y = P.t + i * rowH;
+
+    var lab = el("text", { class: "bar-lab", x: trackX, y: y + 11 });
+    lab.textContent = r.label;
+    svg.appendChild(lab);
+
+    var sub = el("text", { class: "bar-sub", x: trackX + trackW, y: y + 11, "text-anchor": "end" });
+    sub.textContent = r.survived + " of " + r.n + " survived";
+    svg.appendChild(sub);
+
+    // track = all contests in this stratum
+    svg.appendChild(el("rect", { class: "bar-track", x: trackX, y: y + 20,
+      width: trackW, height: barH, rx: 4 }));
+
+    // fill = the share that survived; 4px rounded end, anchored at the baseline
+    if (pct > 0) {
+      svg.appendChild(el("rect", { class: "bar-fill", x: trackX, y: y + 20,
+        width: Math.max(trackW * pct / 100, 6), height: barH, rx: 4 }));
+    }
+
+    var val = el("text", { class: "bar-val" + (pct === 0 ? " zero" : ""),
+      x: pct === 0 ? trackX + 8 : trackX + Math.max(trackW * pct / 100, 6) + 9,
+      y: y + 20 + barH / 2 + 6 });
+    val.textContent = pct.toFixed(pct === 0 ? 0 : 1) + "%";
+    svg.appendChild(val);
+  });
+
+  var foot = el("text", { class: "bar-sub", x: P.l, y: H - 8 });
+  foot.textContent = "bar = share surviving; track = all such contests";
+  svg.appendChild(foot);
+
+  mount.appendChild(svg);
 })();
 </script>
