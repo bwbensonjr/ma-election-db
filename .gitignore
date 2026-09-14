@@ -6,3 +6,6 @@ __pycache__
 .Renviron
 
 
+
+# Backup copies written by election_stats.py before each re-fetch
+data/*_last.csv.gz
