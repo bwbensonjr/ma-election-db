@@ -66,5 +66,15 @@ EVENTS = {
             builder="primary_2026.results",
             incumbent_overrides=OVERRIDES_2026,
         ),
+        Event(
+            name="general_2026",
+            election_date="2026-11-03",
+            stage="general",
+            # Without a party param the general feed returns every race.
+            feed_params={None: {}},
+            offices=frozenset({"State Senate", "State House"}),
+            builder="general_2026.results",
+            incumbent_overrides=OVERRIDES_2026,
+        ),
     ]
 }

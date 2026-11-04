@@ -64,6 +64,15 @@ Rscript demographics/ma_census.R
 Rscript pvi/ma_pvi.R
 ```
 
+### Interim AP results (before certification)
+```bash
+# Interim results from the AP feed behind the Boston Globe, per event.
+# Not part of `make all`; nothing goes into SQLite. See ap_results/README.md.
+uv run python -m ap_results list
+uv run python -m ap_results build general_2026          # from checked-in snapshots
+uv run python -m ap_results build general_2026 --fetch  # refresh snapshots first
+```
+
 ### Candidate duplicate detection
 ```bash
 # Find potential duplicate candidates by name matching
@@ -166,6 +175,19 @@ python find_dup_candidates.py
     rows, one per `(election_year, redistricting_year, city_town, ward, precinct)`
   - `data/precinct/ma_national_presidential_baseline.csv` - 4 rows, one
     per presidential election year
+
+**Side stage: interim AP results (ap_results/)**
+- Python package run as `uv run python -m ap_results build <event>`. Covers
+  the window between election night and certification on electionstats
+- Each election is an event registered in `ap_results/events.py`, with its
+  own `ap_results/<event>/` directory holding gzipped raw-feed snapshots
+  (checked in; builds are offline unless `--fetch` is passed) and any
+  event-specific inputs. Shared code handles fetch, normalization to
+  office/district conventions (via `ap_results/district_reference.csv`),
+  name-matched incumbency, and fail-loud vote-sum verification
+- Events: `primary_2026` (superseded by certified results) and
+  `general_2026` (State Rep + State Senate, 2026-11-03)
+- Outputs go to `data/ap_results/<event>/`. Not in `make all` or SQLite
 
 **Stage 4: SQLite assembly (build_sqlite.R)**
 - Deletes `data/ma_elections.sqlite` and rebuilds it from the CSVs
@@ -292,6 +314,9 @@ python find_dup_candidates.py
 - `data/precinct/ma_precinct_presidential_vote.csv.gz` - Precinct-level presidential votes 2012-2024 (~13,666 rows)
 - `data/precinct/ma_national_presidential_baseline.csv` - National Dem/GOP totals per presidential election (4 rows, used by PVI calc)
 - `data/district_summaries.csv` - LLM-generated narrative summary per district, keyed by `effective_date` (217 rows)
+- `data/ap_results/primary_2026/ma_primary_2026_{candidates,results}.csv.gz` - 2026 primary nominations and interim AP municipality results
+- `data/ap_results/general_2026/ma_general_2026_races.csv.gz` - Interim AP 2026 general results, State Rep + Senate, 1 row per seat (200)
+- `data/ap_results/general_2026/ma_general_2026_results.csv.gz` - Interim AP 2026 general results by municipality, contested races
 - `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)
 

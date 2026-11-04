@@ -8,6 +8,7 @@ conventions. Each election is an **event** with its own subdirectory.
 | Event | Date | Outputs (`data/ap_results/<event>/`) |
 |---|---|---|
 | [`primary_2026`](primary_2026/README.md) | 2026-09-01 | `ma_primary_2026_candidates.csv.gz`, `ma_primary_2026_results.csv.gz` |
+| [`general_2026`](general_2026/README.md) | 2026-11-03 | `ma_general_2026_races.csv.gz`, `ma_general_2026_results.csv.gz` |
 
 ## Build
 
