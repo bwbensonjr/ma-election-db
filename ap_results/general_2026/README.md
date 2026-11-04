@@ -107,3 +107,47 @@ differences:
 
 Race-level candidate votes equal the sum of that candidate's municipality
 rows, and the build checks this.
+
+## `ma_general_2026_forecast_comparison.csv.gz`
+
+The 57 contested races joined to the 2026 legislative forecast from the
+`election-modeling` repo (14d-r2 snapshot, money cutoff 2026-10-20). Built
+from the general results above:
+
+```bash
+uv run python -m ap_results.general_2026.forecast_compare
+```
+
+The forecast inputs in `forecast/` are copies of the files pinned by the
+massnumbers blog post `posts/2026-10-29-contested-races` (blog commit
+`703da84`). The 14d-r2 snapshot is not checked in to `election-modeling`
+itself. `forecast_14d_r2_intervals.csv` holds the 75% intervals the post
+derived from the snapshot's per-race draws.
+
+`actual_margin` uses the model's definition: the Democrat's margin in points
+against the comparison candidate (the Republican, or the strongest
+non-Democrat where no Republican ran) on that pair's own votes,
+`100 * (D - comparison) / (D + comparison)`. Votes for any other candidate
+are in `other_votes` and left out of the margin.
+
+Columns:
+
+- `target_id`, `office`, `district`, `district_display`, `district_id`
+- Forecast inputs: `PVI_N`, `incumbent_status`, `ballot_timing`,
+  `dem_candidate_*`, `comparison_candidate_*`, and receipts and expenditures
+  for each side through the cutoff
+- Forecast: `forecast_margin` (point estimate), `lower_75`/`upper_75`,
+  `lower_90`/`upper_90`, `dem_win_probability`, `forecast_dem_favored`
+- AP results: `race_call_status`, `is_called`, `precincts_reporting_pct`,
+  `eevp`, `dem_votes`, `comparison_votes`, `other_votes`, `actual_margin`,
+  `dem_leading`, `name_winner`, `party_winner`
+- Scoring: `dem_won` and `forecast_correct` (blank until AP calls the race),
+  `margin_error` (actual minus forecast), `in_75`, `in_90`, and `brier`
+  (`(dem_win_probability - dem_won)^2`, blank until called)
+
+On the 2026-11-04 20:01 UTC snapshot, 47 of the 57 races are called. The
+favored side won 45 of the 47; the misses were 22nd Middlesex (14% Dem, Dem
+won) and 8th Bristol (57% Dem, Rep won). Margin error averages +2.9 points
+toward Democrats, with an RMSE of 8.4. 51 of 57 results fall inside the 75%
+interval and 56 inside the 90% interval. The Brier score on called races is
+0.040.
