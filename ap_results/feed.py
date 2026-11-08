@@ -89,4 +89,4 @@ def town_units(race):
 def candidate_name(cand):
     """AP splits names into first/middle/last; rebuild the display form."""
     parts = [cand.get("first"), cand.get("middle"), cand.get("last")]
-    return " ".join(p for p in parts if p)
+    return " ".join(p.strip() for p in parts if p and p.strip())

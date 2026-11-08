@@ -72,7 +72,10 @@ EVENTS = {
             stage="general",
             # Without a party param the general feed returns every race.
             feed_params={None: {}},
-            offices=frozenset({"State Senate", "State House"}),
+            offices=frozenset({
+                "U.S. Senate", "Governor", "U.S. House",
+                "Governor's Council", "State Senate", "State House",
+            }),
             builder="general_2026.results",
             incumbent_overrides=OVERRIDES_2026,
         ),

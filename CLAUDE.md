@@ -186,7 +186,8 @@ python find_dup_candidates.py
   office/district conventions (via `ap_results/district_reference.csv`),
   name-matched incumbency, and fail-loud vote-sum verification
 - Events: `primary_2026` (superseded by certified results) and
-  `general_2026` (State Rep + State Senate, 2026-11-03)
+  `general_2026` (Governor, U.S. Senate, U.S. House, Governor's Council,
+  State Senate, State Rep; 2026-11-03)
 - Outputs go to `data/ap_results/<event>/`. Not in `make all` or SQLite
 
 **Stage 4: SQLite assembly (build_sqlite.R)**
@@ -315,7 +316,7 @@ python find_dup_candidates.py
 - `data/precinct/ma_national_presidential_baseline.csv` - National Dem/GOP totals per presidential election (4 rows, used by PVI calc)
 - `data/district_summaries.csv` - LLM-generated narrative summary per district, keyed by `effective_date` (217 rows)
 - `data/ap_results/primary_2026/ma_primary_2026_{candidates,results}.csv.gz` - 2026 primary nominations and interim AP municipality results
-- `data/ap_results/general_2026/ma_general_2026_races.csv.gz` - Interim AP 2026 general results, State Rep + Senate, 1 row per seat (200)
+- `data/ap_results/general_2026/ma_general_2026_races.csv.gz` - Interim AP 2026 general results, Governor, U.S. Senate, U.S. House, Gov Council, State Senate, State Rep, 1 row per seat (219)
 - `data/ap_results/general_2026/ma_general_2026_results.csv.gz` - Interim AP 2026 general results by municipality, contested races
 - `data/geometry/2021/*.geojson` - District and precinct boundaries for the 2021 redistricting cycle
 - `data/ma_elections.sqlite` - Queryable database via [sqlime.org playground](https://sqlime.org/#https://bwbensonjr.github.io/ma-election-db/data/ma_elections.sqlite)

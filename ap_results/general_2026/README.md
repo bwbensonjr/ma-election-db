@@ -1,7 +1,8 @@
 # 2026 State General Election (`general_2026`)
 
-Interim State Representative and State Senate results for the **November 3,
-2026** Massachusetts general election, from the AP feed. Shared feed,
+Interim results for the **November 3, 2026** Massachusetts general election,
+from the AP feed: Governor, U.S. Senate, U.S. House, Governor's Council, State
+Senate and State Representative. Shared feed,
 snapshot, normalization and verification behavior is described in
 [`../README.md`](../README.md).
 
@@ -10,38 +11,42 @@ uv run python -m ap_results build general_2026          # from the snapshot
 uv run python -m ap_results build general_2026 --fetch  # refresh first
 ```
 
-Snapshot: `snapshots/ap_2026-11-03.json.gz`, taken 2026-11-04 20:01 UTC. One
-feed request (no `party` parameter) returns every race on the ballot; only
-`State House` and `State Senate` are kept. U.S. House, Governor's Council,
-statewide offices and ballot questions are in the snapshot and can be added
-by extending the event's `offices` in `events.py`.
+Snapshot: `snapshots/ap_2026-11-03.json.gz`, taken 2026-11-08 00:50 UTC. One
+feed request (no `party` parameter) returns every race on the ballot. The
+event keeps the offices the database schema knows: Governor, U.S. Senate,
+U.S. House, Governor's Council, State Senate and `State House`. Other
+statewide offices (Secretary of State, Attorney General, Treasurer, Auditor),
+District Attorneys and ballot questions are in the snapshot but outside the
+schema.
 
 Superseded once electionstats publishes certified results; see "Retiring an
 event" in the shared README.
 
 ## Coverage on the current snapshot
 
-| | State Rep | State Senate | Total |
-|---|---|---|---|
-| Seats | 160 | 40 | 200 |
-| Contested | 47 | 10 | 57 |
-| Uncontested | 113 | 30 | 143 |
+| | Governor | U.S. Senate | U.S. House | Gov Council | State Senate | State Rep | Total |
+|---|---|---|---|---|---|---|---|
+| Seats | 1 | 1 | 9 | 8 | 40 | 160 | 219 |
+| Contested | 1 | 1 | 6 | 3 | 10 | 47 | 68 |
+| Uncontested | 0 | 0 | 3 | 5 | 30 | 113 | 151 |
 
-- 190 races called, 10 `Too Early to Call` (9 State Rep, plus the First
-  Bristol and Plymouth Senate seat).
-- Called seats: 167 Democratic, 22 Republican, 1 Independent.
-- 5 seats change hands versus the most recent prior winner, but one of them
+- 218 races called, 1 `Too Early to Call` (Second Plymouth State Rep).
+- Called seats: 191 Democratic, 26 Republican, 1 Independent.
+- 6 seats change hands versus the most recent prior winner, but one of them
   is an artifact. Susannah Whipps (Second Franklin) is listed as `Unenrolled`
   in electionstats and `Ind` by AP, so she shows up as a party change even
   though she held her own seat.
-- 182 of 200 seats have the incumbent on the ballot.
-- 544 municipality rows across 260 race-municipality pairs, 1,416,193 votes.
+- 200 of 219 seats have the incumbent on the ballot.
+- 3,849 municipality rows across 1,358 race-municipality pairs, 9,403,314
+  votes.
 
 ## Caveats
 
 - **Uncontested seats** keep AP's declared winner but leave `votes_*`,
-  `percent_*` and `total_votes` blank. AP reports them at 0 votes, and a 0
-  would distort margins and averages. They are absent from the municipality
+  `percent_*` and `total_votes` blank. AP reports most of them at 0 votes, and
+  a 0 would distort margins and averages. AP does tabulate the three
+  uncontested U.S. House races (2nd, 5th, 7th); those counts stay in the raw
+  snapshot only. They are absent from the municipality
   file.
 - **Uncalled races** have blank `*_winner` columns. `race_call_status` says
   why. Check `precincts_reporting_pct` before reading anything into the
@@ -68,7 +73,8 @@ candidate.
 
 ## `ma_general_2026_races.csv.gz`
 
-One row per (office, district): 200 rows. Columns follow `general_election`
+One row per (office, district): 219 rows. Governor has a blank `district`
+and `district_id`; U.S. Senate is `Class 2`. Columns follow `general_election`
 where an equivalent exists.
 
 - `election_date` (`2026-11-03`), `is_special` (`0`)

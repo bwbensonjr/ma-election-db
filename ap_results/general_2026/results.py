@@ -148,8 +148,11 @@ def join_nominees(cands, event):
     prim = prim.rename(columns={"city_town": "candidate_city_town"})
     prim = prim.drop_duplicates(subset=["office", "_district", "party", "_name"])
 
+    # The primary file leaves U.S. Senate's district blank rather than
+    # "Class N"; one Senate seat is up per cycle, so match on office alone.
     cands = cands.assign(
-        _district=cands["district"].fillna(""),
+        _district=cands["district"].where(
+            cands["office"] != "U.S. Senate").fillna(""),
         _name=cands["candidate_name"].map(first_last),
     )
     out = cands.merge(prim, how="left",
@@ -169,7 +172,8 @@ def pick(group, mask):
 def summarize_races(cands):
     """One row per race with winner / incumbent / dem / gop / third_party."""
     rows = []
-    for _, g in cands.groupby(RACE_KEY, sort=False):
+    # dropna=False keeps Governor, whose district_id is null.
+    for _, g in cands.groupby(RACE_KEY, sort=False, dropna=False):
         first = g.iloc[0]
         uncontested = bool(first["is_uncontested"])
         total = None if uncontested else int(g["votes"].sum())
@@ -223,8 +227,11 @@ def summarize_races(cands):
 def reconcile_problems(cands, towns):
     """Race-level candidate votes must equal summed municipality votes."""
     key = RACE_KEY + ["ap_candidate_id"]
-    want = cands[cands["is_uncontested"] == 0].set_index(key)["votes"]
-    got = towns.groupby(key)["votes"].sum()
+    # Governor has a null district_id; fill it so the two sides align.
+    fill = {"district_id": -1}
+    want = (cands[cands["is_uncontested"] == 0].fillna(fill)
+            .set_index(key)["votes"])
+    got = towns.fillna(fill).groupby(key)["votes"].sum()
     both = pd.concat([want.rename("race"), got.rename("towns")], axis=1)
     bad = both[both["race"].fillna(-1) != both["towns"].fillna(-1)]
     return [
