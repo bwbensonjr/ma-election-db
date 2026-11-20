@@ -34,12 +34,19 @@ candidate_fixes <- function(df) {
              name = case_when(
                  ((election_id == 154409) & (candidate_id == 78007)) ~ "Susannah M. Whipps",
                  ((election_id == 154549) & (candidate_id == 88406)) ~ "Bradley H. Jones, Jr.",
+                 ((election_id == 165464) & (candidate_id == 71766)) ~ "Patrick M. O'Connor",
+                 ((election_id == 173526) & (candidate_id == 63557)) ~ "Maura Healey",
                  TRUE ~ name),
              is_winner = case_when(
                  ((election_id == 96321) & (candidate_id == 71530)) ~ FALSE,
                  TRUE ~ is_winner),
              candidate_id = case_when(
                  ((election_id == 154549) & (candidate_id == 88406)) ~ 62825,
+                 ## 2024 Sen. Patrick M. O'Connor tagged with the ID of a
+                 ## different Patrick A. O'Connor (Lowell, 2010)
+                 ((election_id == 165464) & (candidate_id == 71766)) ~ 78309,
+                 ## 2026 Gov. Maura Healey tagged with Kerry Healey's ID
+                 ((election_id == 173526) & (candidate_id == 63557)) ~ 77961,
                  TRUE ~ candidate_id),
              num_elections = case_when(
                  (candidate_id == 62825) ~ 33,
